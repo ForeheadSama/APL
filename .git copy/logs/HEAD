@@ -1,0 +1,28 @@
+0000000000000000000000000000000000000000 2420c0c9344019ed9f8147a998806c354e330c42 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1739994818 -0500	commit (initial): lexer and parser work. however, error messages after parsing need to be a little more detailed. lexical analysis and syntax analysis are added to respective txt files. more comments need to be added for documentation.
+2420c0c9344019ed9f8147a998806c354e330c42 0e6fe12e5ec41d2ab155e1092c4a2d8882f093a1 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1739995101 -0500	commit: aaaa
+0e6fe12e5ec41d2ab155e1092c4a2d8882f093a1 c56dacd18f3d30df1e105a529e01378511156bcb ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1739996975 -0500	commit: updated requirements needed to run code.
+c56dacd18f3d30df1e105a529e01378511156bcb 377f7cde28e6e78d42a4ae8146e74da9fdaca50a ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1739997274 -0500	commit: small fixes.
+377f7cde28e6e78d42a4ae8146e74da9fdaca50a 90898c8a9d108f65b40e792959676e2d8f85de8a ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1740521619 -0500	commit: Fixes:
+90898c8a9d108f65b40e792959676e2d8f85de8a 0cf6e6cdd5ab36fd8493577b016ea24ea007b476 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741617403 -0500	commit: For tan
+0cf6e6cdd5ab36fd8493577b016ea24ea007b476 fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741617693 -0500	commit: 4 tan
+fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618001 -0500	checkout: moving from main to feat/parser_stuff
+fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618209 -0500	checkout: moving from feat/parser_stuff to main
+fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618333 -0500	checkout: moving from main to fix/remove_secret
+fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 49a5695acc1155cd093625539ace7101a431d9a5 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618363 -0500	commit: Remove secret
+49a5695acc1155cd093625539ace7101a431d9a5 fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618391 -0500	checkout: moving from fix/remove_secret to main
+fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ee709d499bc25ff62c9ae7e5e263213daa9392c2 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618447 -0500	commit: remove secret
+ee709d499bc25ff62c9ae7e5e263213daa9392c2 c3d431d0f6ead399acabdb45d0b2a4eaf805b963 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618812 -0500	commit (amend): remove secret
+c3d431d0f6ead399acabdb45d0b2a4eaf805b963 fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618836 -0500	reset: moving to HEAD~
+fb7d13d49ab0dd7bb0db60e7a546fd50fa9a1263 0cf6e6cdd5ab36fd8493577b016ea24ea007b476 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618846 -0500	reset: moving to HEAD~
+0cf6e6cdd5ab36fd8493577b016ea24ea007b476 90898c8a9d108f65b40e792959676e2d8f85de8a ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618853 -0500	reset: moving to HEAD~
+90898c8a9d108f65b40e792959676e2d8f85de8a d59762f4a4f49d920b392ac493bf8b92d8255747 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618890 -0500	commit (amend): For tan
+d59762f4a4f49d920b392ac493bf8b92d8255747 377f7cde28e6e78d42a4ae8146e74da9fdaca50a ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618897 -0500	reset: moving to HEAD~
+377f7cde28e6e78d42a4ae8146e74da9fdaca50a 377f7cde28e6e78d42a4ae8146e74da9fdaca50a ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618951 -0500	checkout: moving from main to fix/code
+377f7cde28e6e78d42a4ae8146e74da9fdaca50a 00d6c831e4f73f5617ab02481c74f5bb1d51fc4d ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741618967 -0500	commit: Fix codebase
+00d6c831e4f73f5617ab02481c74f5bb1d51fc4d c4e359a242bfed44c13aa1ab19faf4cf4d696e98 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741619910 -0500	commit (merge): Merge branch 'main' of https://github.com/ForeheadSama/APLProject into fix/code
+c4e359a242bfed44c13aa1ab19faf4cf4d696e98 c4e359a242bfed44c13aa1ab19faf4cf4d696e98 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741619948 -0500	checkout: moving from fix/code to fix/code
+c4e359a242bfed44c13aa1ab19faf4cf4d696e98 c4e359a242bfed44c13aa1ab19faf4cf4d696e98 ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741619968 -0500	checkout: moving from fix/code to fix/code
+c4e359a242bfed44c13aa1ab19faf4cf4d696e98 2f24d48acce578c95ee89c3cd6a258e4bb7081db ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741620257 -0500	commit: Remove HEAD
+2f24d48acce578c95ee89c3cd6a258e4bb7081db 2f24d48acce578c95ee89c3cd6a258e4bb7081db ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741620469 -0500	rebase (abort): returning to refs/heads/fix/code
+2f24d48acce578c95ee89c3cd6a258e4bb7081db 2f24d48acce578c95ee89c3cd6a258e4bb7081db ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741620469 -0500	rebase (abort): returning to refs/heads/fix/code
+2f24d48acce578c95ee89c3cd6a258e4bb7081db 00d6c831e4f73f5617ab02481c74f5bb1d51fc4d ForeheadSama <126829981+ForeheadSama@users.noreply.github.com> 1741620563 -0500	rebase (start): checkout 00d6c831e4f73f5617ab02481c74f5bb1d51fc4d~1

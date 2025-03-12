@@ -1,0 +1,65 @@
+$$ Advanced APBL Test Code for Ticket Booking System
+$< 
+    This program demonstrates complex interactions within the APBL system,
+    including user registration, booking, payment processing, and cancellations.
+>$
+
+$$ User Registration
+string name = "Alice".
+string email = "alice@example.com".
+string phone = "1234567890".
+int userID = 123.
+reg(userID, name, email, phone).
+display("User " + name + " registered successfully.").
+
+$$ Listing available events
+display("Fetching available events...").
+list_events().
+
+$$ Checking ticket availability
+string eventName = "Rock Concert".
+date eventDate = "2025-05-20".
+int availableTickets = check_availability(eventName, eventDate).
+display("Tickets available for " + eventName + ": " + availableTickets).
+
+$$ Conditional booking
+int requestedTickets = 3.
+if (requestedTickets <= availableTickets) [
+    book(userID, eventName, eventDate, requestedTickets).
+    display("Successfully booked " + requestedTickets + " tickets for " + eventName + ".").
+]
+else [
+    display("Not enough tickets available for " + eventName + ".") $$ ERROR HERE, NO EOL
+]
+
+$$ Making payment
+float ticketPrice = 50.0.
+float totalAmount = ticketPrice * requestedTickets.
+make_payment(userID, totalAmount).
+display("Payment of $" + totalAmount + " completed.") $$ERROR HERE, NO EOL
+
+$$ Looping through previous reservations
+display("Reviewing past reservations...").
+int historyCount = 5.
+while (historyCount > 0) [
+    display("Fetching reservation " + historyCount + "...").
+    historyCount = historyCount - 1.
+]
+
+display("All reservations reviewed.").
+
+$$ Cancellation process
+if (requestedTickets > 2) [
+    cancel(userID, eventName, eventDate, 1).
+    display("Cancelled 1 ticket for " + eventName + ".").
+]
+
+$$ Accepting user input for next booking
+display("Enter destination: ").
+string nextDestination = accept().
+display("Enter travel date (YYYY-MM-DD): ").
+date nextTravelDate = accept().
+display("Enter number of passengers: ").
+int nextPassengers = accept().
+book(userID, nextDestination, nextTravelDate, nextPassengers).
+display("Booking completed for " + nextDestination + " on " + nextTravelDate + ".").

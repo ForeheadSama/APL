@@ -1,0 +1,29 @@
+Fixes:
+1. fixed parser error messages
+2. fixed return type check
+3. bool must now been written in lower case (true/false instead of True/False)
+4. got rid of duplicate operations & functions
+5. some project clean-up, all errors are now reported in one file (utils/output_handler.py)
+
+To Fix:
+a. Needs extensive error checking & handling, only handles basics
+b. Imtegrate GUI when complete
+c. Can probably be optimized.
+d. AST needs to be represented as a diagram
+
+# Conflicts:
+#	lexer_module/__pycache__/lexer.cpython-39.pyc
+#	lexer_module/lexer.py
+#	lexer_module/lexical_analysis.txt
+#	main.py
+#	parser_module/__pycache__/grammar_rules.cpython-39.pyc
+#	parser_module/__pycache__/parser_mod.cpython-39.pyc
+#	parser_module/__pycache__/parsetab.cpython-39.pyc
+#	parser_module/parser_mod.py
+#	parser_module/parsetab.py
+#	parser_module/syntax_analysis.txt
+#	sample_code.apbl
+#	semantic_module/__pycache__/semantic_mod.cpython-39.pyc
+#	semantic_module/semantic_mod.py
+#	utils/__pycache__/output_handler.cpython-39.pyc
+#	utils/output_handler.py

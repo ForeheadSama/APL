@@ -1,0 +1,23 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = false
+	logallrefupdates = true
+	symlinks = false
+	ignorecase = true
+[remote "APLProject"]
+	url = https://github.com/ForeheadSama/APLProject.git
+	fetch = +refs/heads/*:refs/remotes/APLProject/*
+[branch "main"]
+	remote = APLProject
+	merge = refs/heads/main
+[branch "feat/parser_stuff"]
+	vscode-merge-base = APLProject/main
+	remote = APLProject
+	merge = refs/heads/main
+[branch "fix/remove_secret"]
+	vscode-merge-base = APLProject/main
+[branch "fix/code"]
+	vscode-merge-base = APLProject/main
+	remote = APLProject
+	merge = refs/heads/main

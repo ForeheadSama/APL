@@ -1,0 +1,231 @@
+diff --git a/main.py b/main.py
+index 148e03a..240b6fc 100644
+--- a/main.py
++++ b/main.py
+@@ -1,31 +1,56 @@
++"""
++Main compiler module that integrates lexer, parser, and semantic analyzer
++"""
++
+ from lexer_module.lexer import tokenize
+ from parser_module.parser_mod import parse
++from semantic_module.semantic_mod import SemanticAnalyzer
+ 
+-def compile_apbl(file_path):
+-    """Compile an APBL source file"""
++def compile_file(filename):
++    """
++    Complete compilation process for an APBL file.
++    """
+     try:
+         # Read source code
+-        with open(file_path, 'r') as f:
+-            source_code = f.read()
++        with open(filename, 'r') as f:
++            source_code = f.read() # Store file contents separately
++
++        # Print file name
++        print(f"\nCompiling {filename}...") 
+         
+-        # Step 1: Lexical Analysis
++        # [1] Lexical Analysis
+         tokens = tokenize(source_code)
+         if not tokens:
+-            print("Lexical analysis failed")
++            print("Lexical analysis failed.")
+             return False
+         
+-        # Step 2: Syntax Analysis
+-        ast = parse(tokens)
+-        if not ast:
+-            print("Syntax analysis failed")
+-            return False
++        print(f"\n==> Lexical analysis completed. Found {len(tokens)} tokens.")
+         
+-        return True
+-            
++        # [2] Syntax Analysis
++        #-- TO FIX: 
++        #    1. Extensive errors 
++        print("==> Syntax analysis completed.")
++        ast, syntax_errors = parse(tokens)
++        
++        # [3] Semantic Analysis
++        #-- TO FIX: 
++        #    1. Extensive errors (if i type fffalse instead of false, it shows no errors)
++        analyzer = SemanticAnalyzer()
++        success, semantic_errors, warnings, symbol_table = analyzer.analyze(ast)
++        print("==> Semantic analysis completed.")
++        
++        # if warnings:
++        #     print(f"Found {len(warnings)} warnings:")
++        #     for warning in warnings:
++        #         print(f"  {warning}")
++    
++        return success and not syntax_errors
++
+     except Exception as e:
+-        print(f"Error compiling APBL file: {str(e)}")
++        print(f"\nError compiling APBL file: {str(e)}")
+         return False
+ 
+-# Entry point
+-if __name__ == "__main__":
+-    compile_apbl("sample_code.apbl")
+\ No newline at end of file
++# Main
++if __name__ == "__main__": 
++    compile_file("sample_code.apbl")
++    
+\ No newline at end of file
+diff --git a/sample_code.apbl b/sample_code.apbl
+index 4cbac4a..f52e922 100644
+--- a/sample_code.apbl
++++ b/sample_code.apbl
+@@ -5,12 +5,12 @@ $$ Basic variable declarations
+ int maxSeats = 100.
+ float ticketPrice = 299.99.
+ string flightNumber = "FL123".
+-bool isInternational = True.
++bool isInternational = true.
+ date departureDate = "2024-05-15".
+ time departureTime = "10:30:00".
+ 
+ $$ Function to calculate total price with tax
+-function float calculateTotalPrice(float basePrice, float taxRate) [
++function float calculateTotalPrice(float basePrice, float taxRate)[ 
+     float taxAmount = basePrice * taxRate.
+     return basePrice + taxAmount.
+ ]
+@@ -18,9 +18,9 @@ function float calculateTotalPrice(float basePrice, float taxRate) [
+ $$ Function to check seat availability
+ function bool checkAvailability(int requestedSeats) [
+     if (requestedSeats <= maxSeats) [
+-        return True.
++        return true.
+     ] else [
+-        return False.
++        return false.
+     ]
+ ]
+ 
+@@ -43,10 +43,10 @@ function bool processBooking(string passengerName, int seatCount) [
+         reg(userId, "defaultPass").
+         maxSeats = maxSeats - seatCount.
+         displayConfirmation(passengerName, flightNumber).
+-        return True.
++        return true.
+     ] else [
+         display("Booking failed - not enough seats").
+-        return False.
++        return false.
+     ]
+ ]
+ 
+diff --git a/utils.py b/utils.py
+deleted file mode 100644
+index 0547511..0000000
+--- a/utils.py
++++ /dev/null
+@@ -1,100 +0,0 @@
+-def print_tree(node, level=0, is_last=True, file=None):
+-    """Utility function to visualize the Abstract Syntax Tree (AST)
+-    
+-    Args:
+-        node: Current node in the AST
+-        level: Current indentation level (default: 0)
+-        is_last: Whether this is the last child in its parent (default: True)
+-        file: Optional file object for writing output (default: None, prints to console)
+-    """
+-    # Base case: return if node is None
+-    if not node:
+-        return
+-        
+-    try:
+-        # Create the appropriate indentation with tree-like structure
+-        # Uses │ for vertical lines and ├── or └── for branches
+-        indent = "│   " * (level - 1) + ("└── " if is_last else "├── ") if level > 0 else ""
+-        
+-        # Handle dictionary nodes (AST nodes with attributes)
+-        if isinstance(node, dict):
+-
+-            # Build node description with type, name, data_type, and operator if present
+-            desc = node.get('type', 'unknown')  # Safely get node type with default
+-            if 'name' in node:
+-                desc += f" '{node['name']}'"
+-
+-            if 'data_type' in node and node['data_type']:
+-                # Handle both string and dictionary data types
+-                if isinstance(node['data_type'], dict) and 'name' in node['data_type']:
+-                    desc += f" : {node['data_type']['name']}"
+-                else:
+-                    desc += f" : {node['data_type']}"
+-
+-            if 'op' in node:
+-                desc += f" [{node['op']}]"
+-            
+-            # Print the node description
+-            print(f"{indent}{desc}", file=file)
+-            
+-            # Prepare to handle node's children and attributes
+-            items = []
+-            
+-            # Keys to skip in the output for cleaner visualization
+-            skip_keys = {'type', 'name', 'data_type', 'op', 'line', 'column', 'scope', 'symbol_table'}
+-            
+-            # Special handling for value attributes
+-            if 'value' in node:
+-                if isinstance(node['value'], (dict, list)):
+-                    items.append(('value', node['value']))
+-                else:
+-                    # For simple values, print and return
+-                    print(f"{indent}└── value = {node['value']}", file=file)
+-                    return
+-            
+-            # Collect all other relevant attributes
+-            for key, value in node.items():
+-                if key not in skip_keys and key != 'value' and value is not None:
+-                    items.append((key, value))
+-            
+-            # Define order of attributes for consistent output
+-            priority_keys = ['condition', 'left', 'right', 'then_block', 'else_block', 
+-                           'return_type', 'params', 'body', 'statements']
+-            
+-            # Sort items based on priority and then alphabetically
+-            items.sort(key=lambda x: (
+-                priority_keys.index(x[0]) if x[0] in priority_keys else len(priority_keys),
+-                x[0]
+-            ))
+-            
+-            # Print each child/attribute
+-            for i, (key, value) in enumerate(items):
+-                is_last_child = i == len(items) - 1
+-                child_indent = indent + ("└── " if is_last_child else "├── ")
+-                
+-                if isinstance(value, (dict, list)):
+-                    # Recursively print nested structures
+-                    print(f"{child_indent}{key}:", file=file)
+-                    next_level = level + (2 if level > 0 else 1)
+-                    print_tree(value, next_level, True, file)
+-                else:
+-                    # Print simple values directly
+-                    print(f"{child_indent}{key}: {value}", file=file)
+-                
+-        # Handle list nodes (collections of AST nodes)
+-        elif isinstance(node, list):
+-            for i, item in enumerate(node):
+-                print_tree(item, level, i == len(node) - 1, file)
+-        # Handle simple values
+-        else:
+-            print(f"{indent}{node}", file=file)
+-            
+-    except UnicodeEncodeError:
+-        # Error Handling: Fall back to ASCII characters if Unicode fails
+-        # This can happen when writing to files with certain encodings
+-        indent = "|   " * (level - 1) + ("+-- " if is_last else "+-- ") if level > 0 else ""
+-        print(f"{indent}{str(node)}", file=file)
+-    except Exception as e:
+-        # Error Handling: Log any other errors but continue processing
+-        # This ensures one bad node doesn't stop the entire tree from being printed
+-        print(f"Warning: Error processing node: {str(e)}", file=file) 
+\ No newline at end of file

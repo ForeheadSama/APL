@@ -1,0 +1,2 @@
+pick 00d6c831e4f73f5617ab02481c74f5bb1d51fc4d Fix codebase
+pick 90898c8a9d108f65b40e792959676e2d8f85de8a Fixes: 1. fixed parser error messages 2. fixed return type check 3. bool must now been written in lower case (true/false instead of True/False) 4. got rid of duplicate operations & functions 5. some project clean-up, all errors are now reported in one file (utils/output_handler.py)
