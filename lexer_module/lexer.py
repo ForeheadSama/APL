@@ -1,129 +1,75 @@
-# lexer.py
-#      Load the APBL source code from a file and tokenize it.
-#      The tokens are written to a file named 'lexer_output.txt'.
-# """
-
 import ply.lex as lex
 
-# Reserved words definition
+# Reserved words definition - updated to include data types and if statement keywords
 reserved = {
-    # Built-in Functions (these are now reserved keywords)
-    'book': 'BOOK',         # For booking a ticket
-    'cancel': 'CANCEL',       # For canceling a ticket
-    'list_events': 'LIST_EVENTS',  # For listing available events
-    'check_availability': 'CHECK_AVAILABILITY',  # For checking ticket availability
-    'make_payment': 'MAKE_PAYMENT',  # For making payments
-    'reg': 'REG',           # For registering a user     
-    'display': 'DISPLAY',   # For displaying output
-    'accept': 'ACCEPT',     # For accepting user input
+    # Core Command Keywords
+    'book': 'BOOK',
+    'cancel': 'CANCEL',
+    'list': 'LIST',
+    'check': 'CHECK',
+    'pay': 'PAY',
+    'display': 'DISPLAY',
+    'accept': 'ACCEPT',
     
-    # Control Flow Keywords
+    # Prepositions and Conjunctions
+    'for': 'FOR',
+    'on': 'ON',
+    'event': 'EVENT',
+
+    # Objects and Topics
+    'ticket': 'TICKET',
+    'tickets': 'TICKETS',
+    'events': 'EVENTS',
+    'availability': 'AVAILABILITY',
+    'price': 'PRICE',
+    
+    # Data Types
+    'string': 'STRING_TYPE',
+    'int': 'INT_TYPE',
+    'date': 'DATE_TYPE',
+    
+    # Control Flow
     'if': 'IF',
-    'while': 'WHILE',
-    'foreach': 'FOREACH',
-    'until': 'UNTIL',
-    'return': 'RETURN',
-    'break': 'BREAK',
-    'continue': 'CONTINUE',
-    
-    
-    # Data Type Keywords
-    'int': 'INT_TYPE',      # Integer type
-    'float': 'FLOAT_TYPE',  # Floating-point type
-    'string': 'STRING_TYPE',# String type
-    'bool': 'BOOL_TYPE',    # Boolean type
-    'date': 'DATE_TYPE',    # Date type
-    'time': 'TIME_TYPE',    # Time type
-    
-    # Logical Operators
-    'and': 'AND',
-    'or': 'OR',
-    'not': 'NOT',
-    
-    # Other Keywords
-    'then': 'THEN',
-    'else': 'ELSE',
-    'function': 'FUNCTION',
-    'void': 'VOID',         # Add void type
-    'in': 'IN',             # for foreach loops
+    'else': 'ELSE'
 }
 
-# Token list definition
+# Token list definition - updated to include new symbols and types
 tokens = [
-    'NUMBER',           # e.g., 123
-    'FLOAT_NUM',        # e.g., 2.95
-    'STRING_LITERAL',   # e.g., "Hello, World!"
-    'BOOLEAN_VAL',      # 'true' or 'false'
-    'DATE_VAL',         # e.g., "2021-01-01"
-    'TIME_VAL',         # e.g., "12:00:00"
-    'IDENTIFIER',       # Variable or function names
-    'EQUALS',           # =
-    'EQ',               # ==
-    'NEQ',              # !=
-    'LT',               # <
-    'GT',               # >
-    'LE',               # <=
-    'GE',               # >=
-    'PLUS',             # +
-    'MINUS',            # -
-    'TIMES',            # *
-    'DIVIDE',           # /
-    'LPAREN',           # (
-    'RPAREN',           # )
-    'LBRACKET',         # '['
-    'RBRACKET',         # ']'
-    'COMMA',            # ,
-    'COLON',            # :
-    'EOL',              # .
-] + list(set(reserved.values()))  # Use set to eliminate duplicates
+    'NUMBER',         # e.g., 123
+    'STRING_LITERAL', # e.g., "Hello, World!"
+    'DATE_VAL',       # e.g., "February 17, 2025"
+    'IDENTIFIER',     # Variable names
+    'DOT',            # . (end of sentence)
+    'LPAREN',         # (
+    'RPAREN',         # )
+    'LBRACKET',       # [
+    'RBRACKET',       # ]
+    'EQUALS',         # =
+    'GT',             # >
+    'LT',             # <
+    'GE',             # >=
+    'LE',             # <=
+    'EQ',             # ==
+    'NE',             # !=
+] + list(reserved.values())
 
 # Simple token rules
-t_EQUALS = r'='
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
+t_DOT = r'\.'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
-t_COMMA = r','
-t_COLON = r':'
+t_GT = r'>'
+t_LT = r'<'
+t_GE = r'>='
+t_LE = r'<='
+t_EQ = r'=='
+t_NE = r'!='
+t_EQUALS = r'='
 
-# Complex token rules
-def t_EQ(t):
-    r'=='
-    return t
-
-def t_NEQ(t):
-    r'!='
-    return t
-
-def t_LE(t):
-    r'<='
-    return t
-
-def t_GE(t):
-    r'>='
-    return t
-
-def t_LT(t):
-    r'<'
-    return t
-
-def t_GT(t):
-    r'>'
-    return t
-
-# EOL token (must come before FLOAT_NUM to avoid ambiguity)
-def t_EOL(t):
-    r'\.'
-    return t
-
-# Literal value rules
-def t_FLOAT_NUM(t):
-    r'\d+\.\d+'
-    t.value = float(t.value)
+# Modified date rule
+def t_DATE_VAL(t):
+    r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}'
     return t
 
 def t_NUMBER(t):
@@ -131,71 +77,68 @@ def t_NUMBER(t):
     t.value = int(t.value)
     return t
 
-def t_BOOLEAN_VAL(t):
-    r'True|False'
-    t.value = t.value == 'True'
-    return t
-
-def t_DATE_VAL(t):
-    r'"[0-9]{4}-[0-9]{2}-[0-9]{2}"'
-    t.value = t.value[1:-1]
-    return t
-
-def t_TIME_VAL(t):
-    r'"[0-9]{2}:[0-9]{2}:[0-9]{2}"'
-    t.value = t.value[1:-1]
-    return t
-
 def t_STRING_LITERAL(t):
-    r'"(?:\\.|[^"\\])*"'
-    t.value = t.value[1:-1]
+    r'"[^"]*"'
+    t.value = t.value[1:-1]  # Remove quotes
     return t
 
-# Identifier rule
+# Identifier rule - must come after reserved keywords
 def t_IDENTIFIER(t):
     r'[A-Za-z_][A-Za-z0-9_]*'
-    t.type = reserved.get(t.value, 'IDENTIFIER')
+    t.type = reserved.get(t.value.lower(), 'IDENTIFIER')  # Case-insensitive matching
     return t
 
-# Comment rules
+# Comment rules - updated to handle code blocks
 def t_COMMENT(t):
     r'\$\$.*'
-    t.lexer.lineno += t.value.count('\n')  # Count newlines in comments
-    pass
-
-def t_MLCOMMENT(t):
-    r'\$<[\s\S]*?\>\$'
-    t.lexer.lineno += t.value.count('\n')  # Count newlines in multiline comments
-    pass
+    t.lexer.lineno += t.value.count('\n')
+    pass  # Token discarded
 
 # Whitespace handling
-def t_whitespace(t):
+def t_WHITESPACE(t): # changed to t_WHITESPACE to avoid conflict with newline.
     r'[ \t]+'
-    pass
+    pass  # Token discarded
 
 # Newline handling
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
+# Error handling
 def t_error(t):
-    with open("lexer_module/lexer_output.txt", "w") as f:
-        f.write(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
+    print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
     t.lexer.skip(1)
 
 # Build the lexer
 lexer = lex.lex()
 
 def tokenize(source_code, output_file="lexer_output.txt"):
-    lexer.input(source_code)  # Pass the source code to the lexer
-    tokens = []  # List to store the tokens  
-
-    with open(output_file, "w") as f:  # Open the output file in write mode
+    """
+    Tokenize the given source code and write the tokens to an output file.
+    
+    Args:
+        source_code (str): The source code to tokenize
+        output_file (str): Path to the output file where tokens will be written
+    
+    Returns:
+        list: A list of the tokens found in the source code
+    """
+    lexer.input(source_code)
+    tokens = []
+    try:
+        with open(output_file, "w") as f:
+            while True:
+                tok = lexer.token()
+                if not tok:
+                    break
+                f.write(f"{tok.type}, Value: {tok.value}, Line: {tok.lineno}\n")
+                tokens.append(tok)
+    except IOError:
+        print(f"Warning: Could not write to output file {output_file}")
         while True:
-            tok = lexer.token()  # Get the next token
+            tok = lexer.token()
             if not tok:
                 break
-            # Write the token to the file
-            f.write(f"{tok.type}, Value: {tok.value}, Line: {tok.lineno}\n")
             tokens.append(tok)
+    
     return tokens
