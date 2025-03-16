@@ -1,6 +1,5 @@
 Python
 PLY (Lex-Yacc for Python)
-SQLite or JSON 
-Microsoft Copilot
-Flask
-Microsoft Azure 
+google-generativeai
+dotenv
+activated virtual environment.

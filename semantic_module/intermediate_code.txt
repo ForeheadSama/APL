@@ -1,0 +1,19 @@
+Intermediate Code:
+DECLARE eventName AS string
+DECLARE customerName AS string
+DECLARE numberOfTickets AS int
+DECLARE eventDate AS date
+IF numberOfTickets > 0 THEN
+BOOK numberOfTickets TICKETS FOR customerName ON eventDate FOR eventName
+DISPLAY Booking successful!
+CHECK price FOR eventName ON eventDate
+ELSE
+DISPLAY Error: Must book at least one ticket.
+ENDIF
+DECLARE feedbackPrompt AS string
+DISPLAY feedbackPrompt
+ACCEPT INPUT INTO feedbackResponse
+IF feedbackResponse < 3 THEN
+CANCEL TICKETS FOR customerName FOR eventName
+DISPLAY We're sorry for the inconvenience. Your tickets have been cancelled.
+ENDIF

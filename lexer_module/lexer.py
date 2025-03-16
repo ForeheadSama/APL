@@ -88,7 +88,7 @@ def t_IDENTIFIER(t):
     t.type = reserved.get(t.value.lower(), 'IDENTIFIER')  # Case-insensitive matching
     return t
 
-# Comment rules - updated to handle code blocks
+# Comment rules -
 def t_COMMENT(t):
     r'\$\$.*'
     t.lexer.lineno += t.value.count('\n')
