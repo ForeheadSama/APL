@@ -1,4 +1,0 @@
-LIST, Value: list, Line: 4
-IDENTIFIER, Value: all, Line: 4
-EVENTS, Value: events, Line: 4
-DOT, Value: ., Line: 4

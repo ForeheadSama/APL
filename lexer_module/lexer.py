@@ -1,5 +1,17 @@
 import ply.lex as lex
 
+class LexerError(Exception):
+    def __init__(self, message, line, value=None):
+        self.message = message
+        self.line = line
+        self.value = value
+        
+        # Format error message with context if value is provided
+        msg = f"{message} at line {line}"
+        if value:
+            msg += f": '{value}'"
+        super().__init__(msg)
+        
 # Reserved words definition - updated to include data types and if statement keywords
 reserved = {
     # Core Command Keywords
@@ -106,7 +118,8 @@ def t_newline(t):
 
 # Error handling
 def t_error(t):
-    print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
+    """Error handling for illegal characters"""
+    raise LexerError("Invalid character", t.lineno, t.value[0])
     t.lexer.skip(1)
 
 # Build the lexer

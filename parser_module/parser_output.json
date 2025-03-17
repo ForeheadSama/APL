@@ -1,6 +1,13 @@
 {
     "type": "program",
-    "lineno": 4,
-    "statements": [],
-    "input_handler": "<parser_module.user_input_handler.UserInputHandler object at 0x000001EF67CD0730>"
+    "lineno": 7,
+    "statements": [
+        {
+            "type": "declaration",
+            "lineno": 7,
+            "var_name": "apple",
+            "var_type": "int"
+        }
+    ],
+    "input_handler": "<parser_module.user_input_handler.UserInputHandler object at 0x0000024710DB44C0>"
 }

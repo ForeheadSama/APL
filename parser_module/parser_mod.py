@@ -2,14 +2,12 @@ import ply.yacc as yacc
 from lexer_module.lexer import tokens, lexer  # Import token definitions from the lexer
 import os
 import json
-from parser_module.custom_error_handler import CustomErrorHandler  # Import CustomErrorHandler
 from parser_module.user_input_handler import UserInputHandler  # Import UserInputHandler
 
 # Symbol table for tracking variables and their types
 symbol_table = {}
 
 # Create error handler instance and input handler instance
-error_handler = CustomErrorHandler()
 input_handler = UserInputHandler(symbol_table)
 
 # Token Stream Wrapper
@@ -21,7 +19,12 @@ class TokenStream:
     def __init__(self, tokens):
         self.tokens = tokens
         self.index = 0
-        self.current_line = 1 if tokens else 0
+        self.current_line = 1 
+
+        for token in self.tokens:
+            if hasattr(token, 'lineno'):
+                token.lineno = getattr(token, 'lineno', 1)  # Ensure each token has its correct line number
+
 
     def token(self):
         if self.index < len(self.tokens):
@@ -57,14 +60,14 @@ def create_node(node_type, lineno=None, **kwargs):
         node[key] = value
     return node
 
-# -------------------------------------------------------------------------------
-# TYPE CHECKING
-# -------------------------------------------------------------------------------
-def type_check(var_name, expected_type, lineno):
-    """
-    Check if a variable has the expected type.
-    """
-    return error_handler.check_type_mismatch(var_name, expected_type, lineno)
+# # -------------------------------------------------------------------------------
+# # TYPE CHECKING
+# # -------------------------------------------------------------------------------
+# def type_check(var_name, expected_type, lineno):
+#     """
+#     Check if a variable has the expected type.
+#     """
+#     return error_handler.check_type_mismatch(var_name, expected_type, lineno)
 
 # -------------------------------------------------------------------------------
 # GRAMMAR RULES
@@ -97,12 +100,8 @@ def p_declaration_stmt(p):
     '''declaration_stmt : STRING_TYPE IDENTIFIER EQUALS STRING_LITERAL
                         | INT_TYPE IDENTIFIER EQUALS NUMBER
                         | DATE_TYPE IDENTIFIER EQUALS DATE_VAL'''
-    var_name = p[2]
-    var_type = p[1]
-    symbol_table[var_name] = var_type
-    error_handler.set_symbol_table(symbol_table)
 
-    p[0] = create_node('declaration', lineno=p.lineno(1), var_name=var_name, var_type=var_type)
+    p[0] = create_node('declaration', lineno=p.lineno(1), var_name=p[2], var_type=p[1])
 
 # -------------------------------------------------------------------------------
 # IF STATEMENTS
@@ -114,13 +113,11 @@ def p_if_stmt(p):
 
 def p_if_then_stmt(p):
     '''if_then_stmt : IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET'''
-    error_handler.check_if_statement_completeness(p.slice[1], p[3], p[6])
     
     p[0] = create_node('if_statement', lineno=p.lineno(1), condition=p[3], if_body=p[6])
 
 def p_if_then_else_stmt(p):
     '''if_then_else_stmt : IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET'''
-    error_handler.check_if_statement_completeness(p.slice[1], p[3], p[6], p[10])
     
     p[0] = create_node('if_statement', lineno=p.lineno(1), condition=p[3], if_body=p[6], else_body=p[10])
 
@@ -175,23 +172,14 @@ def p_book_cmd(p):
 def p_quantity(p):
     '''quantity : NUMBER
                 | IDENTIFIER'''
-    if p.slice[1].type == 'IDENTIFIER':
-        error = type_check(p[1], 'int', p.lineno(1))
-        if error:
-            p[0] = create_node('error', lineno=p.lineno(1), message=f"Error at line {p.lineno(1)}: Invalid quantity")
-            return
-        p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='int')
-    else:
-        p[0] = p[1]
+    
+    p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='int')
 
 def p_customer(p):
     '''customer : STRING_LITERAL
                 | IDENTIFIER'''
+    
     if p.slice[1].type == 'IDENTIFIER':
-        error = type_check(p[1], 'string', p.lineno(1))
-        if error:
-            p[0] = create_node('error', lineno=p.lineno(1), message=f"Error at line {p.lineno(1)}: Invalid customer")
-            return
         p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
     else:
         p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='string')
@@ -199,11 +187,8 @@ def p_customer(p):
 def p_date(p):
     '''date : DATE_VAL
             | IDENTIFIER'''
+    
     if p.slice[1].type == 'IDENTIFIER':
-        error = type_check(p[1], 'date', p.lineno(1))
-        if error:
-            p[0] = create_node('error', lineno=p.lineno(1), message=f"Error at line {p.lineno(1)}: Invalid date")
-            return
         p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='date')
     else:
         p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='date')
@@ -211,11 +196,8 @@ def p_date(p):
 def p_event(p):
     '''event : STRING_LITERAL
              | IDENTIFIER'''
+    
     if p.slice[1].type == 'IDENTIFIER':
-        error = type_check(p[1], 'string', p.lineno(1))
-        if error:
-            p[0] = create_node('error', lineno=p.lineno(1), message=f"Error at line {p.lineno(1)}: Invalid event")
-            return
         p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
     else:
         p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='string')
@@ -261,10 +243,6 @@ def p_message(p):
     '''message : STRING_LITERAL
                | IDENTIFIER'''
     if p.slice[1].type == 'IDENTIFIER':
-        error = type_check(p[1], 'string', p.lineno(1))
-        if error:
-            p[0] = create_node('error', lineno=p.lineno(1), message=f"Error at line {p.lineno(1)}: Invalid message")
-            return
         p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
     else:
         p[0] = p[1]
@@ -272,10 +250,8 @@ def p_message(p):
 # Accept Commands
 def p_accept_cmd(p):
     '''accept_cmd : ACCEPT IDENTIFIER'''
+
     var_name = p[2]
-    if var_name not in symbol_table:
-        symbol_table[var_name] = 'string'
-        error_handler.handle_implicit_declaration(var_name, p.lineno(2))
     p[0] = create_node('accept_command', lineno=p.lineno(1), variable=var_name, var_type=symbol_table[var_name])
 
 # -------------------------------------------------------------------------------
@@ -286,16 +262,54 @@ def p_EOL(p):
     p[0] = p[1]
 
 # -------------------------------------------------------------------------------
-# Error function
+# Error Handling
 # -------------------------------------------------------------------------------
+
+# List to store syntax errors
+syntax_errors = []    
+
 def p_error(p):
-    result = error_handler.handle_error(p)
-    # Force checking for specific command errors even when PLY doesn't detect a syntax error
+    if p:
+        # Get line number consistently
+        lineno = p.lineno 
 
-    if p and p.type in ['BOOK', 'CANCEL', 'LIST', 'CHECK', 'PAY', 'DISPLAY', 'ACCEPT']:
-        error_handler._check_incomplete_command(p)
+        # Get the current state of the parser
+        state = parser.state
 
-    return result
+        # Get the production rule for the current state
+        production = parser.productions[state]
+
+        # Generate an error message
+        error_msg = (
+            f"- Syntax error at [{lineno}:{find_column(p)}]:"
+            f"\n\tUnexpected token '{p.value}'. "
+            f"\n\tExpected token: {get_expected_tokens(state)}. "
+        )
+    else:
+        error_msg = "Syntax error at EOF.\n"
+
+    syntax_errors.append(error_msg)
+
+# Helper function to find the column of the error
+def find_column(token):
+    last_cr = lexer.lexdata.rfind('\n', 0, token.lexpos) 
+
+    if last_cr < 0:                     
+        last_cr = 0
+
+    column = (token.lexpos - last_cr)
+    return column
+
+# Helper function to get expected tokens for a state
+def get_expected_tokens(state):
+    action = parser.action[state] 
+    expected_tokens = []
+
+    for token, _ in action.items():
+        if token != 'error':
+            expected_tokens.append(token)
+
+    return expected_tokens
 
 # -------------------------------------------------------------------------------
 # Build the Parser
@@ -312,65 +326,54 @@ def parse(token_list):
     """
     global symbol_table
     symbol_table = {}  # Reset symbol table for each parse
+
+    global syntax_errors
+    syntax_errors = []  # Reset syntax errors for each parse
+
+    lexer.lineno = 1  # Reset the main lexer's line counter
+
+    print(f"Starting parse with lexer.lineno = {lexer.lineno}") #DEBUG
     
     # Set up token stream
     ts = TokenStream(token_list)
     parser.token_stream = ts  # Set the token stream for error tracking
 
-    error_handler.set_token_stream(ts)  # Set the token stream for error handling
-    error_handler.set_symbol_table(symbol_table)  # Set the symbol table for type checking
-
     # Initialize user input handler
     input_handler = UserInputHandler(symbol_table)
 
-    try:
-        # Process each token for potential errors before parsing
-        for i in range(len(token_list)):
-            token = token_list[i]
-
-            # Check for specific command errors
-            if token.type in ['BOOK', 'CANCEL', 'LIST', 'CHECK', 'PAY', 'DISPLAY', 'ACCEPT']:
-                ts.index = i  # Set token stream index to current position
-                error_handler._check_incomplete_command(token)
-                
-            # Check for potential missing dots
-            if i > 0 and token.type not in ['DOT', 'EOL'] and i == len(token_list)-1:
-                ts.index = i + 1  # Set to after the last token
-                error_handler._check_missing_dot_eol(token)
-        
+    try: 
         # Reset index for actual parsing
         ts.index = 0
-        
+            
         ast = parser.parse(lexer=ts, tracking=True)  # Parse the token stream
-        
+            
         # Add user input handler information to the AST
         if ast:
             ast["input_handler"] = str(input_handler)  # Convert input_handler to string for JSON serialization
-            
-        # Check for unclosed brackets at the end of parsing
-        error_handler.check_end_of_input()
+
+        # Write error to file
+        with open("parser_module/parser_errors.txt", "w") as f:
+            for error in syntax_errors:
+                f.write(error)
+            f.close()
         
-        # Write any errors to files
-        error_handler.write_errors_to_file()
-        error_handler.write_warnings_to_file()
-        
-        
-        # Check if there are any errors
-        has_errors = len(error_handler.errors) > 0
-        
-        # Save the AST to a JSON file
-        ast_file = "parser_module/parser_output.json"
-        os.makedirs(os.path.dirname(ast_file), exist_ok=True)
-        with open(ast_file, "w") as f:
-            json.dump(ast, f, indent=4)
-        print(f"AST saved to {ast_file}")
-        
-        #Clear all accumulated errors
-        error_handler.clear_errors()
+        has_errors = bool(syntax_errors) # declare
+
+        if syntax_errors is None:
+            has_errors = False 
+
+            # Save the AST to a JSON file
+            ast_file = "parser_module/parser_output.json"
+
+            os.makedirs(os.path.dirname(ast_file), exist_ok=True)
+            with open(ast_file, "w") as f:
+                json.dump(ast, f, indent=4)
+
+            print(f"AST saved to {ast_file}")
 
         return ast, symbol_table, has_errors  # Return AST, symbol table, and error status
+    
     except Exception as e:
         # Handle any unexpected exceptions
-        error_handler.errors.append(f"Parsing error: {str(e)}")
-        error_handler.write_errors_to_file()
+        print(f"Parsing Error: {str(e)}")
         return None, {}, True  # Return empty symbol table and error status

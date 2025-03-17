@@ -69,7 +69,7 @@ class APBLIDE:
         self.line_numbers.config(state=tk.DISABLED)  # Make line numbers read-only
 
         # Text editor
-        self.text_editor = scrolledtext.ScrolledText(self.editor_frame, wrap=tk.WORD, font=("Courier", 12), bg="#FFFAF0", fg="#333333", insertbackground="#333333", bd=0)
+        self.text_editor = scrolledtext.ScrolledText(self.editor_frame, wrap=tk.WORD, font=("Courier", 11), bg="#FFFAF0", fg="#333333", insertbackground="#333333", bd=0)
         self.text_editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.text_editor.bind("<KeyRelease>", self.on_text_change)
         self.text_editor.bind("<MouseWheel>", self.on_text_change)
@@ -77,7 +77,7 @@ class APBLIDE:
         self.text_editor.bind("<Button-5>", self.on_text_change)
 
         # Compiler output console
-        self.console = scrolledtext.ScrolledText(root, wrap=tk.WORD, font=("Courier", 12), height=10, bg="#FFF8E7", fg="#333333", bd=0)
+        self.console = scrolledtext.ScrolledText(root, wrap=tk.WORD, font=("Courier", 11), height=10, bg="#FFF8E7", fg="#E23D28", bd=0)
         self.console.pack(fill=tk.BOTH, expand=False)
         self.console.config(state=tk.DISABLED)  # Make console read-only
 
@@ -230,6 +230,8 @@ class APBLIDE:
             print("Intermediate code generation error: {e}\n")
             return
 
+        print("--------------------------------------------------------------------\n")
+        
         # Display errors from files
         self.display_errors("parser_module/parser_errors.txt", "Parser Errors")
         self.display_errors("semantic_module/semantic_errors.txt", "Semantic Errors")
