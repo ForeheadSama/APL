@@ -1,0 +1,30 @@
+STRING_TYPE, Value: string, Line: 1
+IDENTIFIER, Value: name, Line: 1
+EQUALS, Value: =, Line: 1
+STRING_LITERAL, Value: abby, Line: 1
+DOT, Value: ., Line: 1
+INT_TYPE, Value: int, Line: 2
+IDENTIFIER, Value: num1, Line: 2
+EQUALS, Value: =, Line: 2
+NUMBER, Value: 1, Line: 2
+DOT, Value: ., Line: 2
+DATE_TYPE, Value: date, Line: 3
+IDENTIFIER, Value: party, Line: 3
+EQUALS, Value: =, Line: 3
+DATE_VAL, Value: April 2, 2024, Line: 3
+DOT, Value: ., Line: 3
+LIST, Value: list, Line: 5
+EVENTS, Value: events, Line: 5
+ON, Value: on, Line: 5
+DATE_VAL, Value: March 3, 2024, Line: 5
+DOT, Value: ., Line: 5
+BOOK, Value: book, Line: 6
+IDENTIFIER, Value: num1, Line: 6
+TICKETS, Value: tickets, Line: 6
+FOR, Value: for, Line: 6
+IDENTIFIER, Value: name, Line: 6
+ON, Value: on, Line: 6
+IDENTIFIER, Value: party, Line: 6
+FOR, Value: for, Line: 6
+STRING_LITERAL, Value: concert, Line: 6
+DOT, Value: ., Line: 6

@@ -1,16 +1,9 @@
-import ply.lex as lex
+# lexer.py
+# Performs the lexical analysis by tokenizing source code.
+# Writes tokens to lexer_output.txt
+# -----------------------------------------------------------------------------------------
 
-class LexerError(Exception):
-    def __init__(self, message, line, value=None):
-        self.message = message
-        self.line = line
-        self.value = value
-        
-        # Format error message with context if value is provided
-        msg = f"{message} at line {line}"
-        if value:
-            msg += f": '{value}'"
-        super().__init__(msg)
+import ply.lex as lex
         
 # Reserved words definition - updated to include data types and if statement keywords
 reserved = {
@@ -119,8 +112,9 @@ def t_newline(t):
 # Error handling
 def t_error(t):
     """Error handling for illegal characters"""
-    raise LexerError("Invalid character", t.lineno, t.value[0])
+    print(f"- Error at line {t.lexer.lineno}: Illegal character '{t.value[0]}'")
     t.lexer.skip(1)
+
 
 # Build the lexer
 lexer = lex.lex()

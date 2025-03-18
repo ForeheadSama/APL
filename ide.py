@@ -1,3 +1,4 @@
+# ide.py
 import tkinter as tk
 from tkinter import scrolledtext, filedialog, messagebox
 import sys
@@ -7,7 +8,8 @@ import re  # Added for regex support
 from lexer_module.lexer import tokenize
 from parser_module.parser_mod import parse
 from semantic_module.semantic_analyzer import SemanticAnalyzer
-from semantic_module.ir_generator import IntermediateCodeGenerator
+from intermediate_code_module.ir_generator import IntermediateCodeGenerator
+from code_generator_module.code_generator import CodeGenerator  # Import CodeGenerator
 
 # Reserved words and their categories for syntax highlighting
 reserved_categories = {
@@ -190,7 +192,7 @@ class APBLIDE:
             tokens = tokenize(source_code, "lexer_module/lexer_output.txt")
             print("Tokenization complete.\n")
         except Exception as e:
-            print(f"Tokenization error: {e}\n")
+            print(f"{e}\n")
             return
 
         # Parse the tokens
@@ -198,39 +200,60 @@ class APBLIDE:
         try:
             ast, symbol_table, syntax_errors = parse(tokens)
 
-            print ("Symbol Table: ", symbol_table) #DEBUGGING
+            #print ("Symbol Table: ", symbol_table) #DEBUGGING
             if syntax_errors:
                 print("Parsing completed with errors. Check parser_errors.txt.\n")
+                print("Compilation aborted.")
             else:
                 print("Parsing completed successfully.\n")
+
+                # Perform semantic analysis
+                print("[3] Performing semantic analysis...")
+                try:
+                    semantic_analyzer = SemanticAnalyzer(ast)
+                    semantic_errors = semantic_analyzer.analyze()
+
+                    if semantic_errors:
+                        print("Semantic analysis completed with errors. Check parser_errors.txt.\n")
+                        print("Compilation aborted.")
+                    else:
+                        print("Semantic analysis completed successfully. AST saved to parseroutput.json\n")
+
+            
+                        # Generate intermediate code
+                        print("\n[4] Generating intermediate code...")
+                        try:
+                            code_generator = IntermediateCodeGenerator(ast)
+                            intermediate_code = code_generator.generate()
+                            print("Intermediate code generated successfully.\n")
+
+                            generator = CodeGenerator()
+                            success = generator.generate()
+                            if success:
+                                print("Code generation completed successfully")
+                                print("--------------------------------------------------------------------\n")
+
+                                
+
+                            else:
+                                print("Code generation failed")
+                        except Exception as e:
+                            print(f"Intermediate code generation error: {e}\n")
+                            self.console.insert("Error during compilation. Compilation aborted.")
+                            return
+
+                        print("--------------------------------------------------------------------\n")
+
+                except Exception as e:
+                    print("Semantic analysis error: {e}\n")
+                    return
+
+                
         except Exception as e:
             print(f"Parsing error: {e}\n")
             return
 
-        # Perform semantic analysis
-        print("[3] Performing semantic analysis...")
-        try:
-            semantic_analyzer = SemanticAnalyzer(ast)
-            semantic_errors = semantic_analyzer.analyze()
-            if semantic_errors:
-                print("Semantic analysis completed with errors. Check semantic_errors.txt.\n")
-            else:
-                print("Semantic analysis completed successfully.\n")
-        except Exception as e:
-            print("Semantic analysis error: {e}\n")
-            return
-
-        # Generate intermediate code
-        print("\n[4] Generating intermediate code...")
-        try:
-            code_generator = IntermediateCodeGenerator(ast)
-            intermediate_code = code_generator.generate()
-            print("Intermediate code generated successfully.\n")
-        except Exception as e:
-            print("Intermediate code generation error: {e}\n")
-            return
-
-        print("--------------------------------------------------------------------\n")
+        
         
         # Display errors from files
         self.display_errors("parser_module/parser_errors.txt", "Parser Errors")

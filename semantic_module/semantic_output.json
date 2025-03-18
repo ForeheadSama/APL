@@ -1,1 +1,54 @@
-[]
+[
+    {
+        "type": "declaration",
+        "var_name": "name",
+        "var_type": "string"
+    },
+    {
+        "type": "declaration",
+        "var_name": "num1",
+        "var_type": "int"
+    },
+    {
+        "type": "declaration",
+        "var_name": "party",
+        "var_type": "date"
+    },
+    {
+        "type": "list_command",
+        "date": null,
+        "event": {
+            "type": "literal",
+            "lineno": 5,
+            "value": "March 3, 2024",
+            "lit_type": "date"
+        }
+    },
+    {
+        "type": "book_command",
+        "quantity": {
+            "type": "variable",
+            "lineno": 6,
+            "name": "num1",
+            "var_type": "int"
+        },
+        "customer": {
+            "type": "variable",
+            "lineno": 6,
+            "name": "name",
+            "var_type": "string"
+        },
+        "date": {
+            "type": "variable",
+            "lineno": 6,
+            "name": "party",
+            "var_type": "date"
+        },
+        "event": {
+            "type": "literal",
+            "lineno": 6,
+            "value": "concert",
+            "lit_type": "string"
+        }
+    }
+]

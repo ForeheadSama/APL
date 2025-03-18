@@ -1,0 +1,5 @@
+DECLARE name AS string
+DECLARE num1 AS int
+DECLARE party AS date
+CALL list_event_details(March 3, 2024)
+CALL book_tickets(num1, name, party, concert)

@@ -1,13 +1,63 @@
 {
     "type": "program",
-    "lineno": 7,
+    "lineno": 1,
     "statements": [
         {
             "type": "declaration",
-            "lineno": 7,
-            "var_name": "apple",
+            "lineno": 1,
+            "var_name": "name",
+            "var_type": "string"
+        },
+        {
+            "type": "declaration",
+            "lineno": 2,
+            "var_name": "num1",
             "var_type": "int"
+        },
+        {
+            "type": "declaration",
+            "lineno": 3,
+            "var_name": "party",
+            "var_type": "date"
+        },
+        {
+            "type": "list_command",
+            "lineno": 5,
+            "event": {
+                "type": "literal",
+                "lineno": 5,
+                "value": "March 3, 2024",
+                "lit_type": "date"
+            }
+        },
+        {
+            "type": "book_command",
+            "lineno": 6,
+            "quantity": {
+                "type": "variable",
+                "lineno": 6,
+                "name": "num1",
+                "var_type": "int"
+            },
+            "customer": {
+                "type": "variable",
+                "lineno": 6,
+                "name": "name",
+                "var_type": "string"
+            },
+            "date": {
+                "type": "variable",
+                "lineno": 6,
+                "name": "party",
+                "var_type": "date"
+            },
+            "event": {
+                "type": "literal",
+                "lineno": 6,
+                "value": "concert",
+                "lit_type": "string"
+            }
         }
     ],
-    "input_handler": "<parser_module.user_input_handler.UserInputHandler object at 0x0000024710DB44C0>"
+    "input_handler": "<parser_module.user_input_handler.UserInputHandler object at 0x0000020FD65F4580>"
 }
