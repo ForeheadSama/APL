@@ -1,0 +1,31 @@
+2025-03-17 20:51:03,391 - Syntax error at line 9 near token: 'three'
+2025-03-17 20:51:03,392 - Syntax error at line 10 near token: 'three'
+2025-03-17 20:54:09,599 - Syntax error at line 9 near token: 'three'
+2025-03-17 20:54:09,600 - Syntax error at line 10 near token: 'three'
+2025-03-17 20:54:22,108 - Syntax error at line 9 near token: 'three'
+2025-03-17 20:54:22,108 - Syntax error at line 10 near token: 'three'
+2025-03-17 21:42:23,354 - Syntax error at line 9 near token: 'three'
+2025-03-17 21:42:23,355 - Syntax error at line 10 near token: 'three'
+2025-03-17 21:42:23,356 - Syntax error at line 11 near token: 'Alice'
+2025-03-17 21:46:07,274 - Error at line 9: Undefined variable 'three' used.
+2025-03-17 21:46:07,275 - Error at line 10: Undefined variable 'three' used.
+2025-03-17 21:46:07,276 - Error at line 11: Undefined variable 'Alice' used.
+2025-03-17 21:48:46,752 - Error at line 9: Undefined variable 'three' used.
+2025-03-17 21:48:46,753 - Error at line 10: Undefined variable 'Alice' used.
+2025-03-17 21:58:21,285 - Error at line 9: Undefined variable 'three' used.
+2025-03-17 21:58:21,285 - Error at line 10: Undefined variable 'Alice' used.
+2025-03-17 21:58:37,476 - Error at line 9: Undefined variable 'three' used.
+2025-03-17 21:58:37,476 - Error at line 10: Undefined variable 'Alice' used.
+2025-03-17 21:58:54,573 - Error at line 9: Undefined variable 'three' used.
+2025-03-17 21:58:54,574 - Syntax error at line 10: Unexpected token '5' of type 'NUMBER'
+2025-03-17 22:22:02,185 - Error at line 9: Undefined variable 'three' used. Ensure the variable is declared before use.
+2025-03-17 22:22:02,186 - Syntax error at line 10: Unexpected token '5' of type 'NUMBER'
+2025-03-17 22:23:00,700 - Error at line 9: Undefined variable 'three' used. Ensure the variable is declared before use.
+2025-03-17 22:23:00,701 - Syntax error at line 10: Unexpected token '5' of type 'NUMBER'
+2025-03-17 22:32:32,698 - Error at line 9: Undefined variable 'three' used. This might be due to a typo or the variable not being declared before use. Ensure that the variable is properly declared.
+2025-03-17 22:32:32,699 - Syntax error at line 10: Unexpected token '5' of type 'NUMBER'
+2025-03-17 22:39:44,513 - Error at line 9: Undefined variable 'three' used. This might be due to a typo or the variable not being declared before use. Ensure that the variable is properly declared.
+2025-03-17 22:39:44,514 - Syntax error at line 13: Unexpected token 'if' of type 'IF'
+2025-03-17 22:39:44,515 - Error at line 20: Unexpected closing ']' without matching opening bracket. You might be missing a '(' or '['.
+2025-03-17 22:39:44,516 - Error at line 22: Unexpected closing ']' without matching opening bracket. You might be missing a '(' or '['.
+2025-03-17 22:40:23,549 - Error at line 9: Undefined variable 'three' used. This might be due to a typo or the variable not being declared before use. Ensure that the variable is properly declared.

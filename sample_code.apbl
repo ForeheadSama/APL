@@ -1,0 +1,37 @@
+$$ This is a sample ticket booking program
+$$ It demonstrates the syntax and capabilities of the DSL
+
+$$ Variable declarations
+string eventName = "Rock Concert".
+string customerName = "Alice Smith".
+int numberOfTickets = 3.
+date eventDate = March 25, 2025.
+int numTickets = three.
+string userName = "bread".
+
+$$ Conditional booking logic
+if (numberOfTickets > 0) [
+    $$ Book tickets for the customer
+    book numberOfTickets tickets for customerName on eventDate for eventName.
+    display "Booking successful!".
+    
+    $$ Check price information
+    check price for eventName on eventDate.
+] else [
+    display "Error: Must book at least one ticket.".
+]
+
+$$ List available events
+list events on eventDate.
+
+$$ Accept user input for customer satisfaction
+string feedbackPrompt = "Please rate your experience (1-5):".
+display feedbackPrompt.
+
+accept feedbackResponse.
+
+$$ Cancel logic
+if (feedbackResponse < "3") [
+    cancel tickets for customerName event eventName.
+    display "We're sorry for the inconvenience. Your tickets have been cancelled.".
+]

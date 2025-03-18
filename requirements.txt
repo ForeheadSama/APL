@@ -1,5 +1,6 @@
 Python
 PLY (Lex-Yacc for Python)
-google-generativeai
-dotenv
-activated virtual environment.
+SQLite or JSON 
+Microsoft Copilot
+Flask
+Microsoft Azure 
