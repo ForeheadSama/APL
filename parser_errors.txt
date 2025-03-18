@@ -1,1 +1,1 @@
-Error at line 9: Undefined variable 'three' used. This might be due to a typo or the variable not being declared before use. Ensure that the variable is properly declared.
+Parsing error: 'CustomErrorHandler' object has no attribute 'check_type_mismatch'

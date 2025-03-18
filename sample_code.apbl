@@ -6,8 +6,6 @@ string eventName = "Rock Concert".
 string customerName = "Alice Smith".
 int numberOfTickets = 3.
 date eventDate = March 25, 2025.
-int numTickets = three.
-string userName = "bread".
 
 $$ Conditional booking logic
 if (numberOfTickets > 0) [
@@ -35,3 +33,4 @@ if (feedbackResponse < "3") [
     cancel tickets for customerName event eventName.
     display "We're sorry for the inconvenience. Your tickets have been cancelled.".
 ]
+

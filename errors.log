@@ -29,3 +29,22 @@
 2025-03-17 22:39:44,515 - Error at line 20: Unexpected closing ']' without matching opening bracket. You might be missing a '(' or '['.
 2025-03-17 22:39:44,516 - Error at line 22: Unexpected closing ']' without matching opening bracket. You might be missing a '(' or '['.
 2025-03-17 22:40:23,549 - Error at line 9: Undefined variable 'three' used. This might be due to a typo or the variable not being declared before use. Ensure that the variable is properly declared.
+2025-03-18 10:46:06,306 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 10:46:33,900 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 10:46:33,900 - Error at line 10: Undefined variable 'Booking' used.
+2025-03-18 11:19:41,672 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 11:19:41,672 - Syntax error at line 13: Unexpected token 'if' of type 'IF'
+2025-03-18 11:27:51,247 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 11:27:51,247 - Syntax error at line 13: Unexpected token 'if' of type 'IF'
+2025-03-18 11:28:03,253 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 11:28:03,253 - Syntax error at line 13: Unexpected token 'if' of type 'IF'
+2025-03-18 11:28:28,808 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 11:33:27,760 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 11:33:27,761 - Syntax error at line 13: Unexpected token 'if' of type 'IF'
+2025-03-18 15:18:54,616 - Error at line 9: Undefined variable 'three' used.
+2025-03-18 15:19:12,043 - Syntax error at line 10: Unexpected token 'string' of type 'STRING_TYPE'
+2025-03-18 15:31:58,124 - Syntax error at line 6: Unexpected token 'string' of type 'STRING_TYPE'
+2025-03-18 15:32:18,040 - Syntax error at line 6: Unexpected token 'string' of type 'STRING_TYPE'
+2025-03-18 15:41:27,397 - Syntax error at line 6: Unexpected token 'string' of type 'STRING_TYPE'
+2025-03-18 15:41:39,783 - Syntax error at line 8: Unexpected token 'date' of type 'DATE_TYPE'
+2025-03-18 15:42:23,423 - Syntax error at line 8: Unexpected token 'date' of type 'DATE_TYPE'
