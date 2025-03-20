@@ -1,30 +1,29 @@
-STRING_TYPE, Value: string, Line: 1
-IDENTIFIER, Value: name, Line: 1
-EQUALS, Value: =, Line: 1
-STRING_LITERAL, Value: abby, Line: 1
+BOOK, Value: book, Line: 1
+NUMBER, Value: 2, Line: 1
+TICKETS, Value: tickets, Line: 1
+FOR, Value: for, Line: 1
+STRING_LITERAL, Value: John Doe, Line: 1
+ON, Value: on, Line: 1
+DATE_VAL, Value: April 22, 2024, Line: 1
+FOR, Value: for, Line: 1
+STRING_LITERAL, Value: Taylor Swift Concert, Line: 1
 DOT, Value: ., Line: 1
-INT_TYPE, Value: int, Line: 2
-IDENTIFIER, Value: num1, Line: 2
-EQUALS, Value: =, Line: 2
-NUMBER, Value: 1, Line: 2
+LIST, Value: list, Line: 2
+STRING_LITERAL, Value: flights, Line: 2
+ON, Value: on, Line: 2
+DATE_VAL, Value: April 21, 2024, Line: 2
 DOT, Value: ., Line: 2
-DATE_TYPE, Value: date, Line: 3
-IDENTIFIER, Value: party, Line: 3
-EQUALS, Value: =, Line: 3
-DATE_VAL, Value: April 2, 2024, Line: 3
-DOT, Value: ., Line: 3
-LIST, Value: list, Line: 5
-EVENTS, Value: events, Line: 5
-ON, Value: on, Line: 5
-DATE_VAL, Value: March 3, 2024, Line: 5
-DOT, Value: ., Line: 5
-BOOK, Value: book, Line: 6
-IDENTIFIER, Value: num1, Line: 6
-TICKETS, Value: tickets, Line: 6
-FOR, Value: for, Line: 6
-IDENTIFIER, Value: name, Line: 6
-ON, Value: on, Line: 6
-IDENTIFIER, Value: party, Line: 6
-FOR, Value: for, Line: 6
-STRING_LITERAL, Value: concert, Line: 6
+DISPLAY, Value: display, Line: 4
+STRING_LITERAL, Value: Enter number of tickets: , Line: 4
+DOT, Value: ., Line: 4
+INT_TYPE, Value: int, Line: 6
+IDENTIFIER, Value: numTick, Line: 6
+EQUALS, Value: =, Line: 6
+NUMBER, Value: 0, Line: 6
 DOT, Value: ., Line: 6
+ACCEPT, Value: accept, Line: 7
+IDENTIFIER, Value: numTick, Line: 7
+DOT, Value: ., Line: 7
+DISPLAY, Value: display, Line: 9
+STRING_LITERAL, Value: Yay!, Line: 9
+DOT, Value: ., Line: 9

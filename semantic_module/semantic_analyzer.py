@@ -1,8 +1,5 @@
-# semantic_analyzer.py
-# performs semantic analysis on ast
-
-import json
 import os
+import json
 
 class SemanticAnalyzer:
     def __init__(self, ast):
@@ -199,12 +196,28 @@ class SemanticAnalyzer:
         date = node.get('date')
         event = node.get('event')
 
-        # Validate variable references
-        for var_name, label in [(quantity.get('name'), "quantity"), 
-                               (customer.get('name'), "customer"), 
-                               (date.get('name'), "date"), 
-                               (event.get('name'), "event")]:
-            if var_name and var_name not in self.symbol_table:
+        # Validate quantity (can be a literal or variable)
+        if quantity.get('type') == 'variable':
+            var_name = quantity.get('name')
+            if var_name not in self.symbol_table:
+                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+
+        # Validate customer (can be a literal or variable)
+        if customer.get('type') == 'variable':
+            var_name = customer.get('name')
+            if var_name not in self.symbol_table:
+                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+
+        # Validate date (can be a literal or variable)
+        if date.get('type') == 'variable':
+            var_name = date.get('name')
+            if var_name not in self.symbol_table:
+                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+
+        # Validate event (can be a literal or variable)
+        if event.get('type') == 'variable':
+            var_name = event.get('name')
+            if var_name not in self.symbol_table:
                 self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
 
         self.output.append({
@@ -222,10 +235,16 @@ class SemanticAnalyzer:
         customer = node.get('customer')
         event = node.get('event')
 
-        # Validate variable references
-        for var_name, label in [(customer.get('name'), "customer"), 
-                               (event.get('name'), "event")]:
-            if var_name and var_name not in self.symbol_table:
+        # Validate customer (can be a literal or variable)
+        if customer.get('type') == 'variable':
+            var_name = customer.get('name')
+            if var_name not in self.symbol_table:
+                self.errors.append(f"Error: Variable '{var_name}' used in cancel command but not declared.")
+
+        # Validate event (can be a literal or variable)
+        if event.get('type') == 'variable':
+            var_name = event.get('name')
+            if var_name not in self.symbol_table:
                 self.errors.append(f"Error: Variable '{var_name}' used in cancel command but not declared.")
 
         self.output.append({
@@ -238,10 +257,30 @@ class SemanticAnalyzer:
         """
         Validate list commands.
         """
+        date = node.get('date')  # Date can be None if not provided
+        event = node.get('event')  # Event is mandatory
+
+        # Validate event (can be a literal or variable)
+        if event is None:
+            self.errors.append("Error: 'event' is required in the list command.")
+        else:
+            if event.get('type') == 'variable':
+                var_name = event.get('name')
+                if var_name not in self.symbol_table:
+                    self.errors.append(f"Error: Variable '{var_name}' used in list command but not declared.")
+
+        # Validate date (can be a literal or variable, but optional)
+        if date is not None:
+            if date.get('type') == 'variable':
+                var_name = date.get('name')
+                if var_name not in self.symbol_table:
+                    self.errors.append(f"Error: Variable '{var_name}' used in list command but not declared.")
+
+        # Append the validated command to the output
         self.output.append({
-            "type": "list_command", 
-            "date": node.get('date'), 
-            "event": node.get('event')
+            "type": "list_command",
+            "date": date,
+            "event": event
         })
 
     def _check_check_command(self, node):
@@ -252,10 +291,16 @@ class SemanticAnalyzer:
         event = node.get('event')
         date = node.get('date')
 
-        # Validate variable references
-        for var_name, label in [(event.get('name'), "event"), 
-                               (date.get('name'), "date")]:
-            if var_name and var_name not in self.symbol_table:
+        # Validate event (can be a literal or variable)
+        if event.get('type') == 'variable':
+            var_name = event.get('name')
+            if var_name not in self.symbol_table:
+                self.errors.append(f"Error: Variable '{var_name}' used in check command but not declared.")
+
+        # Validate date (can be a literal or variable)
+        if date.get('type') == 'variable':
+            var_name = date.get('name')
+            if var_name not in self.symbol_table:
                 self.errors.append(f"Error: Variable '{var_name}' used in check command but not declared.")
 
         self.output.append({
@@ -272,10 +317,16 @@ class SemanticAnalyzer:
         event = node.get('event')
         customer = node.get('customer')
 
-        # Validate variable references
-        for var_name, label in [(event.get('name'), "event"), 
-                               (customer.get('name'), "customer")]:
-            if var_name and var_name not in self.symbol_table:
+        # Validate event (can be a literal or variable)
+        if event.get('type') == 'variable':
+            var_name = event.get('name')
+            if var_name not in self.symbol_table:
+                self.errors.append(f"Error: Variable '{var_name}' used in pay command but not declared.")
+
+        # Validate customer (can be a literal or variable)
+        if customer.get('type') == 'variable':
+            var_name = customer.get('name')
+            if var_name not in self.symbol_table:
                 self.errors.append(f"Error: Variable '{var_name}' used in pay command but not declared.")
 
         self.output.append({

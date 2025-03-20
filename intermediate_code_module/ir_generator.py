@@ -101,6 +101,11 @@ class IntermediateCodeGenerator:
         date = self._generate_expression(node.get('date'))
         event = self._generate_expression(node.get('event'))
 
+        # Enclose strings in proper quotes
+        customer = f'"{customer}"' if isinstance(customer, str) and not customer.startswith('"') else customer
+        date = f'"{date}"' if isinstance(date, str) and not date.startswith('"') else date
+        event = f'"{event}"' if isinstance(event, str) and not event.startswith('"') else event
+
         # Use a function call to represent the booking operation
         self.intermediate_code.append(f"CALL book_tickets({quantity}, {customer}, {date}, {event})")
 
@@ -111,6 +116,10 @@ class IntermediateCodeGenerator:
         event = self._generate_expression(node.get('event'))
         customer = self._generate_expression(node.get('customer'))
 
+        # Enclose strings in proper quotes
+        event = f'"{event}"' if isinstance(event, str) and not event.startswith('"') else event
+        customer = f'"{customer}"' if isinstance(customer, str) and not customer.startswith('"') else customer
+
         # Use a function call to represent the cancellation operation
         self.intermediate_code.append(f"CALL cancel_tickets({customer}, {event})")
 
@@ -118,12 +127,25 @@ class IntermediateCodeGenerator:
         """
         Generate intermediate code for list commands.
         """
-        if 'date' in node:
-            date = self._generate_expression(node.get('date'))
-            self.intermediate_code.append(f"CALL list_events_on_date({date})")
-        elif 'event' in node:
-            event = self._generate_expression(node.get('event'))
-            self.intermediate_code.append(f"CALL list_event_details({event})")
+        event = node.get('event')
+        date = node.get('date')
+
+        # Generate intermediate code based on the presence of 'date'
+        if date is not None:
+            # If 'date' is present, generate code for listing events on a specific date
+            event_code = self._generate_expression(event)
+            date_code = self._generate_expression(date)
+
+            # Ensure proper quoting of strings
+            event_code = f'"{event_code}"' if isinstance(event_code, str) and not event_code.startswith('"') else event_code
+            date_code = f'"{date_code}"' if isinstance(date_code, str) and not date_code.startswith('"') else date_code
+
+            self.intermediate_code.append(f"CALL list_events_on_date({event_code}, {date_code})")
+        else:
+            # If 'date' is not present, generate code for listing details of a specific event
+            event_code = self._generate_expression(event)
+            event_code = f'"{event_code}"' if isinstance(event_code, str) and not event_code.startswith('"') else event_code
+            self.intermediate_code.append(f"CALL list_event_details({event_code})")
 
     def _generate_check_command(self, node):
         """
@@ -132,6 +154,10 @@ class IntermediateCodeGenerator:
         event = self._generate_expression(node.get('event'))
         date = self._generate_expression(node.get('date'))
         check_type = node.get('check_type')
+
+        # Ensure proper quoting of strings
+        event = f'"{event}"' if isinstance(event, str) and not event.startswith('"') else event
+        date = f'"{date}"' if isinstance(date, str) and not date.startswith('"') else date
 
         # Use a function call to represent the check operation
         self.intermediate_code.append(f"CALL check_{check_type}({event}, {date})")
@@ -143,6 +169,10 @@ class IntermediateCodeGenerator:
         event = self._generate_expression(node.get('event'))
         customer = self._generate_expression(node.get('customer'))
 
+        # Ensure proper quoting of strings
+        event = f'"{event}"' if isinstance(event, str) and not event.startswith('"') else event
+        customer = f'"{customer}"' if isinstance(customer, str) and not customer.startswith('"') else customer
+
         # Use a function call to represent the payment operation
         self.intermediate_code.append(f"CALL pay_for_event({event}, {customer})")
 
@@ -151,6 +181,7 @@ class IntermediateCodeGenerator:
         Generate intermediate code for display commands.
         """
         message = self._generate_expression(node.get('message'))
+        message = f'"{message}"' if isinstance(message, str) and not message.startswith('"') else message
         self.intermediate_code.append(f"DISPLAY {message}")
 
     def _generate_accept_command(self, node):
@@ -167,8 +198,13 @@ class IntermediateCodeGenerator:
         if isinstance(node, dict):
             if node.get('type') == 'variable':
                 return node.get('name')
+            
             elif node.get('type') == 'literal':
                 return node.get('value')
+            
+            elif node.get('type') == 'number':
+                return node.get('name') 
+            
             elif node.get('type') == 'condition':
                 left = self._generate_expression(node.get('left'))
                 right = self._generate_expression(node.get('right'))

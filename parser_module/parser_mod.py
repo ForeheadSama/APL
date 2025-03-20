@@ -225,13 +225,16 @@ def p_ticket_or_tickets(p):
 
 # List Commands
 def p_list_cmd(p):
-    '''list_cmd : LIST EVENTS ON date
-                  | LIST EVENTS FOR event'''
+    '''list_cmd : LIST event ON date
+                  | LIST event'''
+
+    #check if command contains "date"
+    if len(p) == 5:
+        p[0] = create_node('list_command', lineno=p.lineno(1), event=p[2], date=p[4])
     
-    if p.slice[1].type == 'DATE_VAL':
-        p[0] = create_node('list_command', lineno=p.lineno(1), date=p[4])
-    else:
-        p[0] = create_node('list_command', lineno=p.lineno(1), event=p[4])
+    #check if command just says list event
+    elif len(p) == 3:
+        p[0] = create_node('list_command', lineno=p.lineno(1), event=p[2])
 
 # Check Commands
 def p_check_cmd(p):
@@ -305,12 +308,12 @@ def p_error(p):
                 error_msg = (f"- Syntax error at [{lineno}:{column}]: "
                             f"\n\tUnexpected token '{p.value}'. "
                             f"\n\t{context_line}\n\t{pointer}"
-                            f"\n\tExpected: {', '.join(expected_tokens)}\n")
+                            f"\nExpected: {', '.join(expected_tokens)}\n")
         else:
             error_msg = (f"- Syntax error at [{lineno}:{column}]: "
                         f"\n\tUnexpected token '{p.value}'. "
                         f"\n\t{context_line}\n\t{pointer}"
-                        f"\n\tExpected: {', '.join(expected_tokens)}\n")
+                        f"\nExpected: {', '.join(expected_tokens)}\n")
 
         syntax_errors.append(error_msg)
 
@@ -358,7 +361,7 @@ def get_expected_tokens(state):
         # Objects and Topics
         'TICKET': 'ticket',
         'TICKETS': 'tickets',
-        'EVENTS': 'events',
+        # 'EVENTS': 'events',
         'AVAILABILITY': 'availability',
         'PRICE': 'price',
         

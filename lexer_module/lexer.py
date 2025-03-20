@@ -24,7 +24,7 @@ reserved = {
     # Objects and Topics
     'ticket': 'TICKET',
     'tickets': 'TICKETS',
-    'events': 'EVENTS',
+    # 'events': 'EVENTS',
     'availability': 'AVAILABILITY',
     'price': 'PRICE',
     

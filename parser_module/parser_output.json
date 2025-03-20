@@ -3,61 +3,49 @@
     "lineno": 1,
     "statements": [
         {
-            "type": "declaration",
-            "lineno": 1,
-            "var_name": "name",
-            "var_type": "string"
-        },
-        {
-            "type": "declaration",
-            "lineno": 2,
-            "var_name": "num1",
-            "var_type": "int"
-        },
-        {
-            "type": "declaration",
-            "lineno": 3,
-            "var_name": "party",
-            "var_type": "date"
-        },
-        {
-            "type": "list_command",
-            "lineno": 5,
-            "event": {
-                "type": "literal",
-                "lineno": 5,
-                "value": "March 3, 2024",
-                "lit_type": "date"
-            }
-        },
-        {
             "type": "book_command",
-            "lineno": 6,
+            "lineno": 1,
             "quantity": {
-                "type": "variable",
-                "lineno": 6,
-                "name": "num1",
+                "type": "number",
+                "lineno": 1,
+                "name": 2,
                 "var_type": "int"
             },
             "customer": {
-                "type": "variable",
-                "lineno": 6,
-                "name": "name",
-                "var_type": "string"
+                "type": "literal",
+                "lineno": 1,
+                "value": "John Doe",
+                "lit_type": "string"
             },
             "date": {
-                "type": "variable",
-                "lineno": 6,
-                "name": "party",
-                "var_type": "date"
+                "type": "literal",
+                "lineno": 1,
+                "value": "April 22, 2024",
+                "lit_type": "date"
             },
             "event": {
                 "type": "literal",
-                "lineno": 6,
-                "value": "concert",
+                "lineno": 1,
+                "value": "Taylor Swift Concert",
                 "lit_type": "string"
+            }
+        },
+        {
+            "type": "list_command",
+            "lineno": 2,
+            "event": {
+                "type": "literal",
+                "lineno": 2,
+                "value": "flights",
+                "lit_type": "string"
+            },
+            "date": {
+                "type": "literal",
+                "lineno": 2,
+                "value": "April 21, 2024",
+                "lit_type": "date"
             }
         }
     ],
-    "input_handler": "<parser_module.user_input_handler.UserInputHandler object at 0x0000020FD65F4580>"
+    "input_handler": "<parser_module.user_input_handler.UserInputHandler object at 0x000001E3AC5BFF40>"
 }

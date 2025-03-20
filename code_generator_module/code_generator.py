@@ -1,4 +1,8 @@
-# code_generator.py
+import os
+import re
+from datetime import datetime
+import requests
+import json
 
 import os
 import re
@@ -18,6 +22,8 @@ class CodeGenerator:
         self.generated_code = [] 
         self.symbol_table = {}  # Store variable names and their types
         self.error_messages = []
+        self.label_counter = 0  # Counter for generating unique labels
+        self.control_flow_stack = []  # Stack to manage control flow blocks
         
         # Ensure output directories exist
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -60,84 +66,21 @@ class CodeGenerator:
             "import sys",
             "from dotenv import load_dotenv",
             "import google.generativeai as genai",
-
             "import json",
             "import os",
+            "import re",
+            "import requests",  # Add requests library for API calls
             "",
             "# Google Gemini API configuration",
             "# Make sure to set GEMINI_API_KEY as an environment variable",
             "GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')",
-            "GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'",
+            "GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'",
             "",
             "# Global variables to store tickets booking and event information",
             "events = {}",
             "bookings = {}",
             "",
             "# Helper functions for ticket system operations",
-            "def book_tickets(quantity, customer, date, event):",
-            "    # Convert types if needed",
-            "    try:",
-            "        quantity = int(quantity) if not isinstance(quantity, int) else quantity",
-            "    except ValueError:",
-            "        print(f\"Error: Invalid quantity format. Using 1 as default.\")",
-            "        quantity = 1",
-            "        ",
-            "    # Create event if it doesn't exist",
-            "    if event not in events:",
-            "        events[event] = {",
-            "            'date': date,",
-            "            'capacity': 100,  # Default capacity",
-            "            'available_tickets': 100 - quantity",
-            "            'bookings': []",
-            "        }",
-            "    else:",
-            "        # Update available tickets",
-            "        current_available = events[event].get('available_tickets', 100)",
-            "        if current_available < quantity:",
-            "            print(f\"Warning: Only {current_available} tickets available for {event}\")",
-            "            if current_available <= 0:",
-            "                print(f\"Error: Event {event} is sold out!\")",
-            "                return",
-            "            quantity = current_available",
-            "        events[event]['available_tickets'] = current_available - quantity",
-            "",    
-            "    booking_id = f\"{customer}_{event}_{date}\"",
-            "    bookings[booking_id] = {",
-            "        'quantity': quantity,",
-            "        'customer': customer,",
-            "        'date': date,",
-            "        'event': event,",
-            "        'paid': False",
-            "    }",
-            "    # Add booking reference to the event",
-            "    events[event]['bookings'].append(booking_id)",
-            "    print(f\"Successfully Booked tickets for {customer} on {date} for {event}\")",
-            "",
-            "def cancel_tickets(customer, event):",
-            "    # Find and remove all bookings for this customer and event",
-            "    to_remove = []",
-            "    quantity_returned = 0",
-            "    for booking_id, booking in bookings.items():",
-            "        if booking['customer'] == customer and booking['event'] == event:",
-            "            to_remove.append(booking_id)",
-            "            quantity_returned += booking.get('quantity', 0)",
-            "    ",
-            "    if to_remove:",
-            "        for booking_id in to_remove:",
-            "            del bookings[booking_id]",
-            "            # Remove booking reference from the event",
-            "            if event in events and 'bookings' in events[event]:",
-            "                if booking_id in events[event]['bookings']:",
-            "                    events[event]['bookings'].remove(booking_id)",
-            "",
-            "        # Update available tickets",
-            "        if event in events:",
-            "            events[event]['available_tickets'] = events[event].get('available_tickets', 0) + quantity_returned",
-            "            ",
-            "        print(f\"Cancelled {quantity_returned} tickets for {customer} for {event}\")",
-            "    else:",
-            "        print(f\"No bookings found for {customer} for {event}\")",
-            "",
             "def fetch_events_from_gemini(event_type, date_str):",
             "    \"\"\"Use Google Gemini API to fetch information about events\"\"\"",
             "    if not GEMINI_API_KEY:",
@@ -183,12 +126,11 @@ class CodeGenerator:
             "                else:",
             "                    # Otherwise take the whole text as JSON",
             "                    json_str = text_content",
-            "                    ",
+            "                ",
             "                events_data = json.loads(json_str)",
             "                return events_data",
             "            except json.JSONDecodeError as e:",
-            "                print(f\"Error parsing JSON response: {e}\")",
-            "                print(\"Raw response:\", text_content)",
+            "                print(text_content)",
             "                return []",
             "        else:",
             "            print(f\"API request failed with status code: {response.status_code}\")",
@@ -198,42 +140,44 @@ class CodeGenerator:
             "        print(f\"Error calling Gemini API: {str(e)}\")",
             "        return []",
             "",
-            "def list_events_on_date(date):",
-            "    print(f\"Events on {date}:\")",
-            "    ",
-            "    # First check locally stored events",
-            "    local_events = []",
-            "    for event_name, event_info in events.items():",
-            "        if event_info.get('date') == date:",
-            "            local_events.append(event_name)",
-            "            ",
-            "    if local_events:",
-            "        print(\"Locally registered events:\")",
-            "        for event in local_events:",
-            "            print(f\"- {event}\")",
-            "    else:",
-            "        print(\"No locally registered events found on this date.\")",
-            "",    
-            "    # Try to fetch real events from Gemini",
+            "def book_tickets(quantity, customer, date, event):",
+            "    # Convert types if needed",
             "    try:",
-            "        # Extract event type if it's included in the function call context",
-            "        event_type = \"events\"  # Default to generic events",
-            "        # This information would normally come from context",
-            "        # For now we'll use a generic search",
-            "",        
-            "        print(f\"\\nSearching for real-world events on {date}:\")",
-            "        gemini_events = fetch_events_from_gemini(event_type, date)",
-            "        ",
-            "        if gemini_events:",
-            "            for i, event in enumerate(gemini_events, 1):",
-            "                print(f\"\\n{i}. {event.get('name', 'Unnamed event')}\")",
-            "                print(f\"   Venue: {event.get('venue', 'Not specified')}\")",
-            "                print(f\"   Time: {event.get('time', 'Not specified')}\")",
-            "                print(f\"   Description: {event.get('description', 'No description available')}\")",
-            "        else:",
-            "            print(\"No additional events found or API request failed.\")",
-            "    except Exception as e:",
-            "        print(f\"Error fetching events from Gemini: {str(e)}\")",
+            "        quantity = int(quantity) if not isinstance(quantity, int) else quantity",
+            "    except ValueError:",
+            "        print(f\"Error: Invalid quantity format. Using 1 as default.\")",
+            "        quantity = 1",
+            "    ",
+            "    # Create event if it doesn't exist",
+            "    if event not in events:",
+            "        events[event] = {",
+            "            'date': date,",
+            "            'capacity': 100,  # Default capacity",
+            "            'available_tickets': 100 - quantity,",
+            "            'bookings': []",
+            "        }",
+            "    else:",
+            "        # Update available tickets",
+            "        current_available = events[event].get('available_tickets', 100)",
+            "        if current_available < quantity:",
+            "            print(f\"Warning: Only {current_available} tickets available for {event}\")",
+            "            if current_available <= 0:",
+            "                print(f\"Error: Event {event} is sold out!\")",
+            "                return",
+            "            quantity = current_available",
+            "        events[event]['available_tickets'] = current_available - quantity",
+            "    ",
+            "    booking_id = f\"{customer}_{event}_{date}\"",
+            "    bookings[booking_id] = {",
+            "        'quantity': quantity,",
+            "        'customer': customer,",
+            "        'date': date,",
+            "        'event': event,",
+            "        'paid': False",
+            "    }",
+            "    # Add booking reference to the event",
+            "    events[event]['bookings'].append(booking_id)",
+            "    print(f\"Successfully Booked tickets for {customer} on {date} for {event}\")",
             "",
             "def list_event_details(event):",
             "    if event in events:",
@@ -243,11 +187,10 @@ class CodeGenerator:
             "                print(f\"  {key}: {value}\")",
             "        print(f\"  Total bookings: {len(events[event].get('bookings', []))}\")",
             "    else:",
-            "        print(f\"Event '{event}' not found in local database.\")",
+            "        print(f\"Event '{event}' not found.\")",
             "        ",
             "        # Try to search for it using Gemini",
             "        try:",
-            "            print(f\"\\nSearching for information about {event}:\")",
             "            gemini_events = fetch_events_from_gemini(event, \"upcoming\")",
             "            ",
             "            if gemini_events:",
@@ -265,332 +208,188 @@ class CodeGenerator:
             "        except Exception as e:",
             "            print(f\"Error fetching event information from Gemini: {str(e)}\")",
             "",
-            "def check_availability(event, date):",
-            "    if event in events and events[event].get('date') == date:",
-            "        available = events[event].get('available_tickets', 0)",
-            "        print(f\"Available tickets for {event} on {date}: {available}\")",
-            "    else:",
-            "        print(f\"Event '{event}' not found on {date}.\")",
-            "",
-            "def check_capacity(event, date):",
-            "    if event in events and events[event].get('date') == date:",
-            "        capacity = events[event].get('capacity', 0)",
-            "        print(f\"Capacity for {event} on {date}: {capacity}\")",
-            "    else:",
-            "        print(f\"Event '{event}' not found on {date}.\")",
-            "",
-            "def pay_for_event(event, customer):",
-            "    paid = False",
-            "    total_paid = 0",
-            "    for booking_id, booking in bookings.items():",
-            "        if booking['customer'] == customer and booking['event'] == event and not booking['paid']:",
-            "            booking['paid'] = True",
-            "            paid = True",
-            "            total_paid += booking.get('quantity', 0)",
-            "    if paid:",
-            "        print(f\"Payment processed for {total_paid} tickets for {customer} for {event}\")",
-            "    else:",
-            "        print(f\"No unpaid bookings found for {customer} for {event}\")",
-            "",
-            "def parse_date(date_str):",
-            "    \"\"\"Convert date string to Python date object\"\"\"",
-            "    if not isinstance(date_str, str):",
-            "        return date_str  # Already processed",
-            "        ",
-            "    try:",
-            "        return datetime.datetime.strptime(date_str, '%B %d, %Y').date()",
-            "    except ValueError:",
-            "        try:",
-            "            return datetime.datetime.strptime(date_str, '%b %d, %Y').date()",
-            "        except ValueError:",
-            "            try:",
-            "                # Try simpler format",
-            "                return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()",
-            "            except ValueError:",
-            "                print(f\"Warning: Could not parse date format: {date_str}. Using as string.\")",
-            "                return date_str",
-            "",
             "# Main program starts here",
             ""
         ])
 
     def _process_intermediate_code(self):
         """Process each line of intermediate code and generate Python code"""
-        control_flow_stack = []  # Track control flow blocks for proper indentation
-        current_indent = 0
-        
         i = 0
         while i < len(self.intermediate_code):
             line = self.intermediate_code[i]
             try:
-                # Handle indentation based on control flow
-                indent_str = "    " * current_indent
-                
-                if line.startswith("LABEL"):
-                    # Handle label for control flow
-                    match = re.match(r"LABEL\s+(L\d+)", line)
-                    if match:
-                        label = match.groups()[0]
-                        if control_flow_stack and control_flow_stack[-1]['end_label'] == label:
-                            # End of a control block
-                            block_info = control_flow_stack.pop()
-                            if block_info['type'] == 'if':
-                                current_indent -= 1
-                            elif block_info['type'] == 'else':
-                                current_indent -= 1
-                            
-                            # No need to generate a comment for end labels
-                            i += 1
-                            continue
-                        else:
-                            # Label that's not related to control flow end
-                            self.generated_code.append(f"{indent_str}# Label: {label}")
-                
-                elif line.startswith("IF NOT"):
-                    # Handle if statements
-                    match = re.match(r"IF\s+NOT\s+(.*)\s+GOTO\s+(L\d+)", line)
-                    if match:
-                        condition, label = match.groups()
-                        # Check if this is part of an if-else construct by looking ahead
-                        is_if_else = False
-                        j = i + 1
-                        while j < len(self.intermediate_code):
-                            next_line = self.intermediate_code[j]
-                            if next_line.startswith(f"GOTO L") and j+1 < len(self.intermediate_code):
-                                # This might be the end of the 'if' block that jumps to the end of the entire if-else
-                                if self.intermediate_code[j+1].startswith(f"LABEL {label}"):
-                                    # Confirmed: we have a GOTO followed by the LABEL from our IF NOT
-                                    is_if_else = True
-                                    # We want the destination of this GOTO as our end label
-                                    end_match = re.match(r"GOTO\s+(L\d+)", next_line)
-                                    if end_match:
-                                        end_label = end_match.groups()[0]
-                                        control_flow_stack.append({
-                                            'type': 'if',
-                                            'else_label': label,
-                                            'end_label': end_label
-                                        })
-                                    break
-                            j += 1
-                            
-                        # Generate Python code
-                        python_condition = self._convert_condition(condition)
-                        self.generated_code.append(f"{indent_str}if {python_condition}:")
-                        current_indent += 1
-                    else:
-                        self._log_error(f"Invalid conditional format: {line}")
-                
+                if line.startswith("IF NOT"):
+                    self._handle_if_not(line)
                 elif line.startswith("GOTO"):
-                    match = re.match(r"GOTO\s+(L\d+)", line)
-                    if match:
-                        goto_label = match.groups()[0]
-                        
-                        # Check if this is the end of an 'if' block in an if-else construct
-                        if control_flow_stack and control_flow_stack[-1]['type'] == 'if':
-                            block_info = control_flow_stack[-1]
-                            if i+1 < len(self.intermediate_code) and self.intermediate_code[i+1].startswith(f"LABEL {block_info['else_label']}"):
-                                # This is indeed the end of the 'if' block
-                                # Decrease indent before the else block
-                                current_indent -= 1
-                                self.generated_code.append(f"{indent_str}else:")
-                                
-                                # Now we're in the 'else' block
-                                control_flow_stack[-1]['type'] = 'else'
-                                current_indent += 1
-                                i += 1  # Skip the next line (LABEL)
-                                continue
-                        
-                        # Regular GOTO - not handling directly in Python
-                        self.generated_code.append(f"{indent_str}# GOTO {goto_label} - Control flow handled structurally")
-                
+                    self._handle_goto(line)
+                elif line.startswith("LABEL"):
+                    self._handle_label(line)
                 elif line.startswith("DECLARE"):
-                    self._handle_declaration(line, indent_str)
+                    self._handle_declaration(line)
                 elif line.startswith("CALL"):
-                    self._handle_function_call(line, indent_str)
+                    self._handle_function_call(line)
                 elif line.startswith("DISPLAY"):
-                    self._handle_display(line, indent_str)
+                    self._handle_display(line)
                 elif line.startswith("ACCEPT"):
-                    self._handle_input(line, indent_str)
+                    self._handle_input(line)
                 elif "=" in line and not line.startswith(("IF", "DECLARE")):
-                    self._handle_assignment(line, indent_str)
-                elif not line.startswith("LABEL"):  # Labels already handled above
+                    self._handle_assignment(line)
+                else:
                     self._log_error(f"Unknown intermediate code: {line}")
-                    self.generated_code.append(f"{indent_str}# Unknown operation: {line}")
-                
+                    self.generated_code.append(f"# Unknown operation: {line}")
                 i += 1
             except Exception as e:
                 self._log_error(f"Error processing line '{line}': {str(e)}")
-                self.generated_code.append(f"{indent_str}# Error processing: {line}")
+                self.generated_code.append(f"# Error processing: {line}")
                 i += 1
 
-    def _convert_condition(self, condition):
-        """Convert intermediate code condition to Python condition"""
-        # Replace common operators
-        condition = condition.replace(" == ", " == ")
-        condition = condition.replace(" != ", " != ")
-        condition = condition.replace(" > ", " > ")
-        condition = condition.replace(" < ", " < ")
-        condition = condition.replace(" >= ", " >= ")
-        condition = condition.replace(" <= ", " <= ")
-        
-        # Handle temporary variables by just using the expression directly
-        # This is a simplification - a more complete implementation would track temp vars
-        matches = re.findall(r't\d+', condition)
-        for match in matches:
-            # In a real implementation, we would resolve the temp var to its expression
-            pass
-            
-        return condition
+    def _handle_if_not(self, line):
+        """Handle IF NOT statements"""
+        match = re.match(r"IF NOT\s+(.*)\s+GOTO\s+(L\d+)", line)
+        if match:
+            condition, label = match.groups()
+            # Generate Python code for the if statement
+            self.generated_code.append(f"if not {condition}:")
+            self.generated_code.append("    " + f"# GOTO {label}")  # Indent the comment
+            self.control_flow_stack.append(('if', label))
+        else:
+            self._log_error(f"Invalid IF NOT format: {line}")
 
-    def _handle_declaration(self, line, indent=""):
+    def _handle_goto(self, line):
+        """Handle GOTO statements"""
+        match = re.match(r"GOTO\s+(L\d+)", line)
+        if match:
+            label = match.groups()[0]
+            # Generate Python code for the GOTO statement
+            self.generated_code.append(f"    # GOTO {label}")  # Indent the comment
+            self.control_flow_stack.append(('goto', label))
+        else:
+            self._log_error(f"Invalid GOTO format: {line}")
+
+    def _handle_label(self, line):
+        """Handle LABEL statements"""
+        match = re.match(r"LABEL\s+(L\d+)", line)
+        if match:
+            label = match.groups()[0]
+            # Generate Python code for the label
+            self.generated_code.append(f"{label}:")  # Labels should not be indented
+        else:
+            self._log_error(f"Invalid LABEL format: {line}")
+
+    def _handle_declaration(self, line):
         """Handle variable declarations"""
-        # Extract variable name and type
-        match = re.match(r"DECLARE\s+(\w+)\s+AS\s+(\w+)\s+WITH VALUE\s+(\w+)", line)
-
+        match = re.match(r"DECLARE\s+(\w+)\s+AS\s+(\w+)\s+WITH VALUE\s+(.+)", line)
         if match:
             var_name, var_type, var_value = match.groups()
             self.symbol_table[var_name] = var_type.lower()
-            
+
             # Generate Python code for the declaration
             if var_type.lower() == "int":
-                self.generated_code.append(f"{indent}{var_name} = {var_value}  # Integer declaration")
+                self.generated_code.append(f"{var_name} = {var_value}  # Integer declaration")
             elif var_type.lower() == "string":
-                self.generated_code.append(f"{indent}{var_name} = {var_value}  # String declaration")
+                self.generated_code.append(f"{var_name} = \"{var_value}\"  # String declaration")
             elif var_type.lower() == "date":
-                self.generated_code.append(f"{indent}{var_name} = {var_value}  # Date declaration")
+                self.generated_code.append(f"{var_name} = \"{var_value}\"  # Date declaration")
             else:
-                self.generated_code.append(f"{indent}{var_name} = None  # {var_type} declaration")
+                self.generated_code.append(f"{var_name} = None  # {var_type} declaration")
         else:
             self._log_error(f"Invalid declaration format: {line}")
 
-    def _handle_function_call(self, line, indent=""):
-        """Handle function calls from intermediate code"""
-        # Extract function name and arguments
+    from datetime import datetime
+
+    def _handle_function_call(self, line):
         match = re.match(r"CALL\s+(\w+)\((.*)\)", line)
         if match:
             func_name, args_str = match.groups()
             
-            # Process arguments - handle variable references and literals
+            # Use a more robust approach to parse arguments that may contain commas inside quotes
             processed_args = []
-
-            if args_str.strip():
-                args = [arg.strip() for arg in args_str.split(',')]
-
-                for arg in args:
-                    # Check if it's a variable name in our symbol table
-                    if arg in self.symbol_table:
-
-                        processed_args.append(arg)
-
-                    # Check if it's a temporary variable (e.g. t1)
-                    elif re.match(r"t\d+", arg):
-
-                        # In real implementation, we would resolve temp vars
-                        processed_args.append(arg)
-
-                    # Check if it's a string literal (in quotes)
-                    elif (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
-                        processed_args.append(arg)
-
-                    # Check if it's a numeric literal
-                    elif re.match(r"^\d+(\.\d+)?$", arg):
-                        processed_args.append(arg)
-
-                    # Special handling for list_events_on_date with event type
-                    elif func_name == "list_events_on_date" and "_" in arg:
-                        # Extract just the event part
-                        event_type = arg.split('_')[0].strip('"\'')
-                        processed_args.append(f'"{event_type}"')
-                        
-                    # If not recognized, pass as string
-                    else:
-                        processed_args.append(f'"{arg}"')
             
-            # Special handling for specific function calls
-            if func_name == "book_tickets":
-                self.generated_code.append(f"{indent}{func_name}({', '.join(processed_args)})")
-            elif func_name == "list_events_on_date":
-                self.generated_code.append(f"{indent}{func_name}({', '.join(processed_args)})")
+            # Parse arguments correctly while preserving quoted strings with commas
+            in_quotes = False
+            current_arg = ""
+            i = 0
+            
+            while i < len(args_str):
+                char = args_str[i]
+                
+                if char == '"' and (i == 0 or args_str[i-1] != '\\'):
+                    in_quotes = not in_quotes
+                    current_arg += char
+                elif char == ',' and not in_quotes:
+                    # End of an argument
+                    processed_args.append(current_arg.strip())
+                    current_arg = ""
+                else:
+                    current_arg += char
+                
+                i += 1
+                    
+            # Add the last argument
+            if current_arg.strip():
+                processed_args.append(current_arg.strip())
+            
+            # Process each argument
+            for j in range(len(processed_args)):
+                arg = processed_args[j]
+                # Check if the argument is a variable or already properly formatted
+                if arg in self.symbol_table or re.match(r"t\d+", arg) or re.match(r"^\d+(\.\d+)?$", arg):
+                    continue  # Keep as is
+                # Check if it's already a properly quoted string
+                elif (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
+                    continue  # Keep as is
+                else:
+                    # Add quotes for string literals
+                    processed_args[j] = f'"{arg}"'
+            
+            # Generate the function call with processed arguments
+            if func_name == "list_events_on_date":
+                if len(processed_args) == 2:
+                    self.generated_code.append(f"events_data = fetch_events_from_gemini({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append("if events_data:")
+                    self.generated_code.append("    for event in events_data:")
+                    self.generated_code.append("        print(f\"Event: {event.get('name', 'Unnamed event')}\")")
+                    self.generated_code.append("        print(f\"Venue: {event.get('venue', 'Not specified')}\")")
+                    self.generated_code.append("        print(f\"Time: {event.get('time', 'Not specified')}\")")
+                    self.generated_code.append("        print(f\"Description: {event.get('description', 'No description available')}\")")
+                    self.generated_code.append("else:")
+                    self.generated_code.append("    print(\"No events found for the given date.\")")
+                else:
+                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
             elif func_name == "list_event_details":
-                self.generated_code.append(f"{indent}{func_name}({', '.join(processed_args)})")
-            elif func_name == "check_availability" or func_name == "check_capacity":
-                self.generated_code.append(f"{indent}{func_name}({', '.join(processed_args)})")
-            elif func_name == "pay_for_event":
-                self.generated_code.append(f"{indent}{func_name}({', '.join(processed_args)})")
+                if len(processed_args) == 1:
+                    self.generated_code.append(f"list_event_details({processed_args[0]})")
+                else:
+                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
             else:
-                # Generic function call
-                self.generated_code.append(f"{indent}{func_name}({', '.join(processed_args)})")
+                self.generated_code.append(f"{func_name}({', '.join(processed_args)})")
         else:
             self._log_error(f"Invalid function call format: {line}")
 
-    def _handle_display(self, line, indent=""):
+    def _handle_display(self, line):
         """Handle display/print statements"""
         match = re.match(r"DISPLAY\s+(.*)", line)
         if match:
             message = match.groups()[0]
-            
-            # Handle different types of messages
-            if message.startswith('"') and message.endswith('"'):
-                # It's a string literal
-                self.generated_code.append(f"{indent}print({message})")
-            elif message in self.symbol_table:
-                # It's a variable
-                var_type = self.symbol_table[message]
-                if var_type == 'date':
-                    # Format the date for nicer output
-                    self.generated_code.append(f"{indent}print(f\"{{str({message})}}\")")
-                else:
-                    self.generated_code.append(f"{indent}print({message})")
-            else:
-                # Assume it's an expression or temporary variable
-                self.generated_code.append(f"{indent}print({message})")
+            self.generated_code.append(f"print('{message}')")
         else:
             self._log_error(f"Invalid display format: {line}")
 
-    def _handle_input(self, line, indent=""):
+    def _handle_input(self, line):
         """Handle input statements"""
         match = re.match(r"ACCEPT\s+INPUT\s+INTO\s+(\w+)", line)
         if match:
             var_name = match.groups()[0]
-            if var_name in self.symbol_table:
-                var_type = self.symbol_table[var_name]
-                if var_type == "int":
-                    self.generated_code.append(f"{indent}try:")
-                    self.generated_code.append(f"{indent}    {var_name} = int(input(\"Enter value for {var_name}: \"))")
-                    self.generated_code.append(f"{indent}except ValueError:")
-                    self.generated_code.append(f"{indent}    print(\"Error: Please enter a valid integer.\")")
-                    self.generated_code.append(f"{indent}    {var_name} = 0")
-                elif var_type == "date":
-                    self.generated_code.append(f"{indent}{var_name}_input = input(\"Enter date for {var_name} (format: Month Day, Year): \")")
-                    self.generated_code.append(f"{indent}{var_name} = parse_date({var_name}_input)")
-                else:  # string or default
-                    self.generated_code.append(f"{indent}{var_name} = input(\"Enter value for {var_name}: \")")
-            else:
-                # Add to symbol table with default type
-                self.symbol_table[var_name] = "string"
-                self.generated_code.append(f"{indent}{var_name} = input(\"Enter value: \")")
-                self.generated_code.append(f"{indent}# Warning: Implicit declaration of variable '{var_name}'")
+            self.generated_code.append(f"{var_name} = input(\"Enter value for {var_name}: \")")
         else:
             self._log_error(f"Invalid input format: {line}")
 
-    def _handle_assignment(self, line, indent=""):
+    def _handle_assignment(self, line):
         """Handle assignment operations"""
         parts = line.split('=', 1)
         if len(parts) == 2:
             left, right = parts[0].strip(), parts[1].strip()
-            
-            # Handle temporary variable assignments specially
-            if re.match(r"t\d+", left):
-                # Check if this is part of a condition
-                if re.search(r"[<>=!]", right):
-                    # It's a condition, we'll generate an appropriate comment
-                    self.generated_code.append(f"{indent}# Condition: {right}")
-                else:
-                    # Regular assignment to temp variable - might be needed later
-                    self.generated_code.append(f"{indent}{left} = {right}  # Temporary variable")
-            else:
-                # Regular variable assignment
-                self.generated_code.append(f"{indent}{left} = {right}")
+            self.generated_code.append(f"{left} = {right}")
         else:
             self._log_error(f"Invalid assignment format: {line}")
 
@@ -604,7 +403,6 @@ class CodeGenerator:
             "    print(\"Set it using: export GEMINI_API_KEY='your_api_key_here'\")",
             "",    
             "# End of generated code",
-            "print(\"Program execution completed.\")"
         ])
 
     def _write_generated_code(self):
