@@ -69,7 +69,9 @@ t_EQUALS = r'='
 
 # Modified date rule
 def t_DATE_VAL(t):
-    r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}'
+    r'(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|' \
+    r'January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}' \
+    r'|\d{1,2}/\d{1,2}/\d{4}'
     return t
 
 def t_NUMBER(t):
@@ -78,8 +80,8 @@ def t_NUMBER(t):
     return t
 
 def t_STRING_LITERAL(t):
-    r'"[^"]*"'
-    t.value = t.value[1:-1]  # Remove quotes
+    r'\"\"\"(.|\n)*?\"\"\"|\"[^\"]*\"'
+    t.value = t.value.strip('"')
     return t
 
 # Identifier rule - must come after reserved keywords
@@ -94,10 +96,8 @@ def t_COMMENT(t):
     t.lexer.lineno += t.value.count('\n')
     pass  # Token discarded
 
-# Whitespace handling
-def t_WHITESPACE(t): # changed to t_WHITESPACE to avoid conflict with newline.
-    r'[ \t]+'
-    pass  # Token discarded
+# Ignore Whitespace
+t_ignore = ' \t'
 
 # Newline handling
 def t_newline(t):
@@ -105,8 +105,11 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 # Error handling
+errors = []
 def t_error(t):
-    print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
+    error_msg = f"ERROR: Illegal character '{t.value[0]}' at line {t.lexer.lineno}"
+    errors.append(error_msg)
+    print(error_msg)
     t.lexer.skip(1)
 
 # Build the lexer

@@ -21,15 +21,17 @@ class CustomErrorHandler:
         logging.basicConfig(filename=self.error_log_file,
                             level=logging.DEBUG,
                             format='%(asctime)s - %(message)s')
-
-        # Add a stream handler to also print errors to the console
-        console_handler = logging.StreamHandler()
-        console_handler.setLevel(logging.ERROR)
-        console_formatter = logging.Formatter('%(asctime)s - %(message)s')
-        console_handler.setFormatter(console_formatter)
-
-        # Add the console handler to the logger
-        logging.getLogger().addHandler(console_handler)
+        
+        # Check if a stream handler is already present
+        if not any(isinstance(h, logging.StreamHandler) for h in logging.getLogger().handlers):
+            # Add a stream handler to also print errors to the console
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(logging.ERROR)
+            console_formatter = logging.Formatter('%(asctime)s - %(message)s')
+            console_handler.setFormatter(console_formatter)
+            
+            # Add the console handler to the logger
+            logging.getLogger().addHandler(console_handler)
         
     def set_token_stream(self, token_stream):
         """Set the token stream for error tracking."""
@@ -78,15 +80,17 @@ class CustomErrorHandler:
             if not self.expected_brackets:
                 error_msg = f"Error at line {p.lineno}: Unexpected closing '{p.value}' without matching opening bracket."
             else:
-                expected, line = self.expected_brackets.pop()
-                if p.type != expected:
+                expected, line = self.expected_brackets[-1]  # Peek at last expected bracket
+                if (p.type == 'RBRACKET' and expected != 'LBRACKET') or (p.type == 'RPAREN' and expected != 'LPAREN'):
                     error_msg = f"Error at line {p.lineno}: Mismatched bracket '{p.value}'. Expected '{expected}' at line {line}."
-        
-        elif p.type in ['PLUS', 'MINUS', 'TIMES', 'DIVIDE']:
-            prev_token = self._peek_prev_token(p)
-            next_token = self._peek_next_token(p)
-            if not prev_token or not next_token or prev_token.type in ['PLUS', 'MINUS', 'TIMES', 'DIVIDE']:
-                error_msg = f"Error at line {p.lineno}: Misplaced operator '{p.value}'."
+                else:
+                    self.expected_brackets.pop()  # Only pop if it matches
+
+        # elif p.type in ['PLUS', 'MINUS', 'TIMES', 'DIVIDE']:
+        #     prev_token = self._peek_prev_token(p)
+        #     next_token = self._peek_next_token(p)
+        #     if not prev_token or not next_token or prev_token.type in ['PLUS', 'MINUS', 'TIMES', 'DIVIDE']:
+        #         error_msg = f"Error at line {p.lineno}: Misplaced operator '{p.value}'."
         
         # Check for missing full stop (.) at the end of each statement (declaration/assignment).
         elif p.type in ['STRING_LITERAL', 'NUMBER', 'IDENTIFIER']:
@@ -112,11 +116,14 @@ class CustomErrorHandler:
         if not self.token_stream or not hasattr(self.token_stream, 'tokens') or not hasattr(self.token_stream, 'index'):
             return None  # Prevents AttributeError
     
-        next_index = self.token_stream.index + 1
-        if next_index >= len(self.token_stream.tokens):
-            return None  # Prevents IndexError
-        
-        return self.token_stream.tokens[next_index]
+        try:
+            index = self.token_stream.tokens.index(p)  # Find current token index
+            if index + 1 < len(self.token_stream.tokens):
+                return self.token_stream.tokens[index + 1]
+        except ValueError:
+            return None  # If p is not found in token_stream, return None
+
+        return None  # Prevents IndexError
     
     def _peek_prev_token(self, p):
         """Peek at the previous token."""
@@ -132,15 +139,19 @@ class CustomErrorHandler:
     
     def write_errors_to_file(self):
         """Write all errors and warnings to their respective files."""
-        os.makedirs(os.path.dirname(self.error_file), exist_ok=True)
-        os.makedirs(os.path.dirname(self.warning_file), exist_ok=True)
-        
+        if os.path.dirname(self.error_file):
+            os.makedirs(os.path.dirname(self.error_file), exist_ok=True)
+        if os.path.dirname(self.warning_file):
+            os.makedirs(os.path.dirname(self.warning_file), exist_ok=True)
+
         with open(self.error_file, "w") as f:
-            if self.errors:
-                for error in self.errors:
-                    f.write(error + "\n")
-            else:
-                f.write("No errors detected during parsing.\n")
+            f.writelines([error + "\n" for error in self.errors] or ["No errors detected during parsing.\n"])
+
+        with open(self.warning_file, "w") as f:
+            f.writelines([warning + "\n" for warning in self.warnings] or ["No warnings during parsing.\n"])
+
+        return bool(self.errors)
+
         
         with open(self.warning_file, "w") as f:
             if self.warnings:

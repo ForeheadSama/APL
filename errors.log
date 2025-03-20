@@ -48,3 +48,6 @@
 2025-03-18 15:41:27,397 - Syntax error at line 6: Unexpected token 'string' of type 'STRING_TYPE'
 2025-03-18 15:41:39,783 - Syntax error at line 8: Unexpected token 'date' of type 'DATE_TYPE'
 2025-03-18 15:42:23,423 - Syntax error at line 8: Unexpected token 'date' of type 'DATE_TYPE'
+2025-03-20 15:07:45,983 - Syntax error at line 8: Unexpected token 'date' of type 'DATE_TYPE'
+2025-03-20 15:08:06,010 - Syntax error at line 11: Unexpected token '[' of type 'LBRACKET'
+2025-03-20 15:08:51,496 - Error at line 5: Undefined variable 'Alice' used.
