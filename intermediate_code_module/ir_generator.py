@@ -181,7 +181,7 @@ class IntermediateCodeGenerator:
         Generate intermediate code for display commands.
         """
         message = self._generate_expression(node.get('message'))
-        message = f'"{message}"' if isinstance(message, str) and not message.startswith('"') else message
+        message = f'{message}' if isinstance(message, str) and not message.startswith('"') else message
         self.intermediate_code.append(f"DISPLAY {message}")
 
     def _generate_accept_command(self, node):
@@ -197,7 +197,7 @@ class IntermediateCodeGenerator:
         """
         if isinstance(node, dict):
             if node.get('type') == 'variable':
-                return node.get('name')
+                return node.get('value')
             
             elif node.get('type') == 'literal':
                 return node.get('value')

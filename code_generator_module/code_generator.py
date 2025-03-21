@@ -208,6 +208,87 @@ class CodeGenerator:
             "        except Exception as e:",
             "            print(f\"Error fetching event information from Gemini: {str(e)}\")",
             "",
+            "def pay_for_event(event, customer):",
+            "    \"\"\"Process payment for an event booking\"\"\"",
+            "    booking_id = f\"{customer}_{event}_\"",
+            "    found = False",
+            "    for bid in bookings:",
+            "        if bid.startswith(booking_id):",
+            "            booking_id = bid",
+            "            found = True",
+            "            break",
+            "",
+            "    if found and booking_id in bookings:",
+            "        if bookings[booking_id]['paid']:",
+            "            print(f\"Booking for {customer} at {event} is already paid.\")",
+            "        else:",
+            "            bookings[booking_id]['paid'] = True",
+            "            print(f\"Payment processed successfully for {customer} at {event}.\")",
+            "    else:",
+            "        print(f\"No booking found for {customer} at {event}.\")",
+            "",
+            "def check_availability(event, date):",
+            "    \"\"\"Check ticket availability for an event\"\"\"",
+            "    if event in events:",
+            "        available = events[event].get('available_tickets', 0)",
+            "        print(f\"There are {available} tickets available for {event} on {date}.\")",
+            "    else:",
+            "        print(f\"Event '{event}' not found in the system.\")",
+            "        # Try to fetch from API",
+            "        events_data = fetch_events_from_gemini(event, date)",
+            "        if events_data:",
+            "            print(\"Similar events found:\")",
+            "            for e in events_data:",
+            "                print(f\"- {e.get('name', 'Unknown event')} at {e.get('venue', 'Unknown venue')}\")",
+            "        else:",
+            "            print(\"No similar events found.\")",
+            "",
+            "def check_price(event, date):",
+            "    \"\"\"Check ticket price for an event\"\"\"",
+            "    # This is a sample implementation",
+            "    price_ranges = {",
+            "        \"Taylor Swift Concert\": \"$150-$450\",",
+            "        \"Grand Gala\": \"$75-$200\",",
+            "        \"Super Bowl\": \"$1500-$5000\",",
+            "        \"Theatre Show\": \"$50-$120\",",
+            "        \"Opera\": \"$85-$250\"",
+            "    }",
+            "    ",
+            "    if event in price_ranges:",
+            "        print(f\"Price range for {event} on {date}: {price_ranges[event]}\")",
+            "    else:",
+            "        print(f\"Price information for '{event}' not available.\")",
+            "        # Try to fetch event info",
+            "        events_data = fetch_events_from_gemini(event, date)",
+            "        if events_data:",
+            "            for e in events_data:",
+            "                if e.get('name', '').lower() == event.lower():",
+            "                    print(f\"Event found: {e.get('name')}\")",
+            "                    # You could add price info to event data in the future",
+            "                    print(\"Contact box office for pricing information.\")",
+            "                    break",
+            "",
+            "def cancel_tickets(customer, event):",
+            "    \"\"\"Cancel a booking\"\"\"",
+            "    booking_prefix = f\"{customer}_{event}_\"",
+            "    found_ids = [bid for bid in bookings.keys() if bid.startswith(booking_prefix)]",
+            "    ",
+            "    if found_ids:",
+            "        for booking_id in found_ids:",
+            "            # Get the quantity being canceled",
+            "            qty = bookings[booking_id]['quantity']",
+            "            # Add tickets back to available pool",
+            "            if event in events:",
+            "                events[event]['available_tickets'] += qty",
+            "                # Remove booking from event's booking list",
+            "                if booking_id in events[event]['bookings']:",
+            "                    events[event]['bookings'].remove(booking_id)",
+            "            # Remove the booking",
+            "            del bookings[booking_id]",
+            "        print(f\"Successfully canceled booking for {customer} at {event}.\")",
+            "    else:",
+            "        print(f\"No booking found for {customer} at {event}.\")",
+            "",
             "# Main program starts here",
             ""
         ])
@@ -361,6 +442,26 @@ class CodeGenerator:
                     self.generated_code.append(f"list_event_details({processed_args[0]})")
                 else:
                     self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+            elif func_name == "pay_for_event":
+                if len(processed_args) == 2:
+                    self.generated_code.append(f"pay_for_event({processed_args[0]}, {processed_args[1]})")
+                else:
+                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+            elif func_name == "check_availability":
+                if len(processed_args) == 2:
+                    self.generated_code.append(f"check_availability({processed_args[0]}, {processed_args[1]})")
+                else:
+                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+            elif func_name == "check_price":
+                if len(processed_args) == 2:
+                    self.generated_code.append(f"check_price({processed_args[0]}, {processed_args[1]})")
+                else:
+                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+            elif func_name == "cancel_tickets":
+                if len(processed_args) == 2:
+                    self.generated_code.append(f"cancel_tickets({processed_args[0]}, {processed_args[1]})")
+                else:
+                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
             else:
                 self.generated_code.append(f"{func_name}({', '.join(processed_args)})")
         else:
@@ -371,7 +472,7 @@ class CodeGenerator:
         match = re.match(r"DISPLAY\s+(.*)", line)
         if match:
             message = match.groups()[0]
-            self.generated_code.append(f"print('{message}')")
+            self.generated_code.append(f"\nprint('{message}')")
         else:
             self._log_error(f"Invalid display format: {line}")
 

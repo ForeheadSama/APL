@@ -1,29 +1,36 @@
-BOOK, Value: book, Line: 1
-NUMBER, Value: 2, Line: 1
-TICKETS, Value: tickets, Line: 1
-FOR, Value: for, Line: 1
-STRING_LITERAL, Value: John Doe, Line: 1
-ON, Value: on, Line: 1
-DATE_VAL, Value: April 22, 2024, Line: 1
-FOR, Value: for, Line: 1
-STRING_LITERAL, Value: Taylor Swift Concert, Line: 1
-DOT, Value: ., Line: 1
-LIST, Value: list, Line: 2
-STRING_LITERAL, Value: flights, Line: 2
-ON, Value: on, Line: 2
-DATE_VAL, Value: April 21, 2024, Line: 2
-DOT, Value: ., Line: 2
 DISPLAY, Value: display, Line: 4
-STRING_LITERAL, Value: Enter number of tickets: , Line: 4
+STRING_LITERAL, Value: WELCOME TO MY SYSTEMMMMM !!!! :D, Line: 4
 DOT, Value: ., Line: 4
-INT_TYPE, Value: int, Line: 6
-IDENTIFIER, Value: numTick, Line: 6
-EQUALS, Value: =, Line: 6
-NUMBER, Value: 0, Line: 6
-DOT, Value: ., Line: 6
-ACCEPT, Value: accept, Line: 7
-IDENTIFIER, Value: numTick, Line: 7
+STRING_TYPE, Value: string, Line: 7
+IDENTIFIER, Value: name, Line: 7
+EQUALS, Value: =, Line: 7
+STRING_LITERAL, Value: David White, Line: 7
 DOT, Value: ., Line: 7
-DISPLAY, Value: display, Line: 9
-STRING_LITERAL, Value: Yay!, Line: 9
+INT_TYPE, Value: int, Line: 8
+IDENTIFIER, Value: numTickets, Line: 8
+EQUALS, Value: =, Line: 8
+NUMBER, Value: 2, Line: 8
+DOT, Value: ., Line: 8
+DATE_TYPE, Value: date, Line: 9
+IDENTIFIER, Value: availableDate, Line: 9
+EQUALS, Value: =, Line: 9
+DATE_VAL, Value: April 21, 2024, Line: 9
 DOT, Value: ., Line: 9
+STRING_TYPE, Value: string, Line: 10
+IDENTIFIER, Value: gala, Line: 10
+EQUALS, Value: =, Line: 10
+STRING_LITERAL, Value: Grand Gala, Line: 10
+DOT, Value: ., Line: 10
+DISPLAY, Value: display, Line: 13
+STRING_LITERAL, Value: Test book command: , Line: 13
+DOT, Value: ., Line: 13
+BOOK, Value: book, Line: 14
+IDENTIFIER, Value: numTickets, Line: 14
+TICKETS, Value: tickets, Line: 14
+FOR, Value: for, Line: 14
+IDENTIFIER, Value: name, Line: 14
+ON, Value: on, Line: 14
+DATE_VAL, Value: April 21, 2024, Line: 14
+FOR, Value: for, Line: 14
+IDENTIFIER, Value: gala, Line: 14
+DOT, Value: ., Line: 14

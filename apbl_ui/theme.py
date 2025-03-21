@@ -7,13 +7,14 @@ THEME = {
     'bg_editor': '#1e1e1e',         # Editor background
     'bg_linenumbers': '#252526',    # Line numbers background
     'bg_console': '#1e1e1e',        # Console background
+    'bg_tabs': '#2d2d2d',           # Slightly lighter color for tabs
     'fg_main': '#d4d4d4',           # Main text color
     'fg_linenumbers': '#858585',    # Line numbers text color
     'fg_console': '#cccccc',        # Console text color
     'error_color': '#f48771',       # Error text color
     'cursor_color': '#aeafad',      # Cursor color
     'select_bg': '#264f78',         # Selection background
-    'highlight_line': '#282828'     # Current line highlight
+    'highlight_line': '#4a4848'     # Current line highlight
 }
 
 # Professional syntax highlighting colors

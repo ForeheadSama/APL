@@ -81,11 +81,13 @@ class SemanticAnalyzer:
         """
         var_name = node.get('var_name')
         var_type = node.get('var_type')
+        value = node.get('value')
+        
         if var_name in self.symbol_table:
             self.errors.append(f"Error: Variable '{var_name}' already declared.")
         else:
             self.symbol_table[var_name] = var_type
-            self.output.append({"type": "declaration", "var_name": var_name, "var_type": var_type})
+            self.output.append({"type": "declaration", "var_name": var_name, "var_type": var_type, "value": value})
 
     def _check_if_statement(self, node):
         """
@@ -189,12 +191,18 @@ class SemanticAnalyzer:
 
     def _check_book_command(self, node):
         """
-        Validate booking commands.
+        Validate booking commands and resolve variable.
         """
         quantity = node.get('quantity')
         customer = node.get('customer')
         date = node.get('date')
         event = node.get('event')
+
+        # Resolve variables if possible
+        resolved_quantity = self._resolve_variable(quantity)
+        resolved_customer = self._resolve_variable(customer)
+        resolved_date = self._resolve_variable(date)
+        resolved_event = self._resolve_variable(event)
 
         # Validate quantity (can be a literal or variable)
         if quantity.get('type') == 'variable':
@@ -221,12 +229,12 @@ class SemanticAnalyzer:
                 self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
 
         self.output.append({
-            "type": "book_command", 
-            "quantity": quantity, 
-            "customer": customer, 
-            "date": date, 
-            "event": event
-        })
+        "type": "book_command", 
+        "quantity": resolved_quantity, 
+        "customer": resolved_customer, 
+        "date": resolved_date, 
+        "event": resolved_event
+    })
 
     def _check_cancel_command(self, node):
         """
@@ -234,6 +242,10 @@ class SemanticAnalyzer:
         """
         customer = node.get('customer')
         event = node.get('event')
+
+        # Resolve variables if possible
+        resolved_customer = self._resolve_variable(customer)
+        resolved_event = self._resolve_variable(event)
 
         # Validate customer (can be a literal or variable)
         if customer.get('type') == 'variable':
@@ -249,8 +261,8 @@ class SemanticAnalyzer:
 
         self.output.append({
             "type": "cancel_command", 
-            "customer": customer, 
-            "event": event
+            "customer": resolved_customer, 
+            "event": resolved_event
         })
 
     def _check_list_command(self, node):
@@ -259,6 +271,10 @@ class SemanticAnalyzer:
         """
         date = node.get('date')  # Date can be None if not provided
         event = node.get('event')  # Event is mandatory
+
+        # Resolve variables if possible
+        resolved_date = self._resolve_variable(date)
+        resolved_event = self._resolve_variable(event)
 
         # Validate event (can be a literal or variable)
         if event is None:
@@ -279,8 +295,8 @@ class SemanticAnalyzer:
         # Append the validated command to the output
         self.output.append({
             "type": "list_command",
-            "date": date,
-            "event": event
+            "date": resolved_date,
+            "event": resolved_event
         })
 
     def _check_check_command(self, node):
@@ -290,6 +306,11 @@ class SemanticAnalyzer:
         check_type = node.get('check_type')
         event = node.get('event')
         date = node.get('date')
+
+        # Resolve variables if possible
+        resolved_check_type = self._resolve_variable(check_type)
+        resolved_date = self._resolve_variable(date)
+        resolved_event = self._resolve_variable(event)
 
         # Validate event (can be a literal or variable)
         if event.get('type') == 'variable':
@@ -305,9 +326,9 @@ class SemanticAnalyzer:
 
         self.output.append({
             "type": "check_command", 
-            "check_type": check_type, 
-            "event": event, 
-            "date": date
+            "check_type": resolved_check_type, 
+            "event": resolved_event, 
+            "date": resolved_date
         })
 
     def _check_pay_command(self, node):
@@ -316,6 +337,10 @@ class SemanticAnalyzer:
         """
         event = node.get('event')
         customer = node.get('customer')
+
+        # Resolve variables if possible
+        resolved_customer = self._resolve_variable(customer)
+        resolved_event = self._resolve_variable(event)
 
         # Validate event (can be a literal or variable)
         if event.get('type') == 'variable':
@@ -331,8 +356,8 @@ class SemanticAnalyzer:
 
         self.output.append({
             "type": "pay_command", 
-            "event": event, 
-            "customer": customer
+            "event": resolved_event, 
+            "customer": resolved_customer
         })
 
     def _check_display_command(self, node):
@@ -340,6 +365,7 @@ class SemanticAnalyzer:
         Validate display commands.
         """
         message = node.get('message')
+        
         if isinstance(message, dict) and message.get('type') == 'variable':
             var_name = message.get('name')
             if var_name not in self.symbol_table:
@@ -351,20 +377,43 @@ class SemanticAnalyzer:
         })
 
     def _check_accept_command(self, node):
-        """
-        Validate accept commands.
-        """
+        """Validate accept commands."""
         var_name = node.get('variable')
+        var_type = node.get('var_type', 'string')  # Get type or default to string
+        
+
         if var_name not in self.symbol_table:
-            self.symbol_table[var_name] = 'string'  # Default to string type
-            warning = f"Implicit declaration of variable '{var_name}'."
+            # Add it to the symbol table
+            self.symbol_table[var_name] = var_type
+            warning = f"Implicit declaration of variable '{var_name}' with type '{var_type}'."
             self.output.append({
-                "type": "accept_command", 
-                "variable": var_name, 
+                "type": "accept_command",
+                "variable": var_name,
                 "warning": warning
             })
         else:
             self.output.append({
-                "type": "accept_command", 
+                "type": "accept_command",
                 "variable": var_name
             })
+
+    def _resolve_variable(self, node):
+        """
+        Resolve a variable node to its actual value based on the symbol table.
+        Returns either the resolved value or the original node if it can't be resolved.
+        """
+        if isinstance(node, dict) and node.get('type') == 'variable':
+            var_name = node.get('name')
+            # If variable exists in symbol table, return its value
+            if var_name in self.symbol_table:
+                # Find the value in declarations
+                for item in self.output:
+                    if item.get('type') == 'declaration' and item.get('var_name') == var_name:
+                        # Create a new literal node with the variable's value
+                        return {
+                            'type': 'literal',
+                            'value': item.get('value'),
+                            'lit_type': self.symbol_table[var_name]
+                        }
+        # Return original node if we can't resolve
+        return node

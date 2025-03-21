@@ -1,43 +1,57 @@
 [
     {
+        "type": "display_command",
+        "message": "WELCOME TO MY SYSTEMMMMM !!!! :D"
+    },
+    {
+        "type": "declaration",
+        "var_name": "name",
+        "var_type": "string",
+        "value": "David White"
+    },
+    {
+        "type": "declaration",
+        "var_name": "numTickets",
+        "var_type": "int",
+        "value": 2
+    },
+    {
+        "type": "declaration",
+        "var_name": "availableDate",
+        "var_type": "date",
+        "value": "April 21, 2024"
+    },
+    {
+        "type": "declaration",
+        "var_name": "gala",
+        "var_type": "string",
+        "value": "Grand Gala"
+    },
+    {
+        "type": "display_command",
+        "message": "Test book command: "
+    },
+    {
         "type": "book_command",
         "quantity": {
-            "type": "number",
-            "lineno": 1,
-            "name": 2,
-            "var_type": "int"
+            "type": "literal",
+            "value": 2,
+            "lit_type": "int"
         },
         "customer": {
             "type": "literal",
-            "lineno": 1,
-            "value": "John Doe",
+            "value": "David White",
             "lit_type": "string"
         },
         "date": {
             "type": "literal",
-            "lineno": 1,
-            "value": "April 22, 2024",
-            "lit_type": "date"
-        },
-        "event": {
-            "type": "literal",
-            "lineno": 1,
-            "value": "Taylor Swift Concert",
-            "lit_type": "string"
-        }
-    },
-    {
-        "type": "list_command",
-        "date": {
-            "type": "literal",
-            "lineno": 2,
+            "lineno": 14,
             "value": "April 21, 2024",
             "lit_type": "date"
         },
         "event": {
             "type": "literal",
-            "lineno": 2,
-            "value": "flights",
+            "value": "Grand Gala",
             "lit_type": "string"
         }
     }

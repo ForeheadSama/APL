@@ -17,9 +17,9 @@ class ConsoleComponent:
         header_frame = tk.Frame(self.parent_frame, bg=THEME['bg_linenumbers'], height=25)
         header_frame.pack(side=tk.TOP, fill=tk.X)
         
-        header_label = tk.Label(header_frame, text="Console Output", bg=THEME['bg_linenumbers'], 
-                               fg=THEME['fg_linenumbers'], padx=5, pady=2)
-        header_label.pack(side=tk.LEFT)
+        # header_label = tk.Label(header_frame, text="Console Output", bg=THEME['bg_linenumbers'], 
+        #                        fg=THEME['fg_linenumbers'], padx=5, pady=2)
+        # header_label.pack(side=tk.LEFT)
         
         clear_btn = tk.Button(header_frame, text="Clear", bg=THEME['bg_linenumbers'], 
                              fg=THEME['fg_linenumbers'], relief=tk.FLAT, 

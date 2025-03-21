@@ -6,11 +6,13 @@ import sys
 import os
 import subprocess
 import re
+import time
 
 from .theme import THEME
 from .editor import EditorComponent
 from .console import ConsoleComponent
 from .status_bar import StatusBar
+from .execution_insights import ExecutionInsightsPanel
 
 # Import required compiler modules
 from lexer_module.lexer import tokenize
@@ -38,8 +40,6 @@ class APBLIDE:
         
     def setup_ui(self):
         """Set up the UI components."""
-        # Create the menu bar
-        self.create_menu()
         
         # Create toolbar
         self.create_toolbar()
@@ -60,12 +60,34 @@ class APBLIDE:
         self.editor_component = EditorComponent(self.editor_frame)
         self.text_editor = self.editor_component.text_editor
         
-        # Create console frame
+        # Create console frame with tabs for Console and Execution Insights
         self.console_frame = tk.Frame(self.editor_paned, bg=THEME['bg_main'])
         self.editor_paned.add(self.console_frame, weight=1)
         
-        # Initialize console component
-        self.console_component = ConsoleComponent(self.console_frame)
+        # Create notebook (tabbed interface) with custom styling
+        style = ttk.Style()
+        style.configure("TNotebook", background=THEME['bg_main'])
+        style.map("TNotebook.Tab", background=[("selected", THEME['bg_tabs'])], 
+                foreground=[("selected", THEME['fg_main'])])
+        style.configure("TNotebook.Tab", background=THEME['bg_linenumbers'], 
+                        foreground=THEME['fg_main'], padding=[10, 2])
+        
+        self.console_notebook = ttk.Notebook(self.console_frame)
+        self.console_notebook.pack(fill=tk.BOTH, expand=True)
+        
+        # Create tab frames
+        self.console_tab = tk.Frame(self.console_notebook, bg=THEME['bg_main'])
+        self.insights_tab = tk.Frame(self.console_notebook, bg=THEME['bg_main'])
+        
+        # Add tabs to notebook
+        self.console_notebook.add(self.console_tab, text="Console")
+        self.console_notebook.add(self.insights_tab, text="Execution Insights")
+        
+        # Initialize console component in console tab
+        self.console_component = ConsoleComponent(self.console_tab)
+        
+        # Initialize execution insights component in insights tab
+        self.execution_insights = ExecutionInsightsPanel(self.insights_tab)
         
         # Create status bar
         self.status_bar = StatusBar(self.root, self.text_editor)
@@ -80,71 +102,6 @@ class APBLIDE:
         self.root.bind("<F5>", lambda event: self.run_compiler())
         self.root.bind("<Control-f>", lambda event: self.find_text())
     
-    def create_menu(self):
-        """Create the menu bar."""
-        self.menu_bar = tk.Menu(self.root)
-        self.root.config(menu=self.menu_bar)
-        
-        # File menu
-        self.file_menu = tk.Menu(self.menu_bar, tearoff=0, bg=THEME['bg_main'], fg=THEME['fg_main'])
-        self.file_menu.add_command(label="New", command=self.new_file, accelerator="Ctrl+N")
-        self.file_menu.add_command(label="Open...", command=self.open_file, accelerator="Ctrl+O")
-        self.file_menu.add_command(label="Save", command=self.save_file, accelerator="Ctrl+S")
-        self.file_menu.add_command(label="Save As...", command=self.save_as_file, accelerator="Ctrl+Shift+S")
-        self.file_menu.add_separator()
-        self.file_menu.add_command(label="Exit", command=self.root.quit, accelerator="Alt+F4")
-        self.menu_bar.add_cascade(label="File", menu=self.file_menu)
-        
-        # Edit menu
-        self.edit_menu = tk.Menu(self.menu_bar, tearoff=0, bg=THEME['bg_main'], fg=THEME['fg_main'])
-        self.edit_menu.add_command(label="Undo", command=lambda: self.text_editor.edit_undo(), accelerator="Ctrl+Z")
-        self.edit_menu.add_command(label="Redo", command=lambda: self.text_editor.edit_redo(), accelerator="Ctrl+Y")
-        self.edit_menu.add_separator()
-        self.edit_menu.add_command(label="Cut", command=lambda: self.text_editor.event_generate("<<Cut>>"), accelerator="Ctrl+X")
-        self.edit_menu.add_command(label="Copy", command=lambda: self.text_editor.event_generate("<<Copy>>"), accelerator="Ctrl+C")
-        self.edit_menu.add_command(label="Paste", command=lambda: self.text_editor.event_generate("<<Paste>>"), accelerator="Ctrl+V")
-        self.edit_menu.add_separator()
-        self.edit_menu.add_command(label="Find", command=self.find_text, accelerator="Ctrl+F")
-        self.menu_bar.add_cascade(label="Edit", menu=self.edit_menu)
-        
-        # Run menu
-        self.run_menu = tk.Menu(self.menu_bar, tearoff=0, bg=THEME['bg_main'], fg=THEME['fg_main'])
-        self.run_menu.add_command(label="Run", command=self.run_compiler, accelerator="F5")
-        self.menu_bar.add_cascade(label="Run", menu=self.run_menu)
-        
-        # Help menu
-        self.help_menu = tk.Menu(self.menu_bar, tearoff=0, bg=THEME['bg_main'], fg=THEME['fg_main'])
-        self.help_menu.add_command(label="About", command=self.show_about)
-        self.menu_bar.add_cascade(label="Help", menu=self.help_menu)
-        
-    def create_toolbar(self):
-        """Create a professional toolbar."""
-        self.toolbar = tk.Frame(self.root, bg=THEME['bg_linenumbers'], bd=1, relief=tk.RAISED)
-        self.toolbar.pack(side=tk.TOP, fill=tk.X)
-        
-        # New file button
-        self.new_btn = tk.Button(self.toolbar, text="New", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
-                                relief=tk.FLAT, command=self.new_file)
-        self.new_btn.pack(side=tk.LEFT, padx=2, pady=2)
-        
-        # Open file button
-        self.open_btn = tk.Button(self.toolbar, text="Open", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
-                                relief=tk.FLAT, command=self.open_file)
-        self.open_btn.pack(side=tk.LEFT, padx=2, pady=2)
-        
-        # Save file button
-        self.save_btn = tk.Button(self.toolbar, text="Save", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
-                                relief=tk.FLAT, command=self.save_file)
-        self.save_btn.pack(side=tk.LEFT, padx=2, pady=2)
-        
-        # Separator
-        tk.Frame(self.toolbar, width=2, height=24, bg=THEME['fg_linenumbers']).pack(side=tk.LEFT, padx=5, pady=2)
-        
-        # Run button
-        self.run_btn = tk.Button(self.toolbar, text="Run", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
-                                relief=tk.FLAT, command=self.run_compiler)
-        self.run_btn.pack(side=tk.LEFT, padx=2, pady=2)
-    
     def new_file(self):
         """Create a new file."""
         if self.text_editor.edit_modified():
@@ -158,7 +115,58 @@ class APBLIDE:
         self.text_editor.edit_modified(False)
         self.current_file = None
         self.update_title()
-    
+
+    def create_toolbar(self):
+        """Create a comprehensive toolbar with all functionality."""
+        self.toolbar = tk.Frame(self.root, bg=THEME['bg_linenumbers'], bd=1, relief=tk.RAISED)
+        self.toolbar.pack(side=tk.TOP, fill=tk.X)
+        
+        # File operations
+        self.new_btn = tk.Button(self.toolbar, text="New", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=self.new_file)
+        self.new_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        self.open_btn = tk.Button(self.toolbar, text="Open", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=self.open_file)
+        self.open_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        self.save_btn = tk.Button(self.toolbar, text="Save", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=self.save_file)
+        self.save_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        self.save_as_btn = tk.Button(self.toolbar, text="Save As", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                    relief=tk.FLAT, command=self.save_as_file)
+        self.save_as_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        # Separator
+        tk.Frame(self.toolbar, width=2, height=24, bg=THEME['fg_linenumbers']).pack(side=tk.LEFT, padx=5, pady=2)
+        
+        # Edit operations
+        self.undo_btn = tk.Button(self.toolbar, text="Undo", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=lambda: self.text_editor.edit_undo())
+        self.undo_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        self.redo_btn = tk.Button(self.toolbar, text="Redo", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=lambda: self.text_editor.edit_redo())
+        self.redo_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        self.find_btn = tk.Button(self.toolbar, text="Find", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=self.find_text)
+        self.find_btn.pack(side=tk.LEFT, padx=2, pady=2)
+        
+        # Separator
+        tk.Frame(self.toolbar, width=2, height=24, bg=THEME['fg_linenumbers']).pack(side=tk.LEFT, padx=5, pady=2)
+        
+        # Help
+        self.about_btn = tk.Button(self.toolbar, text="About", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=self.show_about)
+        self.about_btn.pack(side=tk.LEFT, padx=2, pady=2)
+
+         # Run operation
+        self.run_btn = tk.Button(self.toolbar, text="Run", bg=THEME['bg_linenumbers'], fg=THEME['fg_main'],
+                                relief=tk.FLAT, command=self.run_compiler)
+        self.run_btn.pack(side=tk.RIGHT, padx=2, pady=2)
+        
     def open_file(self):
         """Open a file and load its content into the text editor."""
         if self.text_editor.edit_modified():
@@ -242,7 +250,6 @@ class APBLIDE:
         find_entry.pack(side=tk.LEFT, padx=5)
         find_entry.focus_set()
         
-
         # Buttons
         button_frame = tk.Frame(find_dialog)
         button_frame.pack(fill=tk.X, padx=10, pady=5)
@@ -292,29 +299,103 @@ class APBLIDE:
         else:
             messagebox.showinfo("Find", f"Cannot find '{query}'")
     
+    def get_llm_explanation(self, phase, code_snippet=None, context=None):
+        """
+        Get an explanation from the Gemini LLM API for the current execution step.
+        
+        Args:
+            phase (str): Current compiler phase
+            code_snippet (str, optional): Relevant code being processed
+            context (dict, optional): Additional context information
+            
+        Returns:
+            str: Explanation from the LLM
+        """
+        try:
+            import google.generativeai as genai
+            
+            # Configure the API 
+            GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+            GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+
+            # Create a prompt
+            prompt = f"""
+            Explain the following step in a compiler in a simple, educational way:
+            
+            Phase: {phase}
+            """
+            
+            if code_snippet:
+                prompt += f"""
+                Code being processed:
+                ```
+                {code_snippet}
+                ```
+                """
+                
+            if context:
+                prompt += f"""
+                Additional context:
+                {context}
+                """
+                
+            prompt += """
+            Keep your explanation concise (2-3 sentences) and focus on what's happening in this specific step.
+            """
+            
+            # Make the API call
+            model = genai.GenerativeModel('gemini-1.5-flash')
+            response = model.generate_content(prompt)
+            return response.text
+                
+        except Exception as e:
+            return f"Unable to generate explanation: {str(e)}"
+    
     def run_compiler(self):
         """Run the compiler on the code in the text editor."""
         # Save current file if needed
         if self.current_file and self.text_editor.edit_modified():
             self.save_file()
         
-        # Clear console
+        # Clear console and insights
         self.console_component.clear_console()
+        self.execution_insights.clear_insights()
+        
+        # Show the Execution Insights tab
+        self.console_notebook.select(1)
         
         # Get source code
         source_code = self.text_editor.get(1.0, tk.END)
         
+        # Start compilation with enhanced insights
+        self.execution_insights.add_phase_start("Compilation", 
+            "Starting the compilation process for your APBL program.")
+        
         # Tokenize the source code
         print("[1] Tokenizing the source code...\n")
+        self.execution_insights.add_phase_start("Lexical Analysis", 
+            self.get_llm_explanation("Lexical Analysis", source_code))
+        
         try:
             tokens = tokenize(source_code, "lexer_module/lexer_output.txt")
             print("Tokenization complete.\n\n")
+            
+            # Get first few tokens for insight
+            token_sample = str(tokens[:5]) if len(tokens) > 5 else str(tokens)
+            self.execution_insights.add_phase_end("Lexical Analysis", 
+                f"Successfully converted source code into {len(tokens)} tokens.\nFirst few tokens: {token_sample}")
+            
         except Exception as e:
             print(f"Error: {e}\n\n")
+            self.execution_insights.add_insight("Lexical Analysis Error", 
+                source_code, f"Error during tokenization: {e}")
             return
         
         # Parse the tokens
         print("[2] Parsing the tokens...\n")
+        self.execution_insights.add_phase_start("Parsing", 
+            self.get_llm_explanation("Parsing", context=f"Working with {len(tokens)} tokens"))
+        
         try:
             ast, symbol_table, syntax_errors = parse(tokens)
             
@@ -324,12 +405,23 @@ class APBLIDE:
                 
                 # Display errors from files
                 self.display_errors("parser_module/parser_errors.txt", "Parser Errors")
+                
+                # Add to insights
+                with open("parser_module/parser_errors.txt", "r") as f:
+                    error_content = f.read()
+                self.execution_insights.add_insight("Parsing Errors", 
+                    None, f"Syntax errors found during parsing:\n{error_content}")
                 return
             else:
                 print("Parsing completed successfully.\n\n")
+                self.execution_insights.add_phase_end("Parsing", 
+                    "Successfully constructed the Abstract Syntax Tree (AST) and Symbol Table.")
                 
                 # Perform semantic analysis
                 print("[3] Performing semantic analysis...\n")
+                self.execution_insights.add_phase_start("Semantic Analysis", 
+                    self.get_llm_explanation("Semantic Analysis"))
+                
                 try:
                     semantic_analyzer = SemanticAnalyzer(ast)
                     semantic_errors = semantic_analyzer.analyze()
@@ -340,36 +432,64 @@ class APBLIDE:
                         
                         # Display errors from files
                         self.display_errors("semantic_module/semantic_errors.txt", "Semantic Errors")
+                        
+                        # Add to insights
+                        with open("semantic_module/semantic_errors.txt", "r") as f:
+                            error_content = f.read()
+                        self.execution_insights.add_insight("Semantic Analysis Errors", 
+                            None, f"Semantic errors found during analysis:\n{error_content}")
                         return
                     else:
                         print("Semantic analysis completed successfully.\n\n")
+                        self.execution_insights.add_phase_end("Semantic Analysis", 
+                            "Successfully verified program semantics. No type errors or scope issues found.")
                         
                         # Generate intermediate code
                         print("[4] Generating intermediate code...\n")
+                        self.execution_insights.add_phase_start("Intermediate Code Generation", 
+                            self.get_llm_explanation("Intermediate Code Generation"))
+                        
                         try:
                             code_generator = IntermediateCodeGenerator(ast)
                             intermediate_code = code_generator.generate()
                             print("Intermediate code generated successfully.\n\n")
+                            self.execution_insights.add_phase_end("Intermediate Code Generation", 
+                                "Successfully generated intermediate representation of the program.")
                             
                             # Generate Python code
                             print("[5] Generating Python code...\n")
+                            self.execution_insights.add_phase_start("Code Generation", 
+                                self.get_llm_explanation("Code Generation"))
+                            
                             generator = CodeGenerator()
                             success = generator.generate()
                             if success:
                                 print("=== Running Generated Code ===\n\n")
+                                self.execution_insights.add_phase_end("Code Generation", 
+                                    "Successfully generated Python code from the intermediate representation.")
                                 
                                 # Run the generated Python code
+                                self.execution_insights.add_phase_start("Execution", 
+                                    self.get_llm_explanation("Execution"))
                                 self.run_generated_code()
                             else:
                                 print("Code generation failed.\n")
+                                self.execution_insights.add_insight("Code Generation Error", 
+                                    None, "Failed to generate Python code from the intermediate representation.")
                         except Exception as e:
                             print(f"Intermediate code generation error: {e}\n\n")
+                            self.execution_insights.add_insight("Intermediate Code Generation Error", 
+                                None, f"Error during intermediate code generation: {e}")
                             return
                 except Exception as e:
                     print(f"Semantic analysis error: {e}\n\n")
+                    self.execution_insights.add_insight("Semantic Analysis Error", 
+                        None, f"Error during semantic analysis: {e}")
                     return
         except Exception as e:
             print(f"Parsing error: {e}\n\n")
+            self.execution_insights.add_insight("Parsing Error", 
+                None, f"Error during parsing: {e}")
             return
     
     def run_generated_code(self):
@@ -377,12 +497,19 @@ class APBLIDE:
         generated_code_path = "code_generator_module/generated_code.py"
         if os.path.exists(generated_code_path):
             try:
+                # Get the generated code content for insights
+                with open(generated_code_path, "r") as f:
+                    generated_code = f.read()
+                
                 # Run the generated Python code and capture the output
                 result = subprocess.run(
                     [sys.executable, generated_code_path],
                     capture_output=True,
                     text=True
                 )
+                
+                # Switch to console tab to show the output
+                self.console_notebook.select(0)
                 
                 # Display the output in the console
                 if result.stdout:
@@ -393,15 +520,33 @@ class APBLIDE:
                     print("Errors:\n", "error")
                     print(result.stderr, "error")
                     print("\n")
+                    
+                    # Add to insights
+                    self.execution_insights.add_insight("Execution Error", 
+                        generated_code, f"Error during code execution:\n{result.stderr}")
                 
                 if not result.stdout and not result.stderr:
                     self.console_component.print_to_console("Program executed with no output.\n")
                 
                 self.console_component.print_to_console("=== Execution Complete ===\n", "success")
+                
+                # Complete the execution phase in insights
+                output_summary = result.stdout if result.stdout else "No output generated."
+                self.execution_insights.add_phase_end("Execution", 
+                    f"Program execution completed successfully.\nOutput shown in Console tab.")
+                
+                # Add final compilation summary
+                self.execution_insights.add_insight("Compilation Complete", 
+                    None, "All compilation phases completed successfully. The program has been executed.")
+                
             except Exception as e:
                 print(f"Error running generated code: {e}\n", "error")
+                self.execution_insights.add_insight("Execution Error", 
+                    None, f"Error running generated code: {e}")
         else:
             print(f"Generated code file not found at {generated_code_path}.\n", "error")
+            self.execution_insights.add_insight("Execution Error", 
+                None, f"Generated code file not found at {generated_code_path}.")
     
     def display_errors(self, file_path, error_type):
         """Display errors from a file in the console."""

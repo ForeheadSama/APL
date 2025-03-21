@@ -109,7 +109,15 @@ def p_declaration_stmt(p):
                         | INT_TYPE IDENTIFIER EQUALS NUMBER
                         | DATE_TYPE IDENTIFIER EQUALS DATE_VAL'''
 
+    var_name = p[2]
+    var_type = p[1]
+    value = p[4]
+    
+    # Store both type and value
+    symbol_table[var_name] = {'type': var_type, 'value': value}
+
     p[0] = create_node('declaration', lineno=p.lineno(1), var_name=p[2], var_type=p[1], value=p[4])
+
 
 # -------------------------------------------------------------------------------
 # IF STATEMENTS
@@ -171,28 +179,50 @@ def p_command_stmt(p):
 # Booking Commands
 def p_book_cmd(p):
     '''book_cmd : BOOK quantity TICKETS FOR customer ON date FOR event'''
+
     p[0] = create_node('book_command', lineno=p.lineno(1), 
                        quantity=p[2], 
                        customer=p[5], 
                        date=p[7], 
                        event=p[9])
+    
 
 def p_quantity(p):
     '''quantity : NUMBER
                 | IDENTIFIER'''
     
-    if p.slice[1].type == 'NUMBER':
-        p[0] = create_node('number', lineno=p.lineno(1), name=p[1], var_type='int')
+    if p.slice[1].type == 'IDENTIFIER':
+        var_name = p[1]
+        # Check if variable exists in symbol table
+        if var_name in symbol_table:
+            # Fetch type and value from symbol table
+            var_info = symbol_table[var_name]
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type=var_info['type'], value=var_info['value'])
+        else:
+            # If not in symbol table, add as implicit declaration with warning
+            symbol_table[var_name] = {'type': 'int', 'value': None}  # Default to int type
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type='int', value=None)
     else:
-        p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='int')
+        # If it's a number literal, create a literal node
+        p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='int')
 
 def p_customer(p):
     '''customer : STRING_LITERAL
                 | IDENTIFIER'''
     
     if p.slice[1].type == 'IDENTIFIER':
-        p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
+        var_name = p[1]
+        # Check if variable exists in symbol table
+        if var_name in symbol_table:
+            # Fetch type and value from symbol table
+            var_info = symbol_table[var_name]
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type=var_info['type'], value=var_info['value'])
+        else:
+            # If not in symbol table, add as implicit declaration with warning
+            symbol_table[var_name] = {'type': 'string', 'value': None}  # Default to string type
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type='string', value=None)
     else:
+        # If it's a string literal, create a literal node
         p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='string')
 
 def p_date(p):
@@ -200,8 +230,18 @@ def p_date(p):
             | IDENTIFIER'''
     
     if p.slice[1].type == 'IDENTIFIER':
-        p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='date')
+        var_name = p[1]
+        # Check if variable exists in symbol table
+        if var_name in symbol_table:
+            # Fetch type and value from symbol table
+            var_info = symbol_table[var_name]
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type=var_info['type'], value=var_info['value'])
+        else:
+            # If not in symbol table, add as implicit declaration with warning
+            symbol_table[var_name] = {'type': 'date', 'value': None}  # Default to date type
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type='date', value=None)
     else:
+        # If it's a date literal, create a literal node
         p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='date')
 
 def p_event(p):
@@ -209,8 +249,18 @@ def p_event(p):
              | IDENTIFIER'''
     
     if p.slice[1].type == 'IDENTIFIER':
-        p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
+        var_name = p[1]
+        # Check if variable exists in symbol table
+        if var_name in symbol_table:
+            # Fetch type and value from symbol table
+            var_info = symbol_table[var_name]
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type=var_info['type'], value=var_info['value'])
+        else:
+            # If not in symbol table, add as implicit declaration with warning
+            symbol_table[var_name] = {'type': 'string', 'value': None}  # Default to string type
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type='string', value=None)
     else:
+        # If it's a string literal, create a literal node
         p[0] = create_node('literal', lineno=p.lineno(1), value=p[1], lit_type='string')
 
 # Cancel Commands
@@ -256,15 +306,29 @@ def p_message(p):
     '''message : STRING_LITERAL
                | IDENTIFIER'''
     if p.slice[1].type == 'IDENTIFIER':
-        p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
+        var_name = p[1]
+
+        # Check if variable exists in symbol table
+        if var_name in symbol_table:
+            p[0] = create_node('variable', lineno=p.lineno(1), name=p[1], var_type='string')
+        else:
+            # If not in symbol table, add as implicit declaration with warning
+            symbol_table[var_name] = 'string'  # Assume string type 
+            p[0] = create_node('variable', lineno=p.lineno(1), name=var_name, var_type='string')
+        
     else:
         p[0] = p[1]
 
 # Accept Commands
 def p_accept_cmd(p):
     '''accept_cmd : ACCEPT IDENTIFIER'''
-
     var_name = p[2]
+    
+    # Check if the variable exists in the symbol table
+    if var_name not in symbol_table:
+        # Add it to the symbol table with a default type
+        symbol_table[var_name] = 'string'  # Default to string type
+    
     p[0] = create_node('accept_command', lineno=p.lineno(1), variable=var_name, var_type=symbol_table[var_name])
 
 # -------------------------------------------------------------------------------
@@ -457,6 +521,11 @@ def parse(token_list):
 
             print(f"AST saved to {ast_file}")
 
+
+            # Call the visualization code
+            from parser_module.ast_visualizer import generate_ast_image
+            generate_ast_image(ast)
+    
         return ast, symbol_table, has_errors  # Return AST, symbol table, and error status
     
     except Exception as e:
