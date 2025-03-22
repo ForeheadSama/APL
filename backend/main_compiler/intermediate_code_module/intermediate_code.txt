@@ -1,0 +1,3 @@
+DECLARE name AS string WITH VALUE Anna
+DECLARE numTick AS int WITH VALUE 2
+CALL book_tickets(2, "Anna", "March 5, 2024", "Grand Gala")

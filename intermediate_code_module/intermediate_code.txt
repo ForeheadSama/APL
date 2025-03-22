@@ -1,7 +1,0 @@
-DISPLAY WELCOME TO MY SYSTEMMMMM !!!! :D
-DECLARE name AS string WITH VALUE David White
-DECLARE numTickets AS int WITH VALUE 2
-DECLARE availableDate AS date WITH VALUE April 21, 2024
-DECLARE gala AS string WITH VALUE Grand Gala
-DISPLAY Test book command: 
-CALL book_tickets(2, "David White", "April 21, 2024", "Grand Gala")

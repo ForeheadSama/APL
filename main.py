@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from apbl_ui.ide import APBLIDE
+from frontend.ide import APBLIDE
 
 # Main application
 if __name__ == "__main__":

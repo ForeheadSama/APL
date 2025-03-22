@@ -1,0 +1,51 @@
+{
+    "type": "program",
+    "lineno": 1,
+    "statements": [
+        {
+            "type": "declaration",
+            "lineno": 1,
+            "var_name": "name",
+            "var_type": "string",
+            "value": "Anna"
+        },
+        {
+            "type": "declaration",
+            "lineno": 2,
+            "var_name": "numTick",
+            "var_type": "int",
+            "value": 2
+        },
+        {
+            "type": "book_command",
+            "lineno": 4,
+            "quantity": {
+                "type": "variable",
+                "lineno": 4,
+                "name": "numTick",
+                "var_type": "int",
+                "value": 2
+            },
+            "customer": {
+                "type": "variable",
+                "lineno": 4,
+                "name": "name",
+                "var_type": "string",
+                "value": "Anna"
+            },
+            "date": {
+                "type": "literal",
+                "lineno": 4,
+                "value": "March 5, 2024",
+                "lit_type": "date"
+            },
+            "event": {
+                "type": "literal",
+                "lineno": 4,
+                "value": "Grand Gala",
+                "lit_type": "string"
+            }
+        }
+    ],
+    "input_handler": "<backend.main_compiler.parser_module.user_input_handler.UserInputHandler object at 0x00000185BCFD0AC0>"
+}
