@@ -30,7 +30,7 @@ class SemanticAnalyzer:
         """
         Save semantic errors to a text file.
         """
-        errors_file = "semantic_module/semantic_errors.txt"
+        errors_file = "backend/main_compiler/semantic_module/semantic_errors.txt"
         os.makedirs(os.path.dirname(errors_file), exist_ok=True)  # Ensure directory exists
         with open(errors_file, "w") as f:
             for error in self.errors:
