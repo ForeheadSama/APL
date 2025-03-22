@@ -410,7 +410,21 @@ def p_EOL(p):
 # Error function - Now using our custom error handler
 # -------------------------------------------------------------------------------
 def p_error(p):
-    return error_handler.handle_error(p)
+    if p:
+        error_msg = (
+            f"[Syntax Error] Unexpected token '{p.value}' (type: {p.type}) at line {p.lineno}\n"
+            "  • Why it’s an error: This token does not match any valid grammar rule here.\n"
+            "  • Suggestion: Double-check the structure of your command or statement.\n"
+            "    → For example, ensure commands end with a period and follow the format like:\n"
+            "      book 2 tickets for \"John\" on March 15, 2025 for \"Jazz Fest\"."
+        )
+    else:
+        error_msg = (
+            "[Syntax Error] Unexpected end of input (EOF).\n"
+            "  • Why it’s an error: The parser expected more tokens to complete the statement.\n"
+            "  • Suggestion: You might be missing a closing bracket, parenthesis, or period."
+        )
+    print(error_msg)
 
 # -------------------------------------------------------------------------------
 # Build the Parser

@@ -107,7 +107,11 @@ def t_newline(t):
 # Error handling
 errors = []
 def t_error(t):
-    error_msg = f"ERROR: Illegal character '{t.value[0]}' at line {t.lexer.lineno}"
+    error_msg = (
+        f"[Lexical Error] Illegal character '{t.value[0]}' at line {t.lineno}, position {t.lexpos}\n"
+        "  • Why it’s an error: This character is not part of the valid syntax.\n"
+        "  • Suggestion: Check for typos, misplaced punctuation, or unsupported characters."
+    )
     errors.append(error_msg)
     print(error_msg)
     t.lexer.skip(1)
