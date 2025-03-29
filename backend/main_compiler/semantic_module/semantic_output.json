@@ -1,38 +1,11 @@
 [
     {
-        "type": "declaration",
-        "var_name": "name",
-        "var_type": "string",
-        "value": "Anna"
-    },
-    {
-        "type": "declaration",
-        "var_name": "numTick",
-        "var_type": "int",
-        "value": 2
-    },
-    {
-        "type": "book_command",
-        "quantity": {
-            "type": "literal",
-            "value": 2,
-            "lit_type": "int"
-        },
-        "customer": {
-            "type": "literal",
-            "value": "Anna",
-            "lit_type": "string"
-        },
-        "date": {
-            "type": "literal",
-            "lineno": 4,
-            "value": "March 5, 2024",
-            "lit_type": "date"
-        },
+        "type": "list_command",
+        "date": null,
         "event": {
             "type": "literal",
-            "lineno": 4,
-            "value": "Grand Gala",
+            "lineno": 1,
+            "value": "SUNRISE BREAKFAST PARTY JAMAICA CARNIVAL 2025",
             "lit_type": "string"
         }
     }

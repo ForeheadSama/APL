@@ -1,20 +1,3 @@
-STRING_TYPE, Value: string, Line: 1
-IDENTIFIER, Value: name, Line: 1
-EQUALS, Value: =, Line: 1
-STRING_LITERAL, Value: Anna, Line: 1
+LIST, Value: list, Line: 1
+STRING_LITERAL, Value: SUNRISE BREAKFAST PARTY JAMAICA CARNIVAL 2025, Line: 1
 DOT, Value: ., Line: 1
-INT_TYPE, Value: int, Line: 2
-IDENTIFIER, Value: numTick, Line: 2
-EQUALS, Value: =, Line: 2
-NUMBER, Value: 2, Line: 2
-DOT, Value: ., Line: 2
-BOOK, Value: book, Line: 4
-IDENTIFIER, Value: numTick, Line: 4
-TICKETS, Value: tickets, Line: 4
-FOR, Value: for, Line: 4
-IDENTIFIER, Value: name, Line: 4
-ON, Value: on, Line: 4
-DATE_VAL, Value: March 5, 2024, Line: 4
-FOR, Value: for, Line: 4
-STRING_LITERAL, Value: Grand Gala, Line: 4
-DOT, Value: ., Line: 4

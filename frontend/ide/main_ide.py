@@ -8,11 +8,11 @@ import subprocess
 import re
 import time
 
-from .theme import THEME
-from .editor import EditorComponent
-from .console import ConsoleComponent
-from .status_bar import StatusBar
-from .execution_insights import ExecutionInsightsPanel
+from ide.theme import THEME
+from ide.editor import EditorComponent
+from ide.console import ConsoleComponent
+from ide.status_bar import StatusBar
+from ide.execution_insights import ExecutionInsightsPanel
 
 # Import required compiler modules
 from backend.main_compiler.lexer_module.lexer import tokenize

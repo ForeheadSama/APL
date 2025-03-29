@@ -105,10 +105,52 @@ class CodeGenerator:
             "    print(message)",
             "    return success",
             "",
+            "def list_events_on_date(event_type, date_str):",
+            "    # Call the Gemini helper to fetch and update events first",
+            "    backend.llm_integration.gemini_helper.sync_events_from_eventbrite(event_type)",
+            "    ",
+            "    # Convert date string to proper format",
+            "    try:",
+            "        # Parse date in format 'Month Day, Year'",
+            "        date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y').date()",
+            "        # Check if date is valid (not in past and not too far in future)",
+            "        today = datetime.datetime.now().date()",
+            "",
+            "        if date_obj < today:",
+            "            print(\"Error: Cannot list events from the past. Please select a current or future date.\")",
+            "            return None",
+            "        ",
+            "        # Call the database query to get events on the specified date",
+            "        events = backend.database.query.get_events_by_date(event_type, date_obj)",
+            "        if events:",
+            "            formatted_events = backend.llm_integration.gemini_helper.format_events_list(events)",
+            "            print(formatted_events)",
+            "            return events",
+            "        else:",
+            "            print(f\"No {event_type} events found on {date_str}.\")",
+            "            return None",
+            "    except ValueError as e:",
+            "        print(f\"Error: Invalid date format. Please use 'Month Day, Year' format (e.g., 'June 15, 2024').\")",
+            "        return None",
+            "",
+            "def list_event_details(event_name):",
+            "    # Call the Gemini helper to fetch and update events first",
+            "    backend.llm_integration.gemini_helper.sync_events_from_eventbrite(None)",
+            "    ",
+            "    # Call the database query to get events with the specified name",
+            "    events = backend.database.query.get_events_by_name(event_name)",
+            "    if events:",
+            "        formatted_events = backend.llm_integration.gemini_helper.format_event_details(events)",
+            "        print(formatted_events)",
+            "        return events",
+            "    else:",
+            "        print(f\"No events found with name '{event_name}'.\")",
+            "        return None",
+            "",
             "# Main program starts here",
             ""
         ])
-    
+
     def _process_intermediate_code(self):
         """Process each line of intermediate code and generate Python code with proper indentation."""
         indent_level = 0  # Track the current indentation level
@@ -267,20 +309,17 @@ class CodeGenerator:
             # Generate the function call with processed arguments
             if func_name == "list_events_on_date":
                 if len(processed_args) == 2:
-                    self.generated_code.append(f"events_data = gemini_helper.fetch_events_from_gemini({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append(f"events_data = list_events_on_date({processed_args[0]}, {processed_args[1]})")
                     self.generated_code.append("if events_data:")
-                    self.generated_code.append("    for event in events_data:")
-                    self.generated_code.append("        print(f\"Event: {event.get('name', 'Unnamed event')}\")")
-                    self.generated_code.append("        print(f\"Venue: {event.get('venue', 'Not specified')}\")")
-                    self.generated_code.append("        print(f\"Time: {event.get('time', 'Not specified')}\")")
-                    self.generated_code.append("        print(f\"Description: {event.get('description', 'No description available')}\")")
-                    self.generated_code.append("else:")
-                    self.generated_code.append("    print(\"No events found for the given date.\")")
+                    self.generated_code.append("    print('Events found and displayed above.')")
                 else:
                     self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
             elif func_name == "list_event_details":
                 if len(processed_args) == 1:
-                    self.generated_code.append(f"list_event_details({processed_args[0]})")
+                    self.generated_code.append(f"events_data = list_event_details({processed_args[0]})")
+                    self.generated_code.append("\n")
+                    self.generated_code.append("if events_data:")
+                    self.generated_code.append("    print('Event details displayed above.')")
                 else:
                     self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
             elif func_name == "pay_for_event":
@@ -339,12 +378,8 @@ class CodeGenerator:
         """Generate the footer section of the Python code"""
         self.generated_code.extend([
             "",
-            "# Check if API key is set",
-            "if not GEMINI_API_KEY:",
-            "    print(\"WARNING: GEMINI_API_KEY environment variable not set. Some functions will be limited.\")",
-            "    print(\"Set it using: export GEMINI_API_KEY='your_api_key_here'\")",
-            "",    
-            "# End of generated code",
+            "# By Alex-Ann",  
+            "# == End of generated code == ",
         ])
 
     def _write_generated_code(self):

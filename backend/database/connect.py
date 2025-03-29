@@ -1,18 +1,27 @@
+# backend/database/connect_alt.py
 import pyodbc
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 def get_db_connection():
     """
-    Establish a connection to the Azure SQL Database and return a connection object.
+     Connection function, no Azure SDK
     """
-    # Connection string
+    # Build connection string
     conn_str = (
-        "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=apblbookingserver.database.windows.net;"
-        "DATABASE=APBLBookingDB;"
-        "UID=adminlogin;"
-        "PWD=adm!n123;"
+        "DRIVER={ODBC Driver 18 for SQL Server};"
+        f"SERVER={os.getenv('DB_SERVER')};"
+        f"DATABASE={os.getenv('DB_NAME')};"
+        f"UID={os.getenv('DB_USER')};"
+        f"PWD={os.getenv('DB_PASSWORD')};"
+        "Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
     )
-
-    # Connect to the database
-    conn = pyodbc.connect(conn_str)
-    return conn
+    
+    try:
+        return pyodbc.connect(conn_str)
+    except pyodbc.Error as e:
+        print(f"Database connection error: {str(e)}")
+        raise
