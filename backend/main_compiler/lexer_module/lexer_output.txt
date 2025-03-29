@@ -1,3 +1,3 @@
-LIST, Value: list, Line: 1
-STRING_LITERAL, Value: SUNRISE BREAKFAST PARTY JAMAICA CARNIVAL 2025, Line: 1
+DISPLAY, Value: display, Line: 1
+STRING_LITERAL, Value: Hello World, Line: 1
 DOT, Value: ., Line: 1

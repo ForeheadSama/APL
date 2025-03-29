@@ -3,15 +3,10 @@
     "lineno": 1,
     "statements": [
         {
-            "type": "list_command",
+            "type": "display_command",
             "lineno": 1,
-            "event": {
-                "type": "literal",
-                "lineno": 1,
-                "value": "SUNRISE BREAKFAST PARTY JAMAICA CARNIVAL 2025",
-                "lit_type": "string"
-            }
+            "message": "Hello World"
         }
     ],
-    "input_handler": "<backend.main_compiler.parser_module.user_input_handler.UserInputHandler object at 0x00000176BBA9DE20>"
+    "input_handler": "<backend.main_compiler.parser_module.user_input_handler.UserInputHandler object at 0x000001D341F21D30>"
 }

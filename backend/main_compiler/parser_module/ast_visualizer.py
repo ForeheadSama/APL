@@ -1,6 +1,10 @@
 import json
 import os
+
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to Agg before importing pyplot
 import matplotlib.pyplot as plt
+
 import networkx as nx
 
 # Load the AST from the existing parser_output.json

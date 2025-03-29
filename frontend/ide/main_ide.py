@@ -7,6 +7,7 @@ import os
 import subprocess
 import re
 import time
+import threading
 
 from frontend.ide.theme import THEME
 from frontend.ide.editor import EditorComponent
@@ -353,6 +354,12 @@ class APBLIDE:
     
     def run_compiler(self):
         """Run the compiler on the code in the text editor."""
+        # Start a new thread for the compilation process
+        threading.Thread(target=self._run_compiler_thread).start()
+
+    def _run_compiler_thread(self):
+        """Thread target for running the compiler."""
+
         # Save current file if needed
         if self.current_file and self.text_editor.edit_modified():
             self.save_file()

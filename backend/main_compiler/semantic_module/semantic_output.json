@@ -1,12 +1,6 @@
 [
     {
-        "type": "list_command",
-        "date": null,
-        "event": {
-            "type": "literal",
-            "lineno": 1,
-            "value": "SUNRISE BREAKFAST PARTY JAMAICA CARNIVAL 2025",
-            "lit_type": "string"
-        }
+        "type": "display_command",
+        "message": "Hello World"
     }
 ]
