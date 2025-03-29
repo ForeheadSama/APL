@@ -172,14 +172,10 @@ class APBLStartupLoader:
             self.root.withdraw()  # Hide instead of destroy immediately
 
             try:
-                import importlib.util
 
-                spec = importlib.util.spec_from_file_location("main_ide", "frontend/ide/main_ide.py")
-                main_ide = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(main_ide)
-
-                APBLIDE = main_ide.APBLIDE
-                                
+                # Add project root to path
+                from frontend.ide.main_ide import APBLIDE  # Absolute import
+                
                 # Create main window
                 ide_root = tk.Tk()
                 ide = APBLIDE(ide_root)
@@ -205,10 +201,12 @@ class APBLStartupLoader:
 
             except Exception as e:
                 print(f"Error launching IDE: {e}")
+                print(f"Import path debug: {sys.path}")
+                print(f"Current file: {__file__}")
 
                 # Show error and restore visibility of loader window if IDE fails to launch
                 self.root_copy.deiconify()
-                self.show_error_details(f"Failed to launch IDE. {e}")
+                self.show_error_details(f"Failed to launch IDE.")
                 raise
 
         except Exception as e:

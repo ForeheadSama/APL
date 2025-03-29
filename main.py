@@ -1,4 +1,7 @@
 import tkinter as tk
+import os
+import sys
+
 from frontend.startup.startup_loader import APBLStartupLoader
 
 # Main application
