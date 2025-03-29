@@ -15,7 +15,12 @@ class APBLStartupLoader:
 
         self.root = tk.Tk()
         self.root.title("APBL Compiler")
-        self.root.geometry("500x350")
+        
+        # Set dimensions and center
+        window_width = 500
+        window_height = 350
+        self.center_window(self.root, window_width, window_height)
+
         self.root.configure(bg=THEME['bg_main'])
 
         # Compiler branding
@@ -82,6 +87,17 @@ class APBLStartupLoader:
             'backend/main_compiler/intermediate_code_module/intermediate_code.txt',
             'backend/main_compiler/code_generator_module/code_generator_errors.txt'
         ]
+    
+    def center_window(self, window, width, height):
+        """Center the window on screen"""
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+        
+        # Calculate position
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        
+        window.geometry(f"{width}x{height}+{x}+{y}")
 
     def create_required_files(self):
         for file_path in self.required_files:
