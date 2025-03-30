@@ -117,6 +117,8 @@ class IntermediateCodeGenerator:
         """
         Generate intermediate code for cancellation commands.
         """
+
+        quantity = self._generate_expression(node.get('quantity'))
         event = self._generate_expression(node.get('event'))
         customer = self._generate_expression(node.get('customer'))
 
@@ -125,7 +127,7 @@ class IntermediateCodeGenerator:
         customer = f'"{customer}"' if isinstance(customer, str) and not customer.startswith('"') else customer
 
         # Use a function call to represent the cancellation operation
-        self.intermediate_code.append(f"CALL cancel_tickets({customer}, {event})")
+        self.intermediate_code.append(f"CALL cancel_booking({quantity}, {customer}, {event})")
 
     def _generate_list_command(self, node):
         """
@@ -183,7 +185,7 @@ class IntermediateCodeGenerator:
         customer = f'"{customer}"' if isinstance(customer, str) and not customer.startswith('"') else customer
 
         # Use a function call to represent the payment operation
-        self.intermediate_code.append(f"CALL pay_for_event({event}, {customer})")
+        self.intermediate_code.append(f"CALL pay_for_booking({event}, {customer})")
 
     def _generate_display_command(self, node):
         """

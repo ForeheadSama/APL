@@ -73,7 +73,7 @@ class CodeGenerator:
             "# Add the project root directory to sys.path",
             "sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))",
             "",
-            "import backend.llm_integration.gemini_helper",  # Import the Gemini helper file
+            "from backend.llm_integration.gemini_helper import get_and_format_events",  # Import the Gemini helper file
             "import backend.database.query",  # Import the database query functions",
             "",
             "# Helper functions for ticket system operations",
@@ -90,64 +90,39 @@ class CodeGenerator:
             "        print(f\"Price information for event {event_id} not available.\")",
             "    return price",
             "",
-            "def book_tickets(event_id, user_id, quantity):",
-            "    success, message = backend.database.query.book_ticket(event_id, user_id, quantity)",
+            "def book_tickets(quantity, user_id, date, event_name):",
+            "    success, message = backend.database.query.book_tickets(quantity, user_id, date, event_name)",
             "    print(message)",
             "    return success",
             "",
-            "def pay_for_booking(booking_id):",
-            "    success, message = backend.database.query.pay_for_booking(booking_id)",
+            "def pay_for_booking(event_name, user_name):",
+            "    success, message = backend.database.query.pay_for_booking(event_name, user_name)",
             "    print(message)",
             "    return success",
             "",
-            "def cancel_booking(booking_id):",
-            "    success, message = backend.database.query.cancel_booking(booking_id)",
+            "def cancel_booking(quantity, user_name, event_name):",
+            "    success, message = backend.database.query.cancel_booking(quantity, user_name, event_name)",
             "    print(message)",
             "    return success",
             "",
-            "def list_events_on_date(event_type, date_str):",
-            "    # Call the Gemini helper to fetch and update events first",
-            "    backend.llm_integration.gemini_helper.sync_events_from_eventbrite(event_type)",
-            "    ",
-            "    # Convert date string to proper format",
+           "def list_events_on_date(event_type: str, date_str: str) -> str:",
             "    try:",
-            "        # Parse date in format 'Month Day, Year'",
-            "        date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y').date()",
-            "        # Check if date is valid (not in past and not too far in future)",
             "        today = datetime.datetime.now().date()",
-            "",
+            "        date_obj = datetime.datetime.strptime(date_str, '%B %d, %Y').date()",
             "        if date_obj < today:",
-            "            print(\"Error: Cannot list events from the past. Please select a current or future date.\")",
-            "            return None",
+            "            return \"Error: Cannot list events from the past\"",
             "        ",
-            "        # Call the database query to get events on the specified date",
-            "        events = backend.database.query.get_events_by_date(event_type, date_obj)",
-            "        if events:",
-            "            formatted_events = backend.llm_integration.gemini_helper.format_events_list(events)",
-            "            print(formatted_events)",
-            "            return events",
-            "        else:",
-            "            print(f\"No {event_type} events found on {date_str}.\")",
-            "            return None",
-            "    except ValueError as e:",
-            "        print(f\"Error: Invalid date format. Please use 'Month Day, Year' format (e.g., 'June 15, 2024').\")",
-            "        return None",
+            "        result = get_and_format_events(event_type=event_type, date=date_str)",
+            "        return result",
+            "    except ValueError:",
+            "        return \"Error: Invalid date format. Use 'Month Day, Year'\"",
             "",
-            "def list_event_details(event_name):",
-            "    # Call the Gemini helper to fetch and update events first",
-            "    backend.llm_integration.gemini_helper.sync_events_from_eventbrite(None)",
-            "    ",
-            "    # Call the database query to get events with the specified name",
-            "    events = backend.database.query.get_events_by_name(event_name)",
-            "    if events:",
-            "        formatted_events = backend.llm_integration.gemini_helper.format_event_details(events)",
-            "        print(formatted_events)",
-            "        return events",
-            "    else:",
-            "        print(f\"No events found with name '{event_name}'.\")",
-            "        return None",
+            "def list_event_details(event_name: str) -> str:",
+            "    result = get_and_format_events(event_name=event_name)",
+            "    return result if result else \"No events found\"",
             "",
             "# Main program starts here",
+            "",
             ""
         ])
 
@@ -266,10 +241,8 @@ class CodeGenerator:
         if match:
             func_name, args_str = match.groups()
             
-            # Use a more robust approach to parse arguments that may contain commas inside quotes
+            # Parse arguments with comma handling
             processed_args = []
-            
-            # Parse arguments correctly while preserving quoted strings with commas
             in_quotes = False
             current_arg = ""
             i = 0
@@ -281,7 +254,6 @@ class CodeGenerator:
                     in_quotes = not in_quotes
                     current_arg += char
                 elif char == ',' and not in_quotes:
-                    # End of an argument
                     processed_args.append(current_arg.strip())
                     current_arg = ""
                 else:
@@ -289,64 +261,75 @@ class CodeGenerator:
                 
                 i += 1
                     
-            # Add the last argument
             if current_arg.strip():
                 processed_args.append(current_arg.strip())
             
-            # Process each argument
+            # Process arguments
             for j in range(len(processed_args)):
                 arg = processed_args[j]
-                # Check if the argument is a variable or already properly formatted
                 if arg in self.symbol_table or re.match(r"t\d+", arg) or re.match(r"^\d+(\.\d+)?$", arg):
-                    continue  # Keep as is
-                # Check if it's already a properly quoted string
+                    continue
                 elif (arg.startswith('"') and arg.endswith('"')) or (arg.startswith("'") and arg.endswith("'")):
-                    continue  # Keep as is
+                    continue
                 else:
-                    # Add quotes for string literals
                     processed_args[j] = f'"{arg}"'
             
-            # Generate the function call with processed arguments
+            # Generate proper code for each function
             if func_name == "list_events_on_date":
                 if len(processed_args) == 2:
-                    self.generated_code.append(f"events_data = list_events_on_date({processed_args[0]}, {processed_args[1]})")
-                    self.generated_code.append("if events_data:")
-                    self.generated_code.append("    print('Events found and displayed above.')")
+                    self.generated_code.append(f"result = list_events_on_date({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append("print(result)")
                 else:
-                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+                    self._log_error(f"list_events_on_date requires 2 arguments (type, date), got {len(processed_args)}")
+            
             elif func_name == "list_event_details":
                 if len(processed_args) == 1:
-                    self.generated_code.append(f"events_data = list_event_details({processed_args[0]})")
-                    self.generated_code.append("\n")
-                    self.generated_code.append("if events_data:")
-                    self.generated_code.append("    print('Event details displayed above.')")
+                    self.generated_code.append(f"result = list_event_details({processed_args[0]})")
+                    self.generated_code.append("print(result)")
                 else:
-                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
-            elif func_name == "pay_for_event":
-                if len(processed_args) == 2:
-                    self.generated_code.append(f"pay_for_event({processed_args[0]}, {processed_args[1]})")
-                else:
-                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+                    self._log_error(f"list_event_details requires 1 argument (event_name), got {len(processed_args)}")
+            
             elif func_name == "check_availability":
-                if len(processed_args) == 2:
-                    self.generated_code.append(f"check_availability({processed_args[0]}, {processed_args[1]})")
+                if len(processed_args) == 2:  # Updated to require event_name and date
+                    self.generated_code.append(f"available = check_availability({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append('print("Available tickets: " + str(available))')
                 else:
-                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+                    self._log_error(f"check_availability requires 2 arguments (event_name, date), got {len(processed_args)}")
+            
             elif func_name == "check_price":
-                if len(processed_args) == 2:
-                    self.generated_code.append(f"check_price({processed_args[0]}, {processed_args[1]})")
+                if len(processed_args) == 2:  # Updated to require event_name and date
+                    self.generated_code.append(f"price = check_price({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append('print(f"Ticket price: ${price:.2f}")')
                 else:
-                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
-            elif func_name == "cancel_tickets":
+                    self._log_error(f"check_price requires 2 arguments (event_name, date), got {len(processed_args)}")
+            
+            elif func_name == "pay_for_booking":
                 if len(processed_args) == 2:
-                    self.generated_code.append(f"cancel_tickets({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append(f"success, message = pay_for_booking({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append("print(message)")
                 else:
-                    self._log_error(f"Invalid number of arguments for {func_name}: {len(processed_args)}")
+                    self._log_error(f"pay_for_booking requires 2 arguments (event_name, user_name), got {len(processed_args)}")
+
+            elif func_name == "cancel_booking":
+                if len(processed_args) == 3:
+                    # Ensure proper quoting for string arguments
+                    quantity = processed_args[0]
+                    user_name = processed_args[1] if processed_args[1].startswith('"') else f'"{processed_args[1]}"'
+                    event_name = processed_args[2] if processed_args[2].startswith('"') else f'"{processed_args[2]}"'
+                    
+                    self.generated_code.append(f"success, message = cancel_booking({quantity}, {user_name}, {event_name})")
+                    self.generated_code.append("print(message)")
+                else:
+                    self._log_error(f"cancel_booking requires 3 arguments (quantity, user_name, event_name), got {len(processed_args)}")
+            
             else:
-                self.generated_code.append(f"{func_name}({', '.join(processed_args)})")
+                # Default handling for unrecognized functions
+                self.generated_code.append(f"result = {func_name}({', '.join(processed_args)})")
+                self.generated_code.append("if result is not None: print(result)")
+        
         else:
             self._log_error(f"Invalid function call format: {line}")
-
+            
     def _handle_display(self, line):
         """Handle display/print statements"""
         match = re.match(r"DISPLAY\s+(.*)", line)

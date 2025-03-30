@@ -1,6 +1,45 @@
 [
     {
-        "type": "display_command",
-        "message": "Hello World"
+        "type": "book_command",
+        "quantity": {
+            "type": "literal",
+            "lineno": 1,
+            "value": 2,
+            "lit_type": "int"
+        },
+        "customer": {
+            "type": "literal",
+            "lineno": 1,
+            "value": "Jane Doe",
+            "lit_type": "string"
+        },
+        "date": {
+            "type": "literal",
+            "lineno": 1,
+            "value": "April 27, 2025",
+            "lit_type": "date"
+        },
+        "event": {
+            "type": "literal",
+            "lineno": 1,
+            "value": "Playstation: The Concert",
+            "lit_type": "string"
+        },
+        "lineno": 1
+    },
+    {
+        "type": "cancel_command",
+        "customer": {
+            "type": "literal",
+            "lineno": 3,
+            "value": "Jane Doe",
+            "lit_type": "string"
+        },
+        "event": {
+            "type": "literal",
+            "lineno": 3,
+            "value": "Playstation: The Concert",
+            "lit_type": "string"
+        }
     }
 ]

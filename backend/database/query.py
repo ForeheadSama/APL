@@ -28,17 +28,19 @@ def get_events_by_date(event_type: str, date: datetime.date) -> List[Dict[str, A
         SELECT event_id, event_type, name, venue, date, price, available_tickets
         FROM Events
         WHERE event_type = ? AND CONVERT(date, date) = ?
-        ORDER BY name
+        ORDER BY event_type, name
         """
         
         cursor.execute(query, (event_type, date))
         
         # Convert rows to dictionaries
         columns = [column[0] for column in cursor.description]
+
         for row in cursor.fetchall():
             event = dict(zip(columns, row))
             # Convert date to string format for easier handling
             event['date'] = event['date'].strftime('%B %d, %Y') if event['date'] else None
+            
             events.append(event)
             
         cursor.close()
@@ -93,67 +95,67 @@ def get_events_by_name(event_name: str) -> List[Dict[str, Any]]:
 
 def add_event(event_data: Dict[str, Any]) -> Tuple[bool, str]:
     """
-    Add a new event to the Events table if it doesn't already exist.
-    
-    Args:
-        event_data (Dict[str, Any]): Dictionary containing event data
-    
-    Returns:
-        Tuple[bool, str]: Success status and message
+    Robust event addition with proper date and price handling
     """
+    conn = None
     try:
-        # Check if event already exists
+        # Convert and validate date
+        date_str = event_data['date']
+        try:
+            event_date = datetime.strptime(date_str, '%B %d, %Y').date()
+        except ValueError as e:
+            return False, f"Invalid date format: {date_str}. Expected 'Month Day, Year' (e.g. 'June 15, 2025')"
+
+        # Get proper price (default to 0.0 if not available)
+        price = float(event_data.get('price', 0.0))
+        
         conn = get_db_connection()
         cursor = conn.cursor()
-        
-        check_query = """
-        SELECT COUNT(*) 
-        FROM Events 
-        WHERE name = ? AND venue = ? AND CONVERT(date, date) = ?
-        """
-        
-        # Convert date string to date object if needed
-        event_date = event_data['date']
-        if isinstance(event_date, str):
-            try:
-                event_date = datetime.datetime.strptime(event_date, '%B %d, %Y').date()
-            except ValueError:
-                return False, f"Invalid date format: {event_date}"
-        
-        cursor.execute(check_query, (event_data['name'], event_data['venue'], event_date))
-        count = cursor.fetchone()[0]
-        
-        if count > 0:
-            cursor.close()
-            conn.close()
-            return False, "Event already exists in database"
-        
-        # Insert new event
-        insert_query = """
-        INSERT INTO Events (event_type, name, venue, date, price, available_tickets)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """
-        
-        cursor.execute(
-            insert_query,
+
+        # Check for existing event
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM Events 
+            WHERE LOWER(name) = LOWER(?) 
+            AND LOWER(venue) = LOWER(?) 
+            AND date = ?
+            """,
             (
-                event_data['event_type'],
-                event_data['name'],
-                event_data['venue'],
-                event_date,
-                event_data['price'],
-                event_data['available_tickets']
+                event_data['name'].strip(),
+                event_data['venue'].strip(),
+                event_date
             )
         )
-        
+
+        if cursor.fetchone()[0] > 0:
+            return False, "Event already exists"
+
+        # Insert new event
+        cursor.execute("""
+            INSERT INTO Events 
+            (event_type, name, venue, date, price, available_tickets)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                event_data['event_type'].strip().lower(),
+                event_data['name'].strip(),
+                event_data['venue'].strip(),
+                event_date,
+                price,
+                int(event_data.get('available_tickets', 100))
+            )
+        )
+
         conn.commit()
-        cursor.close()
-        conn.close()
-        
         return True, "Event added successfully"
-        
+
     except Exception as e:
-        return False, f"Error adding event: {str(e)}"
+        if conn:
+            conn.rollback()
+        return False, f"Database error: {str(e)}"
+    finally:
+        if conn:
+            conn.close()
 
 def check_event_exists(name: str, venue: str, date: datetime.date) -> bool:
     """
@@ -240,92 +242,230 @@ def get_or_create_user_id(name):
     finally:
         conn.close()
 
-# def book_ticket(quantity, user_name, date, event_name, event_type, venue, price, available_tickets):
-#     """Book tickets for an event."""
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-#     try:
-#         # Get or create the user ID
-#         user_id = get_or_create_user_id(user_name)
+from datetime import datetime, date
+from decimal import Decimal
 
-#         # Convert the date string to a datetime object
-#         date_obj = datetime.strptime(date, "%B %d, %Y")  # Parse the date string
-#         formatted_date = date_obj.strftime("%Y-%m-%d %H:%M:%S")  # Format for SQL DATETIME
+def book_tickets(quantity: int, user_name: str, event_date: str, event_name: str) -> tuple[bool, str]:
+    """Book tickets for an event with comprehensive validation"""
+    conn = None
+    try:
+        # Validate quantity
+        if not isinstance(quantity, int) or quantity <= 0:
+            return False, "Number of tickets to book must be a positive integer."
 
-#         # Get or create the event ID
-#         #event_id = get_or_create_event_id(event_name, event_type, formatted_date, venue, price, available_tickets)
+        # Validate and parse date
+        try:
+            booking_date = datetime.strptime(event_date, "%B %d, %Y").date()
+            if booking_date < date.today():
+                return False, "Cannot book tickets for past dates. Try a date in the future."
+            sql_date = booking_date.strftime("%Y-%m-%d")
+        except ValueError:
+            return False, "Invalid date format. Use 'Month Day, Year' (e.g. 'June 15, 2025')"
 
-#         if event_id == "None":
-#             return False, "Requested event does not exist yet, try another event."
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get or create user
+        cursor.execute("SELECT user_id FROM Users WHERE name = ?", (user_name,))
+        user = cursor.fetchone()
+        if not user:
+            cursor.execute("INSERT INTO Users (name) OUTPUT INSERTED.user_id VALUES (?)", (user_name,))
+            user_id = cursor.fetchone()[0]
+            conn.commit()
+        else:
+            user_id = user[0]
+
+        # Find matching event
+        cursor.execute("""
+            SELECT event_id, price, available_tickets 
+            FROM Events 
+            WHERE name = ? 
+            AND CONVERT(date, date) = ?
+            """, 
+            (event_name, sql_date))
+        event = cursor.fetchone()
+
+        if not event:
+            return False, f"Unfortunately, no event named '{event_name}' was found on {event_date}."
+
+        event_id, price_per_ticket, available_tickets = event
+
+        # Check ticket availability
+        if available_tickets < quantity:
+            return False, f"Only {available_tickets} tickets are available (requested: {quantity})"
+
+        # Calculate total price
+        total_price = Decimal(price_per_ticket) * quantity
+
+        # Start transaction
+        try:
+            # Update available tickets
+            cursor.execute("""
+                UPDATE Events 
+                SET available_tickets = available_tickets - ? 
+                WHERE event_id = ? AND available_tickets >= ?
+                """, 
+                (quantity, event_id, quantity))
             
-#         # Check available tickets
-#         available = check_available_tickets(event_id)
-#         if available < quantity:
-#             return False, "Not enough tickets available."
+            if cursor.rowcount == 0:
+                return False, "Unfortunately, tickets are no longer available"
 
-#         # Update available tickets
-#         cursor.execute("UPDATE Events SET available_tickets = available_tickets - ? WHERE event_id = ?", (quantity, event_id))
+            # Create booking
+            cursor.execute("""
+                INSERT INTO Bookings 
+                (event_id, user_id, date, quantity, price, status)
+                VALUES (?, ?, GETDATE(), ?, ?, 'Confirmed')
+                """,
+                (event_id, user_id, quantity, float(total_price)))
+            
+            conn.commit()
+            return True, f"Successfully booked {quantity} ticket(s) for {user_name} to {event_name}! Be sure to pay for tickets using the PAY command to finalize your spot."
 
-#         # Insert booking
-#         cursor.execute("""
-#             INSERT INTO Bookings (event_id, user_id, quantity, date, status)
-#             VALUES (?, ?, ?, ?, 'Pending')
-#         """, (event_id, user_id, quantity, formatted_date))
+        except Exception as e:
+            conn.rollback()
+            return False, f"Booking failed: {str(e)}"
 
-#         conn.commit()
-#         return True, "Booking successful."
-    
-#     except Exception as e:
-#         conn.rollback()
-#         return False, f"Error booking tickets: {e}"
-#     finally:
-#         conn.close()
-
-def pay_for_booking(booking_id):
-    """Mark a booking as paid."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    try:
-        # Check if booking exists and is not already paid
-        cursor.execute("SELECT status FROM Bookings WHERE booking_id = ?", booking_id)
-        result = cursor.fetchone()
-        if not result:
-            return False, "Booking not found."
-        if result[0] == "Paid":
-            return False, "Booking is already paid."
-
-        # Update booking status
-        cursor.execute("UPDATE Bookings SET status = 'Paid' WHERE booking_id = ?", booking_id)
-        conn.commit()
-        return True, "Payment successful."
     except Exception as e:
-        conn.rollback()
-        return False, f"Error processing payment: {e}"
+        return False, f"System error: {str(e)}"
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
-def cancel_booking(booking_id):
-    """Cancel a booking."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
+def pay_for_booking(event_name: str, user_name: str) -> tuple[bool, str]:
+    """Mark a booking as paid after validating all conditions"""
+    conn = None
     try:
-        # Check if booking exists and is not already paid
-        cursor.execute("SELECT status, event_id, quantity FROM Bookings WHERE booking_id = ?", booking_id)
-        result = cursor.fetchone()
-        if not result:
-            return False, "Booking not found."
-        if result[0] == "Paid":
-            return False, "Cannot cancel a paid booking."
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-        # Add tickets back to available pool
-        cursor.execute("UPDATE Events SET available_tickets = available_tickets + ? WHERE event_id = ?", (result[2], result[1]))
+        # Verify user exists or create them
+        cursor.execute("SELECT user_id FROM Users WHERE name = ?", (user_name,))
+        user = cursor.fetchone()
+        
+        if not user:
+            # User doesn't exist, create them
+            cursor.execute("INSERT INTO Users (name) VALUES (?)", (user_name,))
+            conn.commit()
 
-        # Delete booking
-        cursor.execute("DELETE FROM Bookings WHERE booking_id = ?", booking_id)
+            cursor.execute("SELECT user_id FROM Users WHERE name = ?", (user_name,))
+            user = cursor.fetchone()
+
+        user_id = user[0]
+
+        # Find matching booking that isn't paid
+        # Get most recent booking if multiple exist
+        cursor.execute("""
+            SELECT b.booking_id, b.status
+            FROM Bookings b
+            JOIN Events e ON b.event_id = e.event_id
+            WHERE e.name = ? AND b.user_id = ?
+            ORDER BY b.date DESC 
+            """, 
+            (event_name, user_id))
+        
+        booking = cursor.fetchone()
+
+        # Handle all validation cases
+        if not booking:
+            return False, f"No booking found for '{event_name}' under '{user_name}'. Try booking first."
+        
+        booking_id, status = booking
+        
+        if status == "Paid":
+            return False, f"Booking for '{event_name}' is already paid."
+        
+        if status == "Cancelled":
+            return False, f"Cannot pay for cancelled booking. Try booking again."
+
+        # Process payment
+        cursor.execute("""
+            UPDATE Bookings 
+            SET status = 'Paid' 
+            WHERE booking_id = ?
+            """, 
+            (booking_id,))
+        
         conn.commit()
-        return True, "Cancellation successful."
+        return True, f"Payment for '{event_name}' confirmed!"
+
     except Exception as e:
-        conn.rollback()
-        return False, f"Error canceling booking: {e}"
+        if conn:
+            conn.rollback()
+        return False, f"Payment processing failed: {str(e)}"
     finally:
-        conn.close()
+        if conn:
+            conn.close()
+
+def cancel_booking(quantity: int, user_name: str, event_name: str) -> tuple[bool, str]:
+    """Cancel booking(s) for a specific user and event.
+    Args:
+        quantity: Number of tickets to cancel
+        user_name: Name of the user who made the booking
+        event_name: Name of the event to cancel
+    Returns:
+        Tuple of (success: bool, message: str)
+    """
+    conn = None
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Get user ID
+        cursor.execute("SELECT user_id FROM Users WHERE name = ?", (user_name,))
+        user = cursor.fetchone()
+
+        if not user:
+            return False, f"User '{user_name}' not found."
+        user_id = user[0]
+
+        # Find the most recent matching booking that isn't paid
+        cursor.execute("""
+            SELECT b.booking_id, b.event_id, b.quantity, b.status, e.name
+            FROM Bookings b
+            JOIN Events e ON b.event_id = e.event_id
+            WHERE b.user_id = ? AND e.name = ? AND b.status != 'Paid'
+            ORDER BY b.date DESC
+            """, (user_id, event_name))
+        
+        booking = cursor.fetchone()
+        
+        if not booking:
+            return False, f"Unfortunately, no cancellable bookings were found for {user_name} to {event_name}."
+
+        booking_id, event_id, booked_quantity, status, event_name = booking
+
+        # Validate quantity
+        if quantity > booked_quantity:
+            return False, f"Cannot cancel {quantity} tickets. Only {booked_quantity} tickets were booked."
+
+        # Update available tickets (add back the canceled quantity)
+        cursor.execute("""
+            UPDATE Events 
+            SET available_tickets = available_tickets + ? 
+            WHERE event_id = ?
+            """, (quantity, event_id))
+
+        # If canceling all tickets, delete the booking
+        if quantity == booked_quantity:
+            cursor.execute("DELETE FROM Bookings WHERE booking_id = ?", (booking_id,))
+            message = f"Successfully canceled all {quantity} tickets for {event_name}."
+        else:
+            # If partial cancellation, update the booking quantity
+            cursor.execute("""
+                UPDATE Bookings 
+                SET quantity = quantity - ? 
+                WHERE booking_id = ?
+                """, (quantity, booking_id))
+            message = f"Successfully canceled {quantity} of {booked_quantity} tickets for {event_name}."
+
+        conn.commit()
+        return True, message
+
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return False, f"Error canceling booking: {str(e)}"
+    finally:
+        if conn:
+            conn.close()

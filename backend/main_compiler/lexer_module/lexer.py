@@ -1,13 +1,9 @@
-# lexer.py
-# Performs the lexical analysis by tokenizing source code.
-# Writes tokens to lexer_output.txt
-# -----------------------------------------------------------------------------------------
-
 import ply.lex as lex
         
-# Reserved words definition - updated to include data types and if statement keywords
+# RESERVED WORDS MAPPED TO THEIR TOKEN NAMES
+# THESE INCLUDE COMMANDS, DATA TYPES, AND CONTROL FLOW KEYWORDS
 reserved = {
-    # Core Command Keywords
+    # CORE COMMAND KEYWORDS FOR BOOKING AND MANAGEMENT
     'book': 'BOOK',
     'cancel': 'CANCEL',
     'list': 'LIST',
@@ -16,49 +12,48 @@ reserved = {
     'display': 'DISPLAY',
     'accept': 'ACCEPT',
     
-    # Prepositions and Conjunctions
+    # PREPOSITIONS AND CONJUNCTIONS USED IN QUERIES
     'for': 'FOR',
     'on': 'ON',
     'event': 'EVENT',
 
-    # Objects and Topics
+    # OBJECTS RELATED TO BOOKING
     'ticket': 'TICKET',
     'tickets': 'TICKETS',
-    # 'events': 'EVENTS',
     'availability': 'AVAILABILITY',
     'price': 'PRICE',
     
-    # Data Types
+    # DATA TYPES SUPPORTED IN THE LANGUAGE
     'string': 'STRING_TYPE',
     'int': 'INT_TYPE',
     'date': 'DATE_TYPE',
     
-    # Control Flow
+    # CONTROL FLOW STATEMENTS
     'if': 'IF',
     'else': 'ELSE'
 }
 
-# Token list definition - updated to include new symbols and types
+# LIST OF TOKENS INCLUDING RESERVED WORDS, SYMBOLS, AND LITERALS
 tokens = [
-    'NUMBER',         # e.g., 123
-    'STRING_LITERAL', # e.g., "Hello, World!"
-    'DATE_VAL',       # e.g., "February 17, 2025"
-    'IDENTIFIER',     # Variable names
-    'DOT',            # . (end of sentence)
-    'LPAREN',         # (
-    'RPAREN',         # )
-    'LBRACKET',       # [
-    'RBRACKET',       # ]
-    'EQUALS',         # =
-    'GT',             # >
-    'LT',             # <
-    'GE',             # >=
-    'LE',             # <=
-    'EQ',             # ==
-    'NE',             # !=
-] + list(reserved.values())
+    'NUMBER',         # INTEGER VALUES (E.G., 123)
+    'STRING_LITERAL', # TEXT ENCLOSED IN DOUBLE QUOTES (E.G., "HELLO")
+    'DATE_VAL',       # DATE VALUES IN A SPECIFIC FORMAT (E.G., "FEBRUARY 17, 2025")
+    'IDENTIFIER',     # VARIABLE NAMES OR FUNCTION NAMES
+    'DOT',            # PERIOD CHARACTER (.)
+    'LPAREN',         # LEFT PARENTHESIS (
+    'RPAREN',         # RIGHT PARENTHESIS )
+    'LBRACKET',       # LEFT SQUARE BRACKET [
+    'RBRACKET',       # RIGHT SQUARE BRACKET ]
+    'EQUALS',         # ASSIGNMENT OPERATOR (=)
+    'GT',             # GREATER THAN SYMBOL (>)
+    'LT',             # LESS THAN SYMBOL (<)
+    'GE',             # GREATER THAN OR EQUAL TO (>=)
+    'LE',             # LESS THAN OR EQUAL TO (<=)
+    'EQ',             # EQUALITY CHECK (==)
+    'NE',             # NOT EQUAL (!=)
+] + list(reserved.values()) # INCLUDE RESERVED WORDS IN THE TOKEN LIST
 
-# Simple token rules
+# REGULAR EXPRESSIONS FOR SIMPLE TOKEN RULES
 t_DOT = r'\.'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
@@ -72,63 +67,64 @@ t_EQ = r'=='
 t_NE = r'!='
 t_EQUALS = r'='
 
-# Modified date rule
+# TOKEN RULE FOR DATE FORMATTED AS MONTH DAY, YEAR
 def t_DATE_VAL(t):
     r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}'
     return t
 
+# TOKEN RULE FOR INTEGER VALUES
 def t_NUMBER(t):
     r'\d+'
-    t.value = int(t.value)
+    t.value = int(t.value)  # CONVERT STRING TO INTEGER
     return t
 
+# TOKEN RULE FOR STRING LITERALS ENCLOSED IN DOUBLE QUOTES
 def t_STRING_LITERAL(t):
     r'"[^"]*"'
-    t.value = t.value[1:-1]  # Remove quotes
+    t.value = t.value[1:-1]  # REMOVE SURROUNDING QUOTES
     return t
 
-# Identifier rule - must come after reserved keywords
+# TOKEN RULE FOR IDENTIFIERS (VARIABLE NAMES)
 def t_IDENTIFIER(t):
     r'[A-Za-z_][A-Za-z0-9_]*'
-    t.type = reserved.get(t.value.lower(), 'IDENTIFIER')  # Case-insensitive matching
+    t.type = reserved.get(t.value.lower(), 'IDENTIFIER')  # CHECK IF IDENTIFIER IS A RESERVED WORD
     return t
 
-# Comment rules -
+# TOKEN RULE FOR COMMENTS STARTING WITH $$ - IGNORED BY THE LEXER
 def t_COMMENT(t):
     r'\$\$.*'
-    t.lexer.lineno += t.value.count('\n')
-    pass  # Token discarded
+    t.lexer.lineno += t.value.count('\n')  # UPDATE LINE NUMBER COUNT
+    pass  # DISCARD COMMENT TOKEN
 
-# Whitespace handling
-def t_WHITESPACE(t): # changed to t_WHITESPACE to avoid conflict with newline.
+# TOKEN RULE FOR WHITESPACE (IGNORED)
+def t_WHITESPACE(t):
     r'[ \t]+'
-    pass  # Token discarded
+    pass  # DISCARD WHITESPACE TOKEN
 
-# Newline handling
+# TOKEN RULE FOR NEWLINES - UPDATES LINE NUMBER COUNTER
 def t_newline(t):
     r'\n+'
-    t.lexer.lineno += len(t.value)
+    t.lexer.lineno += len(t.value)  # INCREMENT LINE COUNT
 
-# Error handling
+# ERROR HANDLING FOR ILLEGAL CHARACTERS
 def t_error(t):
-    """Error handling for illegal characters"""
     print(f"- Error at line {t.lexer.lineno}: Illegal character '{t.value[0]}'")
-    t.lexer.skip(1)
+    t.lexer.skip(1)  # SKIP THE INVALID CHARACTER
 
-
-# Build the lexer
+# BUILD THE LEXER
 lexer = lex.lex()
 
+# FUNCTION TO TOKENIZE SOURCE CODE AND WRITE TOKENS TO A FILE
 def tokenize(source_code, output_file="backend/main_compiler/lexer_module/lexer_output.txt"):
     """
-    Tokenize the given source code and write the tokens to an output file.
+    TOKENIZES THE GIVEN SOURCE CODE AND WRITES THE TOKENS TO AN OUTPUT FILE.
     
-    Args:
-        source_code (str): The source code to tokenize
-        output_file (str): Path to the output file where tokens will be written
+    ARGS:
+        SOURCE_CODE (STR): THE SOURCE CODE TO TOKENIZE
+        OUTPUT_FILE (STR): PATH TO THE OUTPUT FILE WHERE TOKENS WILL BE WRITTEN
     
-    Returns:
-        list: A list of the tokens found in the source code
+    RETURNS:
+        LIST: A LIST OF THE TOKENS FOUND IN THE SOURCE CODE
     """
     lexer.input(source_code)
     tokens = []

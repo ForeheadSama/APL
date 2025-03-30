@@ -265,8 +265,8 @@ def p_event(p):
 
 # Cancel Commands
 def p_cancel_cmd(p):
-    '''cancel_cmd : CANCEL ticket_or_tickets FOR customer EVENT event'''
-    p[0] = create_node('cancel_command', lineno=p.lineno(1), customer=p[4], event=p[6])
+    '''cancel_cmd : CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event'''
+    p[0] = create_node('cancel_command', lineno=p.lineno(1), quantity=p[2], customer=p[5], event=p[8])
 
 def p_ticket_or_tickets(p):
     '''ticket_or_tickets : TICKET

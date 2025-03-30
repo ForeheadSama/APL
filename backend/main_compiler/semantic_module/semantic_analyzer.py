@@ -1,21 +1,34 @@
 import os
 import json
+from typing import List, Dict, Any, Union
 
 class SemanticAnalyzer:
-    def __init__(self, ast):
+    def __init__(self, ast: Union[Dict[str, Any], List[Dict[str, Any]], str]):
+        """
+        Initialize semantic analyzer with type-safe checks
+        
+        Args:
+            ast: Can be either:
+                - A dictionary node
+                - A list of nodes
+                - A string (for error cases)
+        """
         self.ast = ast
-        self.symbol_table = {}  # Symbol table to track variables and their types
-        self.errors = []  # List to store semantic errors
-        self.output = []  # Store semantic output for saving to file
+        self.symbol_table: Dict[str, str] = {}  # Maps variable names to types
+        self.errors: List[str] = []
+        self.output: List[Dict[str, Any]] = []
 
-    def analyze(self):
-        """
-        Perform semantic analysis on the AST.
-        """
-        self._traverse_ast(self.ast)
-        self._save_output()  # Save semantic output to file
-        self._save_errors()  # Save semantic errors to file
-        return self.errors
+    def analyze(self) -> List[str]:
+        """Main analysis entry point with proper type handling"""
+        try:
+            self._traverse(self.ast)
+            self._save_output()
+            self._save_errors()
+            return self.errors
+        except Exception as e:
+            error = f"Critical analysis error: {str(e)}"
+            self.errors.append(error)
+            return [error]
 
     def _save_output(self):
         """
@@ -36,44 +49,68 @@ class SemanticAnalyzer:
             for error in self.errors:
                 f.write(error + "\n")
 
-    def _traverse_ast(self, node):
-        """
-        Recursively traverse the AST and perform semantic checks.
-        Handles both AST nodes and lists of nodes.
-        """
-        if isinstance(node, list):  # Handle lists of nodes
+    def _validate_node(self, node):
+        """Ensure node is properly structured"""
+        if not isinstance(node, dict):
+            self.errors.append(f"Invalid node type: {type(node)}. Expected dict")
+            return False
+        if 'type' not in node:
+            self.errors.append("Node missing 'type' attribute")
+            return False
+        return True
+
+    def _traverse(self, node: Union[Dict[str, Any], List[Any], str, None]) -> None:
+        if node is None:
+            return
+        elif isinstance(node, str):
+            self.errors.append(f"Unexpected string node: {node}")
+        elif isinstance(node, list):
             for item in node:
-                self._traverse_ast(item)
-        elif isinstance(node, dict):  # Handle AST nodes (dictionaries)
-            if node.get('type') == 'program':
-                for statement in node.get('statements', []):
-                    self._traverse_ast(statement)
-            elif node.get('type') == 'declaration':
-                self._check_declaration(node)
-            elif node.get('type') == 'if_statement':
-                self._check_if_statement(node)
-            elif node.get('type') == 'book_command':
+                self._traverse(item)
+        elif isinstance(node, dict):
+            self._process_node(node)
+        else:
+            self.errors.append(f"Unexpected node type: {type(node)}")
+
+    def _process_node(self, node: Dict[str, Any]) -> None:
+        """Process a single AST node with full type safety"""
+
+        if not isinstance(node.get('type'), str):
+            self.errors.append("Node missing string 'type'")
+            return
+
+        node_type = node['type']
+        lineno = node.get('lineno', 'unknown')
+
+        try:
+            if node_type == 'program':
+                self._traverse(node.get('statements', []))
+            elif node_type == 'book_command':
                 self._check_book_command(node)
-            elif node.get('type') == 'cancel_command':
+            elif node_type == 'cancel_command':
                 self._check_cancel_command(node)
-            elif node.get('type') == 'list_command':
+            elif node_type == 'list_command':
                 self._check_list_command(node)
-            elif node.get('type') == 'check_command':
+            elif node_type == 'check_command':
                 self._check_check_command(node)
-            elif node.get('type') == 'pay_command':
+            elif node_type == 'pay_command':
                 self._check_pay_command(node)
-            elif node.get('type') == 'display_command':
+            elif node_type == 'display_command':
                 self._check_display_command(node)
-            elif node.get('type') == 'accept_command':
+            elif node_type == 'accept_command':
                 self._check_accept_command(node)
-            elif node.get('type') == 'condition':
+            elif node_type == 'declaration':
+                self._check_declaration(node)
+            elif node_type == 'if_statement':
+                self._check_if_statement(node)
+            elif node_type == 'condition':
                 self._check_condition(node)
-            elif node.get('type') == 'expression':
+            elif node_type == 'expression':
                 self._check_expression(node)
             else:
-                self.errors.append(f"Unsupported node type: {node.get('type')}")
-        else:
-            self.errors.append(f"Invalid node: {node}")
+                self.errors.append(f"Unknown node type: {node_type} at line {lineno}")
+        except Exception as e:
+            self.errors.append(f"Error processing {node_type} at line {lineno}: {str(e)}")
 
     def _check_declaration(self, node):
         """
@@ -189,52 +226,43 @@ class SemanticAnalyzer:
                     return "unknown"
         return "unknown"
 
-    def _check_book_command(self, node):
-        """
-        Validate booking commands and resolve variable.
-        """
-        quantity = node.get('quantity')
-        customer = node.get('customer')
-        date = node.get('date')
-        event = node.get('event')
+    def _check_book_command(self, node: Dict[str, Any]) -> None:
+        """Type-safe book command validation"""
 
-        # Resolve variables if possible
-        resolved_quantity = self._resolve_variable(quantity)
-        resolved_customer = self._resolve_variable(customer)
-        resolved_date = self._resolve_variable(date)
-        resolved_event = self._resolve_variable(event)
+        required = {'quantity', 'customer', 'date', 'event'}
+        if not all(field in node for field in required):
+            missing = required - set(node.keys())
+            self.errors.append(f"Book command missing fields: {missing}")
+            return
 
-        # Validate quantity (can be a literal or variable)
-        if quantity.get('type') == 'variable':
-            var_name = quantity.get('name')
-            if var_name not in self.symbol_table:
-                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+        self._validate_expression(node['quantity'], 'quantity', node.get('lineno'))
+        self._validate_expression(node['customer'], 'customer', node.get('lineno'))
+        self._validate_expression(node['date'], 'date', node.get('lineno'))
+        self._validate_expression(node['event'], 'event', node.get('lineno'))
 
-        # Validate customer (can be a literal or variable)
-        if customer.get('type') == 'variable':
-            var_name = customer.get('name')
-            if var_name not in self.symbol_table:
-                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+        if not any(e.startswith("Book command") for e in self.errors):
+            self.output.append({
+                'type': 'book_command',
+                'quantity': self._resolve_variable(node['quantity']),
+                'customer': self._resolve_variable(node['customer']),
+                'date': self._resolve_variable(node['date']),
+                'event': self._resolve_variable(node['event']),
+                'lineno': node.get('lineno')
+            })
 
-        # Validate date (can be a literal or variable)
-        if date.get('type') == 'variable':
-            var_name = date.get('name')
-            if var_name not in self.symbol_table:
-                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+    def _validate_expression(self, expr: Any, context: str, lineno: Union[int, str]) -> bool:
+        """Validate any expression with type checking"""
+        if not isinstance(expr, dict) or 'type' not in expr:
+            self.errors.append(f"Invalid {context} at line {lineno}: expected expression node")
+            return False
 
-        # Validate event (can be a literal or variable)
-        if event.get('type') == 'variable':
-            var_name = event.get('name')
-            if var_name not in self.symbol_table:
-                self.errors.append(f"Error: Variable '{var_name}' used in book command but not declared.")
+        if expr['type'] == 'variable':
+            var_name = expr.get('name')
+            if not isinstance(var_name, str) or var_name not in self.symbol_table:
+                self.errors.append(f"Undeclared variable in {context} at line {lineno}")
+                return False
 
-        self.output.append({
-        "type": "book_command", 
-        "quantity": resolved_quantity, 
-        "customer": resolved_customer, 
-        "date": resolved_date, 
-        "event": resolved_event
-    })
+        return True
 
     def _check_cancel_command(self, node):
         """
@@ -398,22 +426,20 @@ class SemanticAnalyzer:
             })
 
     def _resolve_variable(self, node):
-        """
-        Resolve a variable node to its actual value based on the symbol table.
-        Returns either the resolved value or the original node if it can't be resolved.
-        """
-        if isinstance(node, dict) and node.get('type') == 'variable':
-            var_name = node.get('name')
-            # If variable exists in symbol table, return its value
-            if var_name in self.symbol_table:
-                # Find the value in declarations
-                for item in self.output:
-                    if item.get('type') == 'declaration' and item.get('var_name') == var_name:
-                        # Create a new literal node with the variable's value
-                        return {
-                            'type': 'literal',
-                            'value': item.get('value'),
-                            'lit_type': self.symbol_table[var_name]
-                        }
-        # Return original node if we can't resolve
+        """Safe variable resolution"""
+        if not isinstance(node, dict) or node.get('type') != 'variable':
+            return node
+            
+        var_name = node.get('name')
+
+        if var_name in self.symbol_table:
+            for item in self.output:
+
+                if item.get('type') == 'declaration' and item.get('var_name') == var_name:
+                    return {
+                        'type': 'literal',
+                        'value': item.get('value'),
+                        'lit_type': self.symbol_table[var_name],
+                        'lineno': node.get('lineno')
+                    }
         return node

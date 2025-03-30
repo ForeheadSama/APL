@@ -1,6 +1,0 @@
-// AST
-digraph {
-	1917909021504 [label=program]
-	1917868145472 [label=display_command]
-	1917909021504 -> 1917868145472
-}

@@ -2,45 +2,45 @@ import json
 import os
 
 import matplotlib
-matplotlib.use('Agg')  # Set the backend to Agg before importing pyplot
+matplotlib.use('Agg')  # SET THE BACKEND TO AGG TO ENABLE IMAGE GENERATION WITHOUT GUI
 import matplotlib.pyplot as plt
 
-import networkx as nx
+import networkx as nx  # IMPORT NETWORKX FOR GRAPH REPRESENTATION
 
-# Load the AST from the existing parser_output.json
+# FUNCTION TO LOAD THE ABSTRACT SYNTAX TREE (AST) FROM A JSON FILE
 def load_ast_from_file(file_path="backend/main_compiler/parser_module/parser_output.json"):
-    """Load the AST from the given JSON file."""
-    if os.path.exists(file_path):
+    """LOAD THE AST FROM THE GIVEN JSON FILE."""
+    if os.path.exists(file_path):  # CHECK IF FILE EXISTS
         with open(file_path, "r") as f:
-            return json.load(f)
+            return json.load(f)  # LOAD JSON CONTENT AS A PYTHON DICTIONARY
     else:
         print(f"Error: File {file_path} not found.")
         return None
 
-# Function to generate the visual representation of the AST
+# FUNCTION TO GENERATE A VISUAL REPRESENTATION OF THE AST
 def generate_ast_image(ast, output_path="backend/main_compiler/parser_module/visual_ast.png"):
-    """Generate a visual representation of the AST and save as an image."""
+    """GENERATE A VISUAL REPRESENTATION OF THE AST AND SAVE AS AN IMAGE."""
     if ast is None:
         print("AST is empty, cannot generate image.")
         return
     
-    # Use networkx to create a graph
-    G = nx.DiGraph()  # Directed graph for AST
+    # CREATE A DIRECTED GRAPH FOR THE AST
+    G = nx.DiGraph()
 
-    # Recursive function to traverse the AST and add nodes/edges
+    # RECURSIVE FUNCTION TO ADD NODES AND EDGES TO THE GRAPH
     def add_nodes_and_edges(node, parent=None, node_id=None):
-        if not isinstance(node, dict):
+        if not isinstance(node, dict):  # ENSURE NODE IS A DICTIONARY
             return
 
-        # Create a unique identifier for this node
+        # CREATE A UNIQUE IDENTIFIER FOR THIS NODE
         if node_id is None:
             node_id = len(G.nodes())
         
-        # Get meaningful node information
+        # EXTRACT MEANINGFUL INFORMATION FROM THE NODE
         node_type = node.get("type", "Unknown")
         node_value = ""
         
-        # Try to get value or name if available
+        # RETRIEVE VALUE OR NAME IF AVAILABLE
         if "value" in node:
             node_value = f": {node['value']}"
         elif "name" in node:
@@ -49,55 +49,54 @@ def generate_ast_image(ast, output_path="backend/main_compiler/parser_module/vis
         node_label = f"{node_type}{node_value}"
         node_name = f"{node_id}"
 
-        # Add node to the graph
+        # ADD NODE TO THE GRAPH
         G.add_node(node_name, label=node_label)
 
         if parent is not None:
-            G.add_edge(parent, node_name)  # Add edge between parent and current node
+            G.add_edge(parent, node_name)  # CONNECT THE NODE TO ITS PARENT
 
-        # Traverse children nodes if present
+        # TRAVERSE CHILD NODES IF PRESENT
         child_id = len(G.nodes())
         for key, value in node.items():
-            # Skip non-structural properties
+            # IGNORE NON-STRUCTURAL PROPERTIES
             if key in ["type", "value", "name", "position"]:
                 continue
                 
-            if isinstance(value, dict):  # If it's another node
+            if isinstance(value, dict):  # IF CHILD IS A DICTIONARY, RECURSE
                 add_nodes_and_edges(value, node_name, child_id)
                 child_id += 1
-            elif isinstance(value, list):  # If it's a list of nodes
+            elif isinstance(value, list):  # IF CHILD IS A LIST, PROCESS EACH ITEM
                 for child in value:
                     if isinstance(child, dict):
                         add_nodes_and_edges(child, node_name, child_id)
                         child_id += 1
 
-    # Start from the root of the AST
+    # START BUILDING GRAPH FROM THE ROOT NODE
     add_nodes_and_edges(ast)
 
     if not G.nodes():
         print("No nodes were created. Check if the AST structure is as expected.")
         return
 
-    # Draw the graph - use a basic layout instead of graphviz
+    # CREATE FIGURE FOR GRAPH VISUALIZATION
     plt.figure(figsize=(16, 12))
     
-    # Try different layout algorithms that work well for trees
+    # ATTEMPT TO USE DIFFERENT GRAPH LAYOUTS
     try:
-        pos = nx.nx_pydot.pydot_layout(G, prog='dot')  # Try pydot first
+        pos = nx.nx_pydot.pydot_layout(G, prog='dot')  # TRY PYDOT LAYOUT
     except:
         try:
-            pos = nx.drawing.nx_pydot.graphviz_layout(G, prog='dot')  # Try another option
+            pos = nx.drawing.nx_pydot.graphviz_layout(G, prog='dot')  # FALLBACK TO GRAPHVIZ
         except:
-            # Fall back to basic layouts if others fail
             try:
-                pos = nx.drawing.layout.kamada_kawai_layout(G)
+                pos = nx.drawing.layout.kamada_kawai_layout(G)  # USE KAMADA-KAWAI LAYOUT
             except:
-                pos = nx.spring_layout(G, k=0.9, iterations=50)  # Basic spring layout as fallback
+                pos = nx.spring_layout(G, k=0.9, iterations=50)  # USE SPRING LAYOUT AS LAST RESORT
     
-    # Get labels from node attributes
+    # EXTRACT LABELS FOR EACH NODE
     labels = nx.get_node_attributes(G, 'label')
     
-    # Draw nodes and edges
+    # DRAW GRAPH NODES AND EDGES
     nx.draw(G, pos, with_labels=True, labels=labels, 
             node_size=3000, node_color='lightblue', 
             font_size=10, font_weight='bold',
@@ -106,17 +105,20 @@ def generate_ast_image(ast, output_path="backend/main_compiler/parser_module/vis
     
     plt.title("Abstract Syntax Tree Visualization")
     
-    # Save the plot to the specified file
+    # SAVE THE GENERATED GRAPH AS AN IMAGE
     plt.savefig(output_path, format="PNG", dpi=300)
     print(f"AST visualization saved to {output_path}")
 
+# MAIN FUNCTION TO LOAD THE AST AND GENERATE ITS VISUAL REPRESENTATION
 def main():
-    # Load AST from parser_output.json
+    
+    # LOAD AST FROM FILE
     ast = load_ast_from_file()
 
-    # If AST is successfully loaded, generate and save the image
+    # IF AST IS VALID, GENERATE AND SAVE ITS IMAGE
     if ast:
         generate_ast_image(ast)
 
+# ENTRY POINT FOR THE SCRIPT
 if __name__ == "__main__":
     main()

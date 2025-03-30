@@ -43,7 +43,7 @@ Rule 37    date -> DATE_VAL
 Rule 38    date -> IDENTIFIER
 Rule 39    event -> STRING_LITERAL
 Rule 40    event -> IDENTIFIER
-Rule 41    cancel_cmd -> CANCEL ticket_or_tickets FOR customer EVENT event
+Rule 41    cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
 Rule 42    ticket_or_tickets -> TICKET
 Rule 43    ticket_or_tickets -> TICKETS
 Rule 44    list_cmd -> LIST event ON date
@@ -72,7 +72,7 @@ ELSE                 : 14
 EQ                   : 19
 EQUALS               : 8 9 10
 EVENT                : 41
-FOR                  : 32 32 41 46 47 48
+FOR                  : 32 32 41 41 46 47 48
 GE                   : 17
 GT                   : 15
 IDENTIFIER           : 8 9 10 21 34 36 38 40 51 52
@@ -118,7 +118,7 @@ list_cmd             : 27
 message              : 49
 pay_cmd              : 29
 program              : 0
-quantity             : 32
+quantity             : 32 41
 statement            : 2 3
 statement_list       : 1 2 13 14 14
 ticket_or_tickets    : 41
@@ -148,7 +148,7 @@ state 0
     (11) if_stmt -> . if_then_stmt
     (12) if_stmt -> . if_then_else_stmt
     (32) book_cmd -> . BOOK quantity TICKETS FOR customer ON date FOR event
-    (41) cancel_cmd -> . CANCEL ticket_or_tickets FOR customer EVENT event
+    (41) cancel_cmd -> . CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
     (44) list_cmd -> . LIST event ON date
     (45) list_cmd -> . LIST event
     (46) check_cmd -> . CHECK AVAILABILITY FOR event ON date
@@ -237,7 +237,7 @@ state 2
     (11) if_stmt -> . if_then_stmt
     (12) if_stmt -> . if_then_else_stmt
     (32) book_cmd -> . BOOK quantity TICKETS FOR customer ON date FOR event
-    (41) cancel_cmd -> . CANCEL ticket_or_tickets FOR customer EVENT event
+    (41) cancel_cmd -> . CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
     (44) list_cmd -> . LIST event ON date
     (45) list_cmd -> . LIST event
     (46) check_cmd -> . CHECK AVAILABILITY FOR event ON date
@@ -452,14 +452,14 @@ state 19
 
 state 20
 
-    (41) cancel_cmd -> CANCEL . ticket_or_tickets FOR customer EVENT event
-    (42) ticket_or_tickets -> . TICKET
-    (43) ticket_or_tickets -> . TICKETS
+    (41) cancel_cmd -> CANCEL . quantity ticket_or_tickets FOR customer FOR EVENT event
+    (33) quantity -> . NUMBER
+    (34) quantity -> . IDENTIFIER
 
-    TICKET          shift and go to state 38
-    TICKETS         shift and go to state 39
+    NUMBER          shift and go to state 35
+    IDENTIFIER      shift and go to state 36
 
-    ticket_or_tickets              shift and go to state 37
+    quantity                       shift and go to state 37
 
 state 21
 
@@ -468,25 +468,25 @@ state 21
     (39) event -> . STRING_LITERAL
     (40) event -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 41
-    IDENTIFIER      shift and go to state 42
+    STRING_LITERAL  shift and go to state 39
+    IDENTIFIER      shift and go to state 40
 
-    event                          shift and go to state 40
+    event                          shift and go to state 38
 
 state 22
 
     (46) check_cmd -> CHECK . AVAILABILITY FOR event ON date
     (47) check_cmd -> CHECK . PRICE FOR event ON date
 
-    AVAILABILITY    shift and go to state 43
-    PRICE           shift and go to state 44
+    AVAILABILITY    shift and go to state 41
+    PRICE           shift and go to state 42
 
 
 state 23
 
     (48) pay_cmd -> PAY . FOR event customer
 
-    FOR             shift and go to state 45
+    FOR             shift and go to state 43
 
 
 state 24
@@ -495,16 +495,16 @@ state 24
     (50) message -> . STRING_LITERAL
     (51) message -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 47
-    IDENTIFIER      shift and go to state 48
+    STRING_LITERAL  shift and go to state 45
+    IDENTIFIER      shift and go to state 46
 
-    message                        shift and go to state 46
+    message                        shift and go to state 44
 
 state 25
 
     (52) accept_cmd -> ACCEPT . IDENTIFIER
 
-    IDENTIFIER      shift and go to state 49
+    IDENTIFIER      shift and go to state 47
 
 
 state 26
@@ -512,7 +512,7 @@ state 26
     (13) if_then_stmt -> IF . LPAREN condition RPAREN LBRACKET statement_list RBRACKET
     (14) if_then_else_stmt -> IF . LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET
 
-    LPAREN          shift and go to state 50
+    LPAREN          shift and go to state 48
 
 
 state 27
@@ -595,28 +595,28 @@ state 31
 
     (8) declaration_stmt -> STRING_TYPE IDENTIFIER . EQUALS STRING_LITERAL
 
-    EQUALS          shift and go to state 51
+    EQUALS          shift and go to state 49
 
 
 state 32
 
     (9) declaration_stmt -> INT_TYPE IDENTIFIER . EQUALS NUMBER
 
-    EQUALS          shift and go to state 52
+    EQUALS          shift and go to state 50
 
 
 state 33
 
     (10) declaration_stmt -> DATE_TYPE IDENTIFIER . EQUALS DATE_VAL
 
-    EQUALS          shift and go to state 53
+    EQUALS          shift and go to state 51
 
 
 state 34
 
     (32) book_cmd -> BOOK quantity . TICKETS FOR customer ON date FOR event
 
-    TICKETS         shift and go to state 54
+    TICKETS         shift and go to state 52
 
 
 state 35
@@ -624,6 +624,7 @@ state 35
     (33) quantity -> NUMBER .
 
     TICKETS         reduce using rule 33 (quantity -> NUMBER .)
+    TICKET          reduce using rule 33 (quantity -> NUMBER .)
 
 
 state 36
@@ -631,30 +632,21 @@ state 36
     (34) quantity -> IDENTIFIER .
 
     TICKETS         reduce using rule 34 (quantity -> IDENTIFIER .)
+    TICKET          reduce using rule 34 (quantity -> IDENTIFIER .)
 
 
 state 37
 
-    (41) cancel_cmd -> CANCEL ticket_or_tickets . FOR customer EVENT event
+    (41) cancel_cmd -> CANCEL quantity . ticket_or_tickets FOR customer FOR EVENT event
+    (42) ticket_or_tickets -> . TICKET
+    (43) ticket_or_tickets -> . TICKETS
 
-    FOR             shift and go to state 55
+    TICKET          shift and go to state 54
+    TICKETS         shift and go to state 55
 
+    ticket_or_tickets              shift and go to state 53
 
 state 38
-
-    (42) ticket_or_tickets -> TICKET .
-
-    FOR             reduce using rule 42 (ticket_or_tickets -> TICKET .)
-
-
-state 39
-
-    (43) ticket_or_tickets -> TICKETS .
-
-    FOR             reduce using rule 43 (ticket_or_tickets -> TICKETS .)
-
-
-state 40
 
     (44) list_cmd -> LIST event . ON date
     (45) list_cmd -> LIST event .
@@ -663,7 +655,7 @@ state 40
     DOT             reduce using rule 45 (list_cmd -> LIST event .)
 
 
-state 41
+state 39
 
     (39) event -> STRING_LITERAL .
 
@@ -673,7 +665,7 @@ state 41
     IDENTIFIER      reduce using rule 39 (event -> STRING_LITERAL .)
 
 
-state 42
+state 40
 
     (40) event -> IDENTIFIER .
 
@@ -683,60 +675,60 @@ state 42
     IDENTIFIER      reduce using rule 40 (event -> IDENTIFIER .)
 
 
-state 43
+state 41
 
     (46) check_cmd -> CHECK AVAILABILITY . FOR event ON date
 
     FOR             shift and go to state 57
 
 
-state 44
+state 42
 
     (47) check_cmd -> CHECK PRICE . FOR event ON date
 
     FOR             shift and go to state 58
 
 
-state 45
+state 43
 
     (48) pay_cmd -> PAY FOR . event customer
     (39) event -> . STRING_LITERAL
     (40) event -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 41
-    IDENTIFIER      shift and go to state 42
+    STRING_LITERAL  shift and go to state 39
+    IDENTIFIER      shift and go to state 40
 
     event                          shift and go to state 59
 
-state 46
+state 44
 
     (49) display_cmd -> DISPLAY message .
 
     DOT             reduce using rule 49 (display_cmd -> DISPLAY message .)
 
 
-state 47
+state 45
 
     (50) message -> STRING_LITERAL .
 
     DOT             reduce using rule 50 (message -> STRING_LITERAL .)
 
 
-state 48
+state 46
 
     (51) message -> IDENTIFIER .
 
     DOT             reduce using rule 51 (message -> IDENTIFIER .)
 
 
-state 49
+state 47
 
     (52) accept_cmd -> ACCEPT IDENTIFIER .
 
     DOT             reduce using rule 52 (accept_cmd -> ACCEPT IDENTIFIER .)
 
 
-state 50
+state 48
 
     (13) if_then_stmt -> IF LPAREN . condition RPAREN LBRACKET statement_list RBRACKET
     (14) if_then_else_stmt -> IF LPAREN . condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET
@@ -759,44 +751,54 @@ state 50
     condition                      shift and go to state 60
     expression                     shift and go to state 61
 
-state 51
+state 49
 
     (8) declaration_stmt -> STRING_TYPE IDENTIFIER EQUALS . STRING_LITERAL
 
     STRING_LITERAL  shift and go to state 66
 
 
-state 52
+state 50
 
     (9) declaration_stmt -> INT_TYPE IDENTIFIER EQUALS . NUMBER
 
     NUMBER          shift and go to state 67
 
 
-state 53
+state 51
 
     (10) declaration_stmt -> DATE_TYPE IDENTIFIER EQUALS . DATE_VAL
 
     DATE_VAL        shift and go to state 68
 
 
-state 54
+state 52
 
     (32) book_cmd -> BOOK quantity TICKETS . FOR customer ON date FOR event
 
     FOR             shift and go to state 69
 
 
+state 53
+
+    (41) cancel_cmd -> CANCEL quantity ticket_or_tickets . FOR customer FOR EVENT event
+
+    FOR             shift and go to state 70
+
+
+state 54
+
+    (42) ticket_or_tickets -> TICKET .
+
+    FOR             reduce using rule 42 (ticket_or_tickets -> TICKET .)
+
+
 state 55
 
-    (41) cancel_cmd -> CANCEL ticket_or_tickets FOR . customer EVENT event
-    (35) customer -> . STRING_LITERAL
-    (36) customer -> . IDENTIFIER
+    (43) ticket_or_tickets -> TICKETS .
 
-    STRING_LITERAL  shift and go to state 71
-    IDENTIFIER      shift and go to state 72
+    FOR             reduce using rule 43 (ticket_or_tickets -> TICKETS .)
 
-    customer                       shift and go to state 70
 
 state 56
 
@@ -804,10 +806,10 @@ state 56
     (37) date -> . DATE_VAL
     (38) date -> . IDENTIFIER
 
-    DATE_VAL        shift and go to state 74
-    IDENTIFIER      shift and go to state 75
+    DATE_VAL        shift and go to state 72
+    IDENTIFIER      shift and go to state 73
 
-    date                           shift and go to state 73
+    date                           shift and go to state 71
 
 state 57
 
@@ -815,10 +817,10 @@ state 57
     (39) event -> . STRING_LITERAL
     (40) event -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 41
-    IDENTIFIER      shift and go to state 42
+    STRING_LITERAL  shift and go to state 39
+    IDENTIFIER      shift and go to state 40
 
-    event                          shift and go to state 76
+    event                          shift and go to state 74
 
 state 58
 
@@ -826,10 +828,10 @@ state 58
     (39) event -> . STRING_LITERAL
     (40) event -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 41
-    IDENTIFIER      shift and go to state 42
+    STRING_LITERAL  shift and go to state 39
+    IDENTIFIER      shift and go to state 40
 
-    event                          shift and go to state 77
+    event                          shift and go to state 75
 
 state 59
 
@@ -837,10 +839,10 @@ state 59
     (35) customer -> . STRING_LITERAL
     (36) customer -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 71
-    IDENTIFIER      shift and go to state 72
+    STRING_LITERAL  shift and go to state 77
+    IDENTIFIER      shift and go to state 78
 
-    customer                       shift and go to state 78
+    customer                       shift and go to state 76
 
 state 60
 
@@ -946,44 +948,30 @@ state 69
     (35) customer -> . STRING_LITERAL
     (36) customer -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 71
-    IDENTIFIER      shift and go to state 72
+    STRING_LITERAL  shift and go to state 77
+    IDENTIFIER      shift and go to state 78
 
     customer                       shift and go to state 86
 
 state 70
 
-    (41) cancel_cmd -> CANCEL ticket_or_tickets FOR customer . EVENT event
+    (41) cancel_cmd -> CANCEL quantity ticket_or_tickets FOR . customer FOR EVENT event
+    (35) customer -> . STRING_LITERAL
+    (36) customer -> . IDENTIFIER
 
-    EVENT           shift and go to state 87
+    STRING_LITERAL  shift and go to state 77
+    IDENTIFIER      shift and go to state 78
 
+    customer                       shift and go to state 87
 
 state 71
-
-    (35) customer -> STRING_LITERAL .
-
-    EVENT           reduce using rule 35 (customer -> STRING_LITERAL .)
-    DOT             reduce using rule 35 (customer -> STRING_LITERAL .)
-    ON              reduce using rule 35 (customer -> STRING_LITERAL .)
-
-
-state 72
-
-    (36) customer -> IDENTIFIER .
-
-    EVENT           reduce using rule 36 (customer -> IDENTIFIER .)
-    DOT             reduce using rule 36 (customer -> IDENTIFIER .)
-    ON              reduce using rule 36 (customer -> IDENTIFIER .)
-
-
-state 73
 
     (44) list_cmd -> LIST event ON date .
 
     DOT             reduce using rule 44 (list_cmd -> LIST event ON date .)
 
 
-state 74
+state 72
 
     (37) date -> DATE_VAL .
 
@@ -991,7 +979,7 @@ state 74
     FOR             reduce using rule 37 (date -> DATE_VAL .)
 
 
-state 75
+state 73
 
     (38) date -> IDENTIFIER .
 
@@ -999,25 +987,43 @@ state 75
     FOR             reduce using rule 38 (date -> IDENTIFIER .)
 
 
-state 76
+state 74
 
     (46) check_cmd -> CHECK AVAILABILITY FOR event . ON date
 
     ON              shift and go to state 88
 
 
-state 77
+state 75
 
     (47) check_cmd -> CHECK PRICE FOR event . ON date
 
     ON              shift and go to state 89
 
 
-state 78
+state 76
 
     (48) pay_cmd -> PAY FOR event customer .
 
     DOT             reduce using rule 48 (pay_cmd -> PAY FOR event customer .)
+
+
+state 77
+
+    (35) customer -> STRING_LITERAL .
+
+    DOT             reduce using rule 35 (customer -> STRING_LITERAL .)
+    ON              reduce using rule 35 (customer -> STRING_LITERAL .)
+    FOR             reduce using rule 35 (customer -> STRING_LITERAL .)
+
+
+state 78
+
+    (36) customer -> IDENTIFIER .
+
+    DOT             reduce using rule 36 (customer -> IDENTIFIER .)
+    ON              reduce using rule 36 (customer -> IDENTIFIER .)
+    FOR             reduce using rule 36 (customer -> IDENTIFIER .)
 
 
 state 79
@@ -1127,14 +1133,10 @@ state 86
 
 state 87
 
-    (41) cancel_cmd -> CANCEL ticket_or_tickets FOR customer EVENT . event
-    (39) event -> . STRING_LITERAL
-    (40) event -> . IDENTIFIER
+    (41) cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer . FOR EVENT event
 
-    STRING_LITERAL  shift and go to state 41
-    IDENTIFIER      shift and go to state 42
+    FOR             shift and go to state 98
 
-    event                          shift and go to state 98
 
 state 88
 
@@ -1142,8 +1144,8 @@ state 88
     (37) date -> . DATE_VAL
     (38) date -> . IDENTIFIER
 
-    DATE_VAL        shift and go to state 74
-    IDENTIFIER      shift and go to state 75
+    DATE_VAL        shift and go to state 72
+    IDENTIFIER      shift and go to state 73
 
     date                           shift and go to state 99
 
@@ -1153,8 +1155,8 @@ state 89
     (37) date -> . DATE_VAL
     (38) date -> . IDENTIFIER
 
-    DATE_VAL        shift and go to state 74
-    IDENTIFIER      shift and go to state 75
+    DATE_VAL        shift and go to state 72
+    IDENTIFIER      shift and go to state 73
 
     date                           shift and go to state 100
 
@@ -1181,7 +1183,7 @@ state 90
     (11) if_stmt -> . if_then_stmt
     (12) if_stmt -> . if_then_else_stmt
     (32) book_cmd -> . BOOK quantity TICKETS FOR customer ON date FOR event
-    (41) cancel_cmd -> . CANCEL ticket_or_tickets FOR customer EVENT event
+    (41) cancel_cmd -> . CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
     (44) list_cmd -> . LIST event ON date
     (45) list_cmd -> . LIST event
     (46) check_cmd -> . CHECK AVAILABILITY FOR event ON date
@@ -1291,16 +1293,16 @@ state 97
     (37) date -> . DATE_VAL
     (38) date -> . IDENTIFIER
 
-    DATE_VAL        shift and go to state 74
-    IDENTIFIER      shift and go to state 75
+    DATE_VAL        shift and go to state 72
+    IDENTIFIER      shift and go to state 73
 
     date                           shift and go to state 102
 
 state 98
 
-    (41) cancel_cmd -> CANCEL ticket_or_tickets FOR customer EVENT event .
+    (41) cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer FOR . EVENT event
 
-    DOT             reduce using rule 41 (cancel_cmd -> CANCEL ticket_or_tickets FOR customer EVENT event .)
+    EVENT           shift and go to state 103
 
 
 state 99
@@ -1338,7 +1340,7 @@ state 101
     (11) if_stmt -> . if_then_stmt
     (12) if_stmt -> . if_then_else_stmt
     (32) book_cmd -> . BOOK quantity TICKETS FOR customer ON date FOR event
-    (41) cancel_cmd -> . CANCEL ticket_or_tickets FOR customer EVENT event
+    (41) cancel_cmd -> . CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
     (44) list_cmd -> . LIST event ON date
     (45) list_cmd -> . LIST event
     (46) check_cmd -> . CHECK AVAILABILITY FOR event ON date
@@ -1349,7 +1351,7 @@ state 101
     (13) if_then_stmt -> . IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET
     (14) if_then_else_stmt -> . IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET
 
-    RBRACKET        shift and go to state 103
+    RBRACKET        shift and go to state 104
     STRING_TYPE     shift and go to state 14
     INT_TYPE        shift and go to state 15
     DATE_TYPE       shift and go to state 16
@@ -1380,10 +1382,21 @@ state 102
 
     (32) book_cmd -> BOOK quantity TICKETS FOR customer ON date . FOR event
 
-    FOR             shift and go to state 104
+    FOR             shift and go to state 105
 
 
 state 103
+
+    (41) cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer FOR EVENT . event
+    (39) event -> . STRING_LITERAL
+    (40) event -> . IDENTIFIER
+
+    STRING_LITERAL  shift and go to state 39
+    IDENTIFIER      shift and go to state 40
+
+    event                          shift and go to state 106
+
+state 104
 
     (13) if_then_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET .
     (14) if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET . ELSE LBRACKET statement_list RBRACKET
@@ -1401,35 +1414,42 @@ state 103
     IF              reduce using rule 13 (if_then_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET .)
     $end            reduce using rule 13 (if_then_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET .)
     RBRACKET        reduce using rule 13 (if_then_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET .)
-    ELSE            shift and go to state 105
+    ELSE            shift and go to state 107
 
 
-state 104
+state 105
 
     (32) book_cmd -> BOOK quantity TICKETS FOR customer ON date FOR . event
     (39) event -> . STRING_LITERAL
     (40) event -> . IDENTIFIER
 
-    STRING_LITERAL  shift and go to state 41
-    IDENTIFIER      shift and go to state 42
+    STRING_LITERAL  shift and go to state 39
+    IDENTIFIER      shift and go to state 40
 
-    event                          shift and go to state 106
+    event                          shift and go to state 108
 
-state 105
+state 106
+
+    (41) cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event .
+
+    DOT             reduce using rule 41 (cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event .)
+
+
+state 107
 
     (14) if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE . LBRACKET statement_list RBRACKET
 
-    LBRACKET        shift and go to state 107
+    LBRACKET        shift and go to state 109
 
 
-state 106
+state 108
 
     (32) book_cmd -> BOOK quantity TICKETS FOR customer ON date FOR event .
 
     DOT             reduce using rule 32 (book_cmd -> BOOK quantity TICKETS FOR customer ON date FOR event .)
 
 
-state 107
+state 109
 
     (14) if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET . statement_list RBRACKET
     (2) statement_list -> . statement_list statement
@@ -1451,7 +1471,7 @@ state 107
     (11) if_stmt -> . if_then_stmt
     (12) if_stmt -> . if_then_else_stmt
     (32) book_cmd -> . BOOK quantity TICKETS FOR customer ON date FOR event
-    (41) cancel_cmd -> . CANCEL ticket_or_tickets FOR customer EVENT event
+    (41) cancel_cmd -> . CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
     (44) list_cmd -> . LIST event ON date
     (45) list_cmd -> . LIST event
     (46) check_cmd -> . CHECK AVAILABILITY FOR event ON date
@@ -1498,7 +1518,7 @@ state 107
   ! ACCEPT          [ reduce using rule 4 (statement_list -> .) ]
   ! IF              [ reduce using rule 4 (statement_list -> .) ]
 
-    statement_list                 shift and go to state 108
+    statement_list                 shift and go to state 110
     statement                      shift and go to state 3
     command_stmt                   shift and go to state 4
     declaration_stmt               shift and go to state 5
@@ -1513,7 +1533,7 @@ state 107
     if_then_stmt                   shift and go to state 17
     if_then_else_stmt              shift and go to state 18
 
-state 108
+state 110
 
     (14) if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list . RBRACKET
     (2) statement_list -> statement_list . statement
@@ -1533,7 +1553,7 @@ state 108
     (11) if_stmt -> . if_then_stmt
     (12) if_stmt -> . if_then_else_stmt
     (32) book_cmd -> . BOOK quantity TICKETS FOR customer ON date FOR event
-    (41) cancel_cmd -> . CANCEL ticket_or_tickets FOR customer EVENT event
+    (41) cancel_cmd -> . CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event
     (44) list_cmd -> . LIST event ON date
     (45) list_cmd -> . LIST event
     (46) check_cmd -> . CHECK AVAILABILITY FOR event ON date
@@ -1544,7 +1564,7 @@ state 108
     (13) if_then_stmt -> . IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET
     (14) if_then_else_stmt -> . IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET
 
-    RBRACKET        shift and go to state 109
+    RBRACKET        shift and go to state 111
     STRING_TYPE     shift and go to state 14
     INT_TYPE        shift and go to state 15
     DATE_TYPE       shift and go to state 16
@@ -1571,7 +1591,7 @@ state 108
     if_then_stmt                   shift and go to state 17
     if_then_else_stmt              shift and go to state 18
 
-state 109
+state 111
 
     (14) if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET .
 
@@ -1614,14 +1634,14 @@ WARNING: shift/reduce conflict for PAY in state 90 resolved as shift
 WARNING: shift/reduce conflict for DISPLAY in state 90 resolved as shift
 WARNING: shift/reduce conflict for ACCEPT in state 90 resolved as shift
 WARNING: shift/reduce conflict for IF in state 90 resolved as shift
-WARNING: shift/reduce conflict for STRING_TYPE in state 107 resolved as shift
-WARNING: shift/reduce conflict for INT_TYPE in state 107 resolved as shift
-WARNING: shift/reduce conflict for DATE_TYPE in state 107 resolved as shift
-WARNING: shift/reduce conflict for BOOK in state 107 resolved as shift
-WARNING: shift/reduce conflict for CANCEL in state 107 resolved as shift
-WARNING: shift/reduce conflict for LIST in state 107 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 107 resolved as shift
-WARNING: shift/reduce conflict for PAY in state 107 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 107 resolved as shift
-WARNING: shift/reduce conflict for ACCEPT in state 107 resolved as shift
-WARNING: shift/reduce conflict for IF in state 107 resolved as shift
+WARNING: shift/reduce conflict for STRING_TYPE in state 109 resolved as shift
+WARNING: shift/reduce conflict for INT_TYPE in state 109 resolved as shift
+WARNING: shift/reduce conflict for DATE_TYPE in state 109 resolved as shift
+WARNING: shift/reduce conflict for BOOK in state 109 resolved as shift
+WARNING: shift/reduce conflict for CANCEL in state 109 resolved as shift
+WARNING: shift/reduce conflict for LIST in state 109 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 109 resolved as shift
+WARNING: shift/reduce conflict for PAY in state 109 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 109 resolved as shift
+WARNING: shift/reduce conflict for ACCEPT in state 109 resolved as shift
+WARNING: shift/reduce conflict for IF in state 109 resolved as shift

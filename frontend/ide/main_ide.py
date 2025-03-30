@@ -483,16 +483,19 @@ class APBLIDE:
                                 print("Code generation failed.\n")
                                 self.execution_insights.add_insight("Code Generation Error", 
                                     None, "Failed to generate Python code from the intermediate representation.")
+                                
                         except Exception as e:
                             print(f"Intermediate code generation error: {e}\n\n")
                             self.execution_insights.add_insight("Intermediate Code Generation Error", 
                                 None, f"Error during intermediate code generation: {e}")
                             return
+                        
                 except Exception as e:
                     print(f"Semantic analysis error: {e}\n\n")
                     self.execution_insights.add_insight("Semantic Analysis Error", 
                         None, f"Error during semantic analysis: {e}")
                     return
+                
         except Exception as e:
             print(f"Parsing error found: {e}\n\n")
             self.execution_insights.add_insight("Parsing Error", 

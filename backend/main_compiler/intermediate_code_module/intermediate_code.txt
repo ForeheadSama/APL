@@ -1,1 +1,2 @@
-DISPLAY Hello World
+CALL book_tickets(2, "Jane Doe", "April 27, 2025", "Playstation: The Concert")
+CALL cancel_booking(1, "Jane Doe", "Playstation: The Concert")

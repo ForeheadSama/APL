@@ -3,10 +3,55 @@
     "lineno": 1,
     "statements": [
         {
-            "type": "display_command",
+            "type": "book_command",
             "lineno": 1,
-            "message": "Hello World"
+            "quantity": {
+                "type": "literal",
+                "lineno": 1,
+                "value": 2,
+                "lit_type": "int"
+            },
+            "customer": {
+                "type": "literal",
+                "lineno": 1,
+                "value": "Jane Doe",
+                "lit_type": "string"
+            },
+            "date": {
+                "type": "literal",
+                "lineno": 1,
+                "value": "April 27, 2025",
+                "lit_type": "date"
+            },
+            "event": {
+                "type": "literal",
+                "lineno": 1,
+                "value": "Playstation: The Concert",
+                "lit_type": "string"
+            }
+        },
+        {
+            "type": "cancel_command",
+            "lineno": 3,
+            "quantity": {
+                "type": "literal",
+                "lineno": 3,
+                "value": 1,
+                "lit_type": "int"
+            },
+            "customer": {
+                "type": "literal",
+                "lineno": 3,
+                "value": "Jane Doe",
+                "lit_type": "string"
+            },
+            "event": {
+                "type": "literal",
+                "lineno": 3,
+                "value": "Playstation: The Concert",
+                "lit_type": "string"
+            }
         }
     ],
-    "input_handler": "<backend.main_compiler.parser_module.user_input_handler.UserInputHandler object at 0x000001D341F21D30>"
+    "input_handler": "<backend.main_compiler.parser_module.user_input_handler.UserInputHandler object at 0x000001E92DDE6C70>"
 }

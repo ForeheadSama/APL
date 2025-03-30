@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ACCEPT AVAILABILITY BOOK CANCEL CHECK DATE_TYPE DATE_VAL DISPLAY DOT ELSE EQ EQUALS EVENT FOR GE GT IDENTIFIER IF INT_TYPE LBRACKET LE LIST LPAREN LT NE NUMBER ON PAY PRICE RBRACKET RPAREN STRING_LITERAL STRING_TYPE TICKET TICKETSprogram : statement_liststatement_list : statement_list statement\n                      | statement\n                      | statement : command_stmt EOL\n                 | declaration_stmt EOL\n                 | if_stmtdeclaration_stmt : STRING_TYPE IDENTIFIER EQUALS STRING_LITERAL\n                        | INT_TYPE IDENTIFIER EQUALS NUMBER\n                        | DATE_TYPE IDENTIFIER EQUALS DATE_VALif_stmt : if_then_stmt\n               | if_then_else_stmtif_then_stmt : IF LPAREN condition RPAREN LBRACKET statement_list RBRACKETif_then_else_stmt : IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKETcondition : expression GT expression\n                 | expression LT expression\n                 | expression GE expression\n                 | expression LE expression\n                 | expression EQ expression\n                 | expression NE expressionexpression : IDENTIFIER\n                 | NUMBER\n                 | STRING_LITERAL\n                 | DATE_VALcommand_stmt : book_cmd\n                     | cancel_cmd\n                     | list_cmd\n                     | check_cmd\n                     | pay_cmd\n                     | display_cmd\n                     | accept_cmdbook_cmd : BOOK quantity TICKETS FOR customer ON date FOR eventquantity : NUMBER\n                | IDENTIFIERcustomer : STRING_LITERAL\n                | IDENTIFIERdate : DATE_VAL\n            | IDENTIFIERevent : STRING_LITERAL\n             | IDENTIFIERcancel_cmd : CANCEL ticket_or_tickets FOR customer EVENT eventticket_or_tickets : TICKET\n                          | TICKETSlist_cmd : LIST event ON date\n                  | LIST eventcheck_cmd : CHECK AVAILABILITY FOR event ON date\n                  | CHECK PRICE FOR event ON datepay_cmd : PAY FOR event customerdisplay_cmd : DISPLAY messagemessage : STRING_LITERAL\n               | IDENTIFIERaccept_cmd : ACCEPT IDENTIFIEREOL : DOT'
+_lr_signature = 'ACCEPT AVAILABILITY BOOK CANCEL CHECK DATE_TYPE DATE_VAL DISPLAY DOT ELSE EQ EQUALS EVENT FOR GE GT IDENTIFIER IF INT_TYPE LBRACKET LE LIST LPAREN LT NE NUMBER ON PAY PRICE RBRACKET RPAREN STRING_LITERAL STRING_TYPE TICKET TICKETSprogram : statement_liststatement_list : statement_list statement\n                      | statement\n                      | statement : command_stmt EOL\n                 | declaration_stmt EOL\n                 | if_stmtdeclaration_stmt : STRING_TYPE IDENTIFIER EQUALS STRING_LITERAL\n                        | INT_TYPE IDENTIFIER EQUALS NUMBER\n                        | DATE_TYPE IDENTIFIER EQUALS DATE_VALif_stmt : if_then_stmt\n               | if_then_else_stmtif_then_stmt : IF LPAREN condition RPAREN LBRACKET statement_list RBRACKETif_then_else_stmt : IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKETcondition : expression GT expression\n                 | expression LT expression\n                 | expression GE expression\n                 | expression LE expression\n                 | expression EQ expression\n                 | expression NE expressionexpression : IDENTIFIER\n                 | NUMBER\n                 | STRING_LITERAL\n                 | DATE_VALcommand_stmt : book_cmd\n                     | cancel_cmd\n                     | list_cmd\n                     | check_cmd\n                     | pay_cmd\n                     | display_cmd\n                     | accept_cmdbook_cmd : BOOK quantity TICKETS FOR customer ON date FOR eventquantity : NUMBER\n                | IDENTIFIERcustomer : STRING_LITERAL\n                | IDENTIFIERdate : DATE_VAL\n            | IDENTIFIERevent : STRING_LITERAL\n             | IDENTIFIERcancel_cmd : CANCEL quantity ticket_or_tickets FOR customer FOR EVENT eventticket_or_tickets : TICKET\n                          | TICKETSlist_cmd : LIST event ON date\n                  | LIST eventcheck_cmd : CHECK AVAILABILITY FOR event ON date\n                  | CHECK PRICE FOR event ON datepay_cmd : PAY FOR event customerdisplay_cmd : DISPLAY messagemessage : STRING_LITERAL\n               | IDENTIFIERaccept_cmd : ACCEPT IDENTIFIEREOL : DOT'
     
-_lr_action_items = {'STRING_TYPE':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[14,14,-3,-7,-11,-12,-2,-5,-53,-6,14,14,-13,14,14,-14,]),'INT_TYPE':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[15,15,-3,-7,-11,-12,-2,-5,-53,-6,15,15,-13,15,15,-14,]),'DATE_TYPE':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[16,16,-3,-7,-11,-12,-2,-5,-53,-6,16,16,-13,16,16,-14,]),'BOOK':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[19,19,-3,-7,-11,-12,-2,-5,-53,-6,19,19,-13,19,19,-14,]),'CANCEL':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[20,20,-3,-7,-11,-12,-2,-5,-53,-6,20,20,-13,20,20,-14,]),'LIST':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[21,21,-3,-7,-11,-12,-2,-5,-53,-6,21,21,-13,21,21,-14,]),'CHECK':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[22,22,-3,-7,-11,-12,-2,-5,-53,-6,22,22,-13,22,22,-14,]),'PAY':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[23,23,-3,-7,-11,-12,-2,-5,-53,-6,23,23,-13,23,23,-14,]),'DISPLAY':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[24,24,-3,-7,-11,-12,-2,-5,-53,-6,24,24,-13,24,24,-14,]),'ACCEPT':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[25,25,-3,-7,-11,-12,-2,-5,-53,-6,25,25,-13,25,25,-14,]),'IF':([0,2,3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[26,26,-3,-7,-11,-12,-2,-5,-53,-6,26,26,-13,26,26,-14,]),'$end':([0,1,2,3,6,17,18,27,28,29,30,103,109,],[-4,0,-1,-3,-7,-11,-12,-2,-5,-53,-6,-13,-14,]),'RBRACKET':([3,6,17,18,27,28,29,30,90,101,103,107,108,109,],[-3,-7,-11,-12,-2,-5,-53,-6,-4,103,-13,-4,109,-14,]),'DOT':([4,5,7,8,9,10,11,12,13,40,41,42,46,47,48,49,66,67,68,71,72,73,74,75,78,98,99,100,106,],[29,29,-25,-26,-27,-28,-29,-30,-31,-45,-39,-40,-49,-50,-51,-52,-8,-9,-10,-35,-36,-44,-37,-38,-48,-41,-46,-47,-32,]),'IDENTIFIER':([14,15,16,19,21,24,25,41,42,45,50,55,56,57,58,59,69,80,81,82,83,84,85,87,88,89,97,104,],[31,32,33,36,42,48,49,-39,-40,42,62,72,75,42,42,72,72,62,62,62,62,62,62,42,75,75,75,42,]),'NUMBER':([19,50,52,80,81,82,83,84,85,],[35,63,67,63,63,63,63,63,63,]),'TICKET':([20,],[38,]),'TICKETS':([20,34,35,36,],[39,54,-33,-34,]),'STRING_LITERAL':([21,24,41,42,45,50,51,55,57,58,59,69,80,81,82,83,84,85,87,104,],[41,47,-39,-40,41,64,66,71,41,41,71,71,64,64,64,64,64,64,41,41,]),'AVAILABILITY':([22,],[43,]),'PRICE':([22,],[44,]),'FOR':([23,37,38,39,43,44,54,74,75,102,],[45,55,-42,-43,57,58,69,-37,-38,104,]),'LPAREN':([26,],[50,]),'EQUALS':([31,32,33,],[51,52,53,]),'ON':([40,41,42,71,72,76,77,86,],[56,-39,-40,-35,-36,88,89,97,]),'DATE_VAL':([50,53,56,80,81,82,83,84,85,88,89,97,],[65,68,74,65,65,65,65,65,65,74,74,74,]),'RPAREN':([60,62,63,64,65,91,92,93,94,95,96,],[79,-21,-22,-23,-24,-15,-16,-17,-18,-19,-20,]),'GT':([61,62,63,64,65,],[80,-21,-22,-23,-24,]),'LT':([61,62,63,64,65,],[81,-21,-22,-23,-24,]),'GE':([61,62,63,64,65,],[82,-21,-22,-23,-24,]),'LE':([61,62,63,64,65,],[83,-21,-22,-23,-24,]),'EQ':([61,62,63,64,65,],[84,-21,-22,-23,-24,]),'NE':([61,62,63,64,65,],[85,-21,-22,-23,-24,]),'EVENT':([70,71,72,],[87,-35,-36,]),'LBRACKET':([79,105,],[90,107,]),'ELSE':([103,],[105,]),}
+_lr_action_items = {'STRING_TYPE':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[14,14,-3,-7,-11,-12,-2,-5,-53,-6,14,14,-13,14,14,-14,]),'INT_TYPE':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[15,15,-3,-7,-11,-12,-2,-5,-53,-6,15,15,-13,15,15,-14,]),'DATE_TYPE':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[16,16,-3,-7,-11,-12,-2,-5,-53,-6,16,16,-13,16,16,-14,]),'BOOK':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[19,19,-3,-7,-11,-12,-2,-5,-53,-6,19,19,-13,19,19,-14,]),'CANCEL':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[20,20,-3,-7,-11,-12,-2,-5,-53,-6,20,20,-13,20,20,-14,]),'LIST':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[21,21,-3,-7,-11,-12,-2,-5,-53,-6,21,21,-13,21,21,-14,]),'CHECK':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[22,22,-3,-7,-11,-12,-2,-5,-53,-6,22,22,-13,22,22,-14,]),'PAY':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[23,23,-3,-7,-11,-12,-2,-5,-53,-6,23,23,-13,23,23,-14,]),'DISPLAY':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[24,24,-3,-7,-11,-12,-2,-5,-53,-6,24,24,-13,24,24,-14,]),'ACCEPT':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[25,25,-3,-7,-11,-12,-2,-5,-53,-6,25,25,-13,25,25,-14,]),'IF':([0,2,3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[26,26,-3,-7,-11,-12,-2,-5,-53,-6,26,26,-13,26,26,-14,]),'$end':([0,1,2,3,6,17,18,27,28,29,30,104,111,],[-4,0,-1,-3,-7,-11,-12,-2,-5,-53,-6,-13,-14,]),'RBRACKET':([3,6,17,18,27,28,29,30,90,101,104,109,110,111,],[-3,-7,-11,-12,-2,-5,-53,-6,-4,104,-13,-4,111,-14,]),'DOT':([4,5,7,8,9,10,11,12,13,38,39,40,44,45,46,47,66,67,68,71,72,73,76,77,78,99,100,106,108,],[29,29,-25,-26,-27,-28,-29,-30,-31,-45,-39,-40,-49,-50,-51,-52,-8,-9,-10,-44,-37,-38,-48,-35,-36,-46,-47,-41,-32,]),'IDENTIFIER':([14,15,16,19,20,21,24,25,39,40,43,48,56,57,58,59,69,70,80,81,82,83,84,85,88,89,97,103,105,],[31,32,33,36,36,40,46,47,-39,-40,40,62,73,40,40,78,78,78,62,62,62,62,62,62,73,73,73,40,40,]),'NUMBER':([19,20,48,50,80,81,82,83,84,85,],[35,35,63,67,63,63,63,63,63,63,]),'STRING_LITERAL':([21,24,39,40,43,48,49,57,58,59,69,70,80,81,82,83,84,85,103,105,],[39,45,-39,-40,39,64,66,39,39,77,77,77,64,64,64,64,64,64,39,39,]),'AVAILABILITY':([22,],[41,]),'PRICE':([22,],[42,]),'FOR':([23,41,42,52,53,54,55,72,73,77,78,87,102,],[43,57,58,69,70,-42,-43,-37,-38,-35,-36,98,105,]),'LPAREN':([26,],[48,]),'EQUALS':([31,32,33,],[49,50,51,]),'TICKETS':([34,35,36,37,],[52,-33,-34,55,]),'TICKET':([35,36,37,],[-33,-34,54,]),'ON':([38,39,40,74,75,77,78,86,],[56,-39,-40,88,89,-35,-36,97,]),'DATE_VAL':([48,51,56,80,81,82,83,84,85,88,89,97,],[65,68,72,65,65,65,65,65,65,72,72,72,]),'RPAREN':([60,62,63,64,65,91,92,93,94,95,96,],[79,-21,-22,-23,-24,-15,-16,-17,-18,-19,-20,]),'GT':([61,62,63,64,65,],[80,-21,-22,-23,-24,]),'LT':([61,62,63,64,65,],[81,-21,-22,-23,-24,]),'GE':([61,62,63,64,65,],[82,-21,-22,-23,-24,]),'LE':([61,62,63,64,65,],[83,-21,-22,-23,-24,]),'EQ':([61,62,63,64,65,],[84,-21,-22,-23,-24,]),'NE':([61,62,63,64,65,],[85,-21,-22,-23,-24,]),'LBRACKET':([79,107,],[90,109,]),'EVENT':([98,],[103,]),'ELSE':([104,],[107,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,],[1,]),'statement_list':([0,90,107,],[2,101,108,]),'statement':([0,2,90,101,107,108,],[3,27,3,27,3,27,]),'command_stmt':([0,2,90,101,107,108,],[4,4,4,4,4,4,]),'declaration_stmt':([0,2,90,101,107,108,],[5,5,5,5,5,5,]),'if_stmt':([0,2,90,101,107,108,],[6,6,6,6,6,6,]),'book_cmd':([0,2,90,101,107,108,],[7,7,7,7,7,7,]),'cancel_cmd':([0,2,90,101,107,108,],[8,8,8,8,8,8,]),'list_cmd':([0,2,90,101,107,108,],[9,9,9,9,9,9,]),'check_cmd':([0,2,90,101,107,108,],[10,10,10,10,10,10,]),'pay_cmd':([0,2,90,101,107,108,],[11,11,11,11,11,11,]),'display_cmd':([0,2,90,101,107,108,],[12,12,12,12,12,12,]),'accept_cmd':([0,2,90,101,107,108,],[13,13,13,13,13,13,]),'if_then_stmt':([0,2,90,101,107,108,],[17,17,17,17,17,17,]),'if_then_else_stmt':([0,2,90,101,107,108,],[18,18,18,18,18,18,]),'EOL':([4,5,],[28,30,]),'quantity':([19,],[34,]),'ticket_or_tickets':([20,],[37,]),'event':([21,45,57,58,87,104,],[40,59,76,77,98,106,]),'message':([24,],[46,]),'condition':([50,],[60,]),'expression':([50,80,81,82,83,84,85,],[61,91,92,93,94,95,96,]),'customer':([55,59,69,],[70,78,86,]),'date':([56,88,89,97,],[73,99,100,102,]),}
+_lr_goto_items = {'program':([0,],[1,]),'statement_list':([0,90,109,],[2,101,110,]),'statement':([0,2,90,101,109,110,],[3,27,3,27,3,27,]),'command_stmt':([0,2,90,101,109,110,],[4,4,4,4,4,4,]),'declaration_stmt':([0,2,90,101,109,110,],[5,5,5,5,5,5,]),'if_stmt':([0,2,90,101,109,110,],[6,6,6,6,6,6,]),'book_cmd':([0,2,90,101,109,110,],[7,7,7,7,7,7,]),'cancel_cmd':([0,2,90,101,109,110,],[8,8,8,8,8,8,]),'list_cmd':([0,2,90,101,109,110,],[9,9,9,9,9,9,]),'check_cmd':([0,2,90,101,109,110,],[10,10,10,10,10,10,]),'pay_cmd':([0,2,90,101,109,110,],[11,11,11,11,11,11,]),'display_cmd':([0,2,90,101,109,110,],[12,12,12,12,12,12,]),'accept_cmd':([0,2,90,101,109,110,],[13,13,13,13,13,13,]),'if_then_stmt':([0,2,90,101,109,110,],[17,17,17,17,17,17,]),'if_then_else_stmt':([0,2,90,101,109,110,],[18,18,18,18,18,18,]),'EOL':([4,5,],[28,30,]),'quantity':([19,20,],[34,37,]),'event':([21,43,57,58,103,105,],[38,59,74,75,106,108,]),'message':([24,],[44,]),'ticket_or_tickets':([37,],[53,]),'condition':([48,],[60,]),'expression':([48,80,81,82,83,84,85,],[61,91,92,93,94,95,96,]),'date':([56,88,89,97,],[71,99,100,102,]),'customer':([59,69,70,],[76,86,87,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -37,47 +37,47 @@ _lr_productions = [
   ('declaration_stmt -> STRING_TYPE IDENTIFIER EQUALS STRING_LITERAL','declaration_stmt',4,'p_declaration_stmt','parser_mod.py',108),
   ('declaration_stmt -> INT_TYPE IDENTIFIER EQUALS NUMBER','declaration_stmt',4,'p_declaration_stmt','parser_mod.py',109),
   ('declaration_stmt -> DATE_TYPE IDENTIFIER EQUALS DATE_VAL','declaration_stmt',4,'p_declaration_stmt','parser_mod.py',110),
-  ('if_stmt -> if_then_stmt','if_stmt',1,'p_if_stmt','parser_mod.py',119),
-  ('if_stmt -> if_then_else_stmt','if_stmt',1,'p_if_stmt','parser_mod.py',120),
-  ('if_then_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET','if_then_stmt',7,'p_if_then_stmt','parser_mod.py',124),
-  ('if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET','if_then_else_stmt',11,'p_if_then_else_stmt','parser_mod.py',129),
-  ('condition -> expression GT expression','condition',3,'p_condition','parser_mod.py',134),
-  ('condition -> expression LT expression','condition',3,'p_condition','parser_mod.py',135),
-  ('condition -> expression GE expression','condition',3,'p_condition','parser_mod.py',136),
-  ('condition -> expression LE expression','condition',3,'p_condition','parser_mod.py',137),
-  ('condition -> expression EQ expression','condition',3,'p_condition','parser_mod.py',138),
-  ('condition -> expression NE expression','condition',3,'p_condition','parser_mod.py',139),
-  ('expression -> IDENTIFIER','expression',1,'p_expression','parser_mod.py',143),
-  ('expression -> NUMBER','expression',1,'p_expression','parser_mod.py',144),
-  ('expression -> STRING_LITERAL','expression',1,'p_expression','parser_mod.py',145),
-  ('expression -> DATE_VAL','expression',1,'p_expression','parser_mod.py',146),
-  ('command_stmt -> book_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',163),
-  ('command_stmt -> cancel_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',164),
-  ('command_stmt -> list_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',165),
-  ('command_stmt -> check_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',166),
-  ('command_stmt -> pay_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',167),
-  ('command_stmt -> display_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',168),
-  ('command_stmt -> accept_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',169),
-  ('book_cmd -> BOOK quantity TICKETS FOR customer ON date FOR event','book_cmd',9,'p_book_cmd','parser_mod.py',174),
-  ('quantity -> NUMBER','quantity',1,'p_quantity','parser_mod.py',182),
-  ('quantity -> IDENTIFIER','quantity',1,'p_quantity','parser_mod.py',183),
-  ('customer -> STRING_LITERAL','customer',1,'p_customer','parser_mod.py',191),
-  ('customer -> IDENTIFIER','customer',1,'p_customer','parser_mod.py',192),
-  ('date -> DATE_VAL','date',1,'p_date','parser_mod.py',200),
-  ('date -> IDENTIFIER','date',1,'p_date','parser_mod.py',201),
-  ('event -> STRING_LITERAL','event',1,'p_event','parser_mod.py',209),
-  ('event -> IDENTIFIER','event',1,'p_event','parser_mod.py',210),
-  ('cancel_cmd -> CANCEL ticket_or_tickets FOR customer EVENT event','cancel_cmd',6,'p_cancel_cmd','parser_mod.py',219),
-  ('ticket_or_tickets -> TICKET','ticket_or_tickets',1,'p_ticket_or_tickets','parser_mod.py',223),
-  ('ticket_or_tickets -> TICKETS','ticket_or_tickets',1,'p_ticket_or_tickets','parser_mod.py',224),
-  ('list_cmd -> LIST event ON date','list_cmd',4,'p_list_cmd','parser_mod.py',229),
-  ('list_cmd -> LIST event','list_cmd',2,'p_list_cmd','parser_mod.py',230),
-  ('check_cmd -> CHECK AVAILABILITY FOR event ON date','check_cmd',6,'p_check_cmd','parser_mod.py',242),
-  ('check_cmd -> CHECK PRICE FOR event ON date','check_cmd',6,'p_check_cmd','parser_mod.py',243),
-  ('pay_cmd -> PAY FOR event customer','pay_cmd',4,'p_pay_cmd','parser_mod.py',248),
-  ('display_cmd -> DISPLAY message','display_cmd',2,'p_display_cmd','parser_mod.py',253),
-  ('message -> STRING_LITERAL','message',1,'p_message','parser_mod.py',257),
-  ('message -> IDENTIFIER','message',1,'p_message','parser_mod.py',258),
-  ('accept_cmd -> ACCEPT IDENTIFIER','accept_cmd',2,'p_accept_cmd','parser_mod.py',266),
-  ('EOL -> DOT','EOL',1,'p_EOL','parser_mod.py',280),
+  ('if_stmt -> if_then_stmt','if_stmt',1,'p_if_stmt','parser_mod.py',126),
+  ('if_stmt -> if_then_else_stmt','if_stmt',1,'p_if_stmt','parser_mod.py',127),
+  ('if_then_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET','if_then_stmt',7,'p_if_then_stmt','parser_mod.py',131),
+  ('if_then_else_stmt -> IF LPAREN condition RPAREN LBRACKET statement_list RBRACKET ELSE LBRACKET statement_list RBRACKET','if_then_else_stmt',11,'p_if_then_else_stmt','parser_mod.py',136),
+  ('condition -> expression GT expression','condition',3,'p_condition','parser_mod.py',141),
+  ('condition -> expression LT expression','condition',3,'p_condition','parser_mod.py',142),
+  ('condition -> expression GE expression','condition',3,'p_condition','parser_mod.py',143),
+  ('condition -> expression LE expression','condition',3,'p_condition','parser_mod.py',144),
+  ('condition -> expression EQ expression','condition',3,'p_condition','parser_mod.py',145),
+  ('condition -> expression NE expression','condition',3,'p_condition','parser_mod.py',146),
+  ('expression -> IDENTIFIER','expression',1,'p_expression','parser_mod.py',150),
+  ('expression -> NUMBER','expression',1,'p_expression','parser_mod.py',151),
+  ('expression -> STRING_LITERAL','expression',1,'p_expression','parser_mod.py',152),
+  ('expression -> DATE_VAL','expression',1,'p_expression','parser_mod.py',153),
+  ('command_stmt -> book_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',170),
+  ('command_stmt -> cancel_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',171),
+  ('command_stmt -> list_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',172),
+  ('command_stmt -> check_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',173),
+  ('command_stmt -> pay_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',174),
+  ('command_stmt -> display_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',175),
+  ('command_stmt -> accept_cmd','command_stmt',1,'p_command_stmt','parser_mod.py',176),
+  ('book_cmd -> BOOK quantity TICKETS FOR customer ON date FOR event','book_cmd',9,'p_book_cmd','parser_mod.py',181),
+  ('quantity -> NUMBER','quantity',1,'p_quantity','parser_mod.py',191),
+  ('quantity -> IDENTIFIER','quantity',1,'p_quantity','parser_mod.py',192),
+  ('customer -> STRING_LITERAL','customer',1,'p_customer','parser_mod.py',210),
+  ('customer -> IDENTIFIER','customer',1,'p_customer','parser_mod.py',211),
+  ('date -> DATE_VAL','date',1,'p_date','parser_mod.py',229),
+  ('date -> IDENTIFIER','date',1,'p_date','parser_mod.py',230),
+  ('event -> STRING_LITERAL','event',1,'p_event','parser_mod.py',248),
+  ('event -> IDENTIFIER','event',1,'p_event','parser_mod.py',249),
+  ('cancel_cmd -> CANCEL quantity ticket_or_tickets FOR customer FOR EVENT event','cancel_cmd',8,'p_cancel_cmd','parser_mod.py',268),
+  ('ticket_or_tickets -> TICKET','ticket_or_tickets',1,'p_ticket_or_tickets','parser_mod.py',272),
+  ('ticket_or_tickets -> TICKETS','ticket_or_tickets',1,'p_ticket_or_tickets','parser_mod.py',273),
+  ('list_cmd -> LIST event ON date','list_cmd',4,'p_list_cmd','parser_mod.py',278),
+  ('list_cmd -> LIST event','list_cmd',2,'p_list_cmd','parser_mod.py',279),
+  ('check_cmd -> CHECK AVAILABILITY FOR event ON date','check_cmd',6,'p_check_cmd','parser_mod.py',291),
+  ('check_cmd -> CHECK PRICE FOR event ON date','check_cmd',6,'p_check_cmd','parser_mod.py',292),
+  ('pay_cmd -> PAY FOR event customer','pay_cmd',4,'p_pay_cmd','parser_mod.py',297),
+  ('display_cmd -> DISPLAY message','display_cmd',2,'p_display_cmd','parser_mod.py',302),
+  ('message -> STRING_LITERAL','message',1,'p_message','parser_mod.py',306),
+  ('message -> IDENTIFIER','message',1,'p_message','parser_mod.py',307),
+  ('accept_cmd -> ACCEPT IDENTIFIER','accept_cmd',2,'p_accept_cmd','parser_mod.py',324),
+  ('EOL -> DOT','EOL',1,'p_EOL','parser_mod.py',338),
 ]

@@ -1,2 +1,0 @@
-Invalid number of arguments for list_events_on_date: 3
-Invalid function call format:     CALL book_tickets(2, "Anna", "March 5, 2024", "Grand Gala")
