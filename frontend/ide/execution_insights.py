@@ -16,7 +16,7 @@ class ExecutionInsightsPanel:
     def setup_panel(self):
         """Create the execution insights panel."""
         # Panel header
-        header_frame = tk.Frame(self.parent_frame, bg=THEME['bg_linenumbers'], height=25)
+        header_frame = tk.Frame(self.parent_frame, bg=THEME['bg_main'], height=25)
         header_frame.pack(side=tk.TOP, fill=tk.X)
         
         # header_label = tk.Label(header_frame, text="Execution Insights", bg=THEME['bg_linenumbers'], 

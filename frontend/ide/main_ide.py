@@ -44,7 +44,16 @@ class APBLIDE:
         
         # Create toolbar
         self.create_toolbar()
-        
+
+         # First, configure scrollbar colors globally
+        self.root.option_add("*Scrollbar.background", THEME['bg_linenumbers'])
+        self.root.option_add("*Scrollbar.troughColor", THEME['bg_main'])
+        self.root.option_add("*Scrollbar.activeBackground", THEME['bg_linenumbers'])
+        self.root.option_add("*Scrollbar.highlightBackground", THEME['bg_main'])
+        self.root.option_add("*Scrollbar.borderWidth", 0)
+        self.root.option_add("*Scrollbar.highlightThickness", 0)
+        self.root.option_add("*Scrollbar.elementBorderWidth", 0)
+            
         # Create the main framework
         self.main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
         self.main_paned.pack(fill=tk.BOTH, expand=True)
@@ -67,18 +76,40 @@ class APBLIDE:
         
         # Create notebook (tabbed interface) with custom styling
         style = ttk.Style()
+
         style.configure("TNotebook", background=THEME['bg_main'])
-        style.map("TNotebook.Tab", background=[("selected", THEME['bg_tabs'])], 
-                foreground=[("selected", THEME['fg_main'])])
         style.configure("TNotebook.Tab", background=THEME['bg_linenumbers'], 
-                        foreground=THEME['fg_main'], padding=[10, 2])
+                   foreground=THEME['fg_main'], padding=[10, 2])
         
+        # Style the tab area completely 
+        style.map("TNotebook.Tab", background=[("selected", THEME['bg_linenumbers'])],
+                foreground=[("selected", THEME['fg_main'])])
+
+        # Configure the client area (the area inside the tabs)
+        style.configure("TFrame", background=THEME['bg_main'])
+
+        # Configure scrollbars to match theme
+        style.configure("Vertical.TScrollbar", background=THEME['bg_linenumbers'], 
+                        troughcolor=THEME['bg_main'], arrowcolor=THEME['fg_main'])
+        style.configure("Horizontal.TScrollbar", background=THEME['bg_linenumbers'], 
+                        troughcolor=THEME['bg_main'], arrowcolor=THEME['fg_main'])
+        
+        # Map scrollbar states for hover effects
+        style.map("Vertical.TScrollbar", background=[("active", THEME['bg_linenumbers'])],
+                troughcolor=[("active", THEME['bg_main'])])
+        style.map("Horizontal.TScrollbar", background=[("active", THEME['bg_linenumbers'])],
+                troughcolor=[("active", THEME['bg_main'])])
+
+        # Configure tab area background
+        style.configure("TNotebook", background=THEME['bg_main'])
+        
+        # Create notebook
         self.console_notebook = ttk.Notebook(self.console_frame)
         self.console_notebook.pack(fill=tk.BOTH, expand=True)
         
         # Create tab frames
-        self.console_tab = tk.Frame(self.console_notebook, bg=THEME['bg_main'])
-        self.insights_tab = tk.Frame(self.console_notebook, bg=THEME['bg_main'])
+        self.console_tab = ttk.Frame(self.console_notebook, style="TFrame")
+        self.insights_tab = ttk.Frame(self.console_notebook, style="TFrame")
         
         # Add tabs to notebook
         self.console_notebook.add(self.console_tab, text="Console")
@@ -93,7 +124,27 @@ class APBLIDE:
         # Create status bar
         self.status_bar = StatusBar(self.root, self.text_editor)
         self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+        # Apply scrollbar styling to existing scrollbars
+        self._style_scrollbars(self.root)
     
+    def _style_scrollbars(self, widget):
+        """Recursively style all scrollbars in the application."""
+        if isinstance(widget, tk.Scrollbar):
+            widget.config(
+                bg=THEME['bg_linenumbers'],
+                troughcolor=THEME['bg_main'],
+                activebackground=THEME['bg_linenumbers'],
+                highlightbackground=THEME['bg_main'],
+                highlightthickness=0,
+                borderwidth=0,
+                relief=tk.FLAT
+            )
+        
+        # Recursively process children
+        for child in widget.winfo_children():
+            self._style_scrollbars(child)
+
     def setup_shortcuts(self):
         """Setup keyboard shortcuts."""
         self.root.bind("<Control-n>", lambda event: self.new_file())
@@ -570,51 +621,5 @@ class APBLIDE:
     
     def show_about(self):
         """Show about dialog."""
-        about_dialog = tk.Toplevel(self.root)
-        about_dialog.title("About APBL IDE")
-        about_dialog.geometry("400x250")
-        about_dialog.resizable(False, False)
-        about_dialog.transient(self.root)
-        about_dialog.configure(bg=THEME['bg_main'])
-        
-        # Logo or title
-        title_label = tk.Label(
-            about_dialog, 
-            text="APBL IDE", 
-            font=("Arial", 18, "bold"),
-            bg=THEME['bg_main'],
-            fg=THEME['fg_main']
-        )
-        title_label.pack(pady=(20, 5))
-        
-        # Version
-        version_label = tk.Label(
-            about_dialog, 
-            text="Professional Edition v1.0", 
-            font=("Arial", 10),
-            bg=THEME['bg_main'],
-            fg=THEME['fg_main']
-        )
-        version_label.pack(pady=5)
-        
-        # Description
-        desc_label = tk.Label(
-            about_dialog, 
-            text="An Integrated Development Environment for APBL Language\n"
-                 "©2025 All Rights Reserved", 
-            font=("Arial", 9),
-            bg=THEME['bg_main'],
-            fg=THEME['fg_main'],
-            justify=tk.CENTER
-        )
-        desc_label.pack(pady=10)
-        
-        # Close button
-        close_btn = tk.Button(
-            about_dialog, 
-            text="Close", 
-            command=about_dialog.destroy,
-            bg=THEME['bg_linenumbers'],
-            fg=THEME['fg_main']
-        )
-        close_btn.pack(pady=20)
+        from frontend.ide.about import AboutWindow
+        about_window = AboutWindow(self.root, THEME)

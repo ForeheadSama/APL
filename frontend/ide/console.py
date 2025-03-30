@@ -14,7 +14,7 @@ class ConsoleComponent:
     def setup_console(self):
         """Create the output console."""
         # Console header
-        header_frame = tk.Frame(self.parent_frame, bg=THEME['bg_linenumbers'], height=25)
+        header_frame = tk.Frame(self.parent_frame, bg=THEME['bg_main'], height=25)
         header_frame.pack(side=tk.TOP, fill=tk.X)
         
         # header_label = tk.Label(header_frame, text="Console Output", bg=THEME['bg_linenumbers'], 
