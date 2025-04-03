@@ -30,7 +30,7 @@ class ConsoleComponent:
         self.console = scrolledtext.ScrolledText(
             self.parent_frame,
             wrap=tk.WORD,
-            font=("Consolas", 10),
+            font=("Consolas", 13),
             bg=THEME['bg_console'],
             fg=THEME['fg_console'],
             bd=0,

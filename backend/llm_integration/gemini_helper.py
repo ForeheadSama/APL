@@ -37,27 +37,23 @@ except ValueError as e:
 
 
 def fetch_events_from_ticketmaster(
-    event_type: Optional[str] = None, 
-    event_name: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
-
-    """
-    Fetch events from Ticketmaster API with robust error handling
-    Returns empty list on failure to allow database fallback
-    """
-
-    #today = datetime.now().date()
-    
+    event_type: Optional[str] = None,
+    event_name: Optional[str] = None,
+    date: Optional[datetime.date] = None
+) -> List[Dict[str, Any]]:
     params = {
         "apikey": TICKETMASTER_API_KEY,
         "size": 50,
+        "sort": "date,asc"
     }
 
-    # Handle event type/name parameters 
     if event_type:
-        params["classificationName"] = event_type.lower()  # Use lowercase for consistency
+        params["classificationName"] = event_type.lower()
     if event_name:
-        params["keyword"] = event_name.replace('"', '')  # Remove quotes if present
+        params["keyword"] = event_name.replace('"', '')
+    if date:
+        params["startDateTime"] = f"{date.isoformat()}T00:00:00Z"
+        params["endDateTime"] = f"{date.isoformat()}T23:59:59Z"
 
     try:
         response = requests.get(
@@ -67,10 +63,8 @@ def fetch_events_from_ticketmaster(
         )
         response.raise_for_status()
         return _process_ticketmaster_events(response.json())
-        
-    except requests.exceptions.HTTPError as e:
-        if response.status_code == 400:
-            print(f"Ticketmaster API rejected our parameters: {params}")
+    except Exception as e:
+        print(f"API Error: {str(e)}")
         return []
 
 def _process_ticketmaster_events(events_data: dict) -> List[Dict[str, Any]]:
@@ -124,52 +118,71 @@ def get_and_format_events(
     event_type: Optional[str] = None,
     event_name: Optional[str] = None,
     date: Optional[str] = None
-    ) -> str:
-
+) -> str:
     """
     Unified interface for getting events with:
-    - Ticketmaster API as primary source
-    - Database as fallback
-    - Automatic Gemini formatting
+    1. Ticketmaster API as primary source
+    2. Database as fallback only if API returns nothing
+    3. Automatic deduplication
+    4. Gemini formatting
     """
     # Clean input parameters
     event_name = event_name.strip('"').strip("'") if event_name else None
     event_type = event_type.lower() if event_type else None
+    date_obj = None
+
+    if date:
+        try:
+            date_obj = datetime.datetime.strptime(date, '%B %d, %Y').date()
+            if date_obj < datetime.datetime.now().date():
+                return f"No events found for past date: {date}"
+        except ValueError:
+            pass
 
     try:
         # Try API first
-        api_events = fetch_events_from_ticketmaster(event_type, event_name)
+        api_events = fetch_events_from_ticketmaster(event_type, event_name, date_obj)
         
-        # Fallback to database if needed
+        # Only check database if API returned nothing
         db_events = []
+        if not api_events:
+            if event_name:
+                db_events = get_events_by_name(event_name)
+            elif event_type and date_obj:
+                db_events = get_events_by_date(event_type, date_obj)
 
-        if event_name:
-            db_events = get_events_by_name(event_name)
-
-        elif event_type and date:
-            try:
-                date_obj = datetime.datetime.strptime(date, '%B %d, %Y').date()
-                if date_obj >= datetime.datetime.now().date():
-                    db_events = get_events_by_date(event_type, date_obj)
-            except ValueError:
-                pass
-
-        all_events = api_events + [e for e in db_events if e not in api_events]
+        # Deduplicate events by name and date
+        all_events = _deduplicate_events(api_events + db_events)
         
         if not all_events:
-            if event_name:
-                return f"No events found matching '{event_name}'"
-            
-            elif event_type and date:
-                return f"No {event_type} events found on {date}"
-            
-            return "No upcoming events found"
+            return _build_empty_response(event_type, event_name, date)
             
         return format_events(all_events)
 
     except Exception as e:
         print(f"System error: {str(e)}")
         return "Event search is temporarily unavailable."
+
+def _deduplicate_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Remove duplicate events based on name and date"""
+    seen = set()
+    unique_events = []
+    
+    for event in events:
+        key = (event['name'].lower(), event['date'])
+        if key not in seen:
+            seen.add(key)
+            unique_events.append(event)
+    
+    return unique_events
+
+def _build_empty_response(self, event_type, event_name, date):
+    """Generate appropriate 'not found' message"""
+    if event_name:
+        return f"No events found matching '{event_name}'"
+    elif event_type and date:
+        return f"No {event_type} events found on {date}"
+    return "No upcoming events found"
 
 def _get_db_events(
     event_type: Optional[str],

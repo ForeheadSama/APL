@@ -74,35 +74,33 @@ class CodeGenerator:
             "sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))",
             "",
             "from backend.llm_integration.gemini_helper import get_and_format_events",  # Import the Gemini helper file
-            "import backend.database.query",  # Import the database query functions",
+            "from backend.database.query import check_available_tickets, check_event_price, book_ticket, pay_booking, cancel_bookings",  # Import the database query functions",
             "",
             "# Helper functions for ticket system operations",
-            "def check_availability(event_id):",
-            "    available = backend.database.query.check_available_tickets(event_id)",
-            "    print(f\"Available tickets for event {event_id}: {available}\")",
+            "def check_availability(event_name, date):",
+            "    available = check_available_tickets(event_name, date)",
+            "    print(f\"Available tickets for event {event_name}: {available}\")",
             "    return available",
             "",
-            "def check_price(event_id):",
-            "    price = backend.database.query.check_event_price(event_id)",
+            "def check_price(event_name, date):",
+            "    price = check_event_price(event_name, date)",
             "    if price:",
-            "        print(f\"Price for event {event_id}: ${price}\")",
+            "        print(f\"Price for event {event_name}: ${price:.2f}\")",
             "    else:",
-            "        print(f\"Price information for event {event_id} not available.\")",
+            "        print(f\"Price information for event {event_name} not available.\")",
             "    return price",
             "",
             "def book_tickets(quantity, user_id, date, event_name):",
-            "    success, message = backend.database.query.book_tickets(quantity, user_id, date, event_name)",
-            "    print(message)",
-            "    return success",
+            "    success, bookMessage = book_ticket(quantity, user_id, date, event_name)",
+            "    return success, bookMessage",
             "",
             "def pay_for_booking(event_name, user_name):",
-            "    success, message = backend.database.query.pay_for_booking(event_name, user_name)",
-            "    print(message)",
-            "    return success",
+            "    success, payMessage = pay_booking(event_name, user_name)",
+            "    return success, payMessage",
             "",
             "def cancel_booking(quantity, user_name, event_name):",
-            "    success, message = backend.database.query.cancel_booking(quantity, user_name, event_name)",
-            "    return success, message",
+            "    success, cancelMessage = cancel_bookings(quantity, user_name, event_name)",
+            "    return success, cancelMessage",
             "",
            "def list_events_on_date(event_type: str, date_str: str) -> str:",
             "    try:",
@@ -288,24 +286,33 @@ class CodeGenerator:
                 else:
                     self._log_error(f"list_event_details requires 1 argument (event_name), got {len(processed_args)}")
             
+            # good
             elif func_name == "check_availability":
                 if len(processed_args) == 2:  # Updated to require event_name and date
                     self.generated_code.append(f"available = check_availability({processed_args[0]}, {processed_args[1]})")
-                    self.generated_code.append('print("Available tickets: " + str(available))')
                 else:
                     self._log_error(f"check_availability requires 2 arguments (event_name, date), got {len(processed_args)}")
             
             elif func_name == "check_price":
                 if len(processed_args) == 2:  # Updated to require event_name and date
                     self.generated_code.append(f"price = check_price({processed_args[0]}, {processed_args[1]})")
-                    self.generated_code.append('print(f"Ticket price: ${price:.2f}")')
                 else:
                     self._log_error(f"check_price requires 2 arguments (event_name, date), got {len(processed_args)}")
             
+            elif func_name == "book_tickets":
+                if len(processed_args) == 4:  
+                    quantity = processed_args[0]
+                    user_name = processed_args[1] if processed_args[1].startswith('"') else f'"{processed_args[1]}"'
+                    event_date = processed_args[2]
+                    event_name = processed_args[3] if processed_args[2].startswith('"') else f'"{processed_args[2]}"'
+
+                    self.generated_code.append(f"success, bookMessage = book_tickets({quantity}, {user_name}, {event_date}, {event_name})")
+                    self.generated_code.append("print(bookMessage)")
+
             elif func_name == "pay_for_booking":
                 if len(processed_args) == 2:
-                    self.generated_code.append(f"success, message = pay_for_booking({processed_args[0]}, {processed_args[1]})")
-                    self.generated_code.append("print(message)")
+                    self.generated_code.append(f"success, payMessage = pay_for_booking({processed_args[0]}, {processed_args[1]})")
+                    self.generated_code.append("print(payMessage)")
                 else:
                     self._log_error(f"pay_for_booking requires 2 arguments (event_name, user_name), got {len(processed_args)}")
 
@@ -316,16 +323,14 @@ class CodeGenerator:
                     user_name = processed_args[1] if processed_args[1].startswith('"') else f'"{processed_args[1]}"'
                     event_name = processed_args[2] if processed_args[2].startswith('"') else f'"{processed_args[2]}"'
                     
-                    self.generated_code.append(f"success, message = cancel_booking({quantity}, {user_name}, {event_name})")
-                    self.generated_code.append("print(message)")
+                    self.generated_code.append(f"success, cancelMessage = cancel_booking({quantity}, {user_name}, {event_name})")
+                    self.generated_code.append("print(cancelMessage)")
                 else:
                     self._log_error(f"cancel_booking requires 3 arguments (quantity, user_name, event_name), got {len(processed_args)}")
-            
             else:
                 # Default handling for unrecognized functions
                 self.generated_code.append(f"result = {func_name}({', '.join(processed_args)})")
-                self.generated_code.append("if result is not None: print(result)")
-        
+                self.generated_code.append("if result is not None: print(result)") 
         else:
             self._log_error(f"Invalid function call format: {line}")
             
@@ -360,7 +365,7 @@ class CodeGenerator:
         """Generate the footer section of the Python code"""
         self.generated_code.extend([
             "",
-            "# By Alex-Ann",  
+            "# By Alex-Ann Burrell :P",  
             "# == End of generated code == ",
         ])
 
@@ -369,7 +374,6 @@ class CodeGenerator:
         try:
             with open(self.output_path, 'w') as f:
                 f.write('\n'.join(self.generated_code))
-            print(f"Generated code written to {self.output_path}")
         except Exception as e:
             raise Exception(f"Failed to write generated code: {str(e)}")
 

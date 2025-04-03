@@ -134,10 +134,10 @@ class SemanticAnalyzer:
 
         if not self._is_valid_condition(condition):
             self.errors.append(f"Error: Invalid condition in if statement: {condition}.")
-        self._traverse_ast(node.get('if_body', []))
+        self._traverse(node.get('if_body', []))
 
         if 'else_body' in node:
-            self._traverse_ast(node.get('else_body', []))
+            self._traverse(node.get('else_body', []))
 
     def _is_valid_condition(self, condition):
         """

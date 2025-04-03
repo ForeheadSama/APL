@@ -1,20 +1,20 @@
 # Theme and style definitions
 
 
-# Color theme (inspired by vs code dark++
+# Color theme (Light theme inspired by VS Code Light+)
 THEME = {
-    'bg_main': '#1e1e1e',           # Main background
-    'bg_editor': '#1e1e1e',         # Editor background
-    'bg_linenumbers': '#252526',    # Line numbers background
-    'bg_console': '#1e1e1e',        # Console background
-    'bg_tabs': '#2d2d2d',           # Slightly lighter color for tabs
-    'fg_main': '#d4d4d4',           # Main text color
-    'fg_linenumbers': '#858585',    # Line numbers text color
-    'fg_console': '#cccccc',        # Console text color
-    'error_color': '#f48771',       # Error text color
-    'cursor_color': '#aeafad',      # Cursor color
-    'select_bg': '#264f78',         # Selection background
-    'highlight_line': '#4a4848'     # Current line highlight
+    'bg_main': '#ffffff',           # Main background (white)
+    'bg_editor': '#ffffff',         # Editor background (white)
+    'bg_linenumbers': '#f3f3f3',    # Line numbers background (light gray)
+    'bg_console': '#ffffff',        # Console background (white)
+    'bg_tabs': '#e7e7e7',           # Slightly darker shade for tabs
+    'fg_main': '#333333',           # Main text color (dark gray)
+    'fg_linenumbers': '#888888',    # Line numbers text color (gray)
+    'fg_console': '#444444',        # Console text color (darker gray)
+    'error_color': '#d32f2f',       # Error text color (red)
+    'cursor_color': '#000000',      # Cursor color (black)
+    'select_bg': '#d0e7ff',         # Selection background (light blue)
+    'highlight_line': '#f0f0f0'     # Current line highlight (very light gray)
 }
 
 # Professional syntax highlighting colors

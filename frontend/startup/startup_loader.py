@@ -15,7 +15,13 @@ class APBLStartupLoader:
         from frontend.ide.theme import THEME
 
         self.root = tk.Tk()
-        self.root.title("APBL Compiler")
+        self.root.overrideredirect(True)  # This removes the title bar
+        self.root.title("")
+
+        # Make window draggable
+        self.root.bind("<ButtonPress-1>", self.start_move)
+        self.root.bind("<ButtonRelease-1>", self.stop_move)
+        self.root.bind("<B1-Motion>", self.on_move)
         
         # Set dimensions and center
         window_width = 500
@@ -83,6 +89,7 @@ class APBLStartupLoader:
             'backend/main_compiler/parser_module/parser_output.json',
             'backend/main_compiler/parser_module/parser_warnings.txt',
             'backend/main_compiler/parser_module/visual_ast.png',
+            'backend/main_compiler/parser_module/symbol_table.json',
             'backend/main_compiler/lexer_module/lexer_output.txt',
             'backend/main_compiler/semantic_module/semantic_errors.txt',
             'backend/main_compiler/intermediate_code_module/intermediate_code.txt',
@@ -92,13 +99,65 @@ class APBLStartupLoader:
         # Threading components
         self.message_queue = queue.Queue()
 
+        # Add custom close button
+        from frontend.ide.theme import THEME
+
+        self.close_btn = tk.Button(
+            self.root, 
+            text="×", 
+            font=("Arial", 14), 
+            command=self.root.destroy,
+            bg=THEME['bg_main'],
+            fg=THEME['fg_main'],
+            activebackground=THEME['select_bg'],
+            activeforeground=THEME['fg_main'],
+            borderwidth=0,
+            highlightthickness=0
+        )
+        self.close_btn.place(x=window_width-30, y=10, width=20, height=20)
+        
+        # Make it look better on hover
+        self.close_btn.bind("<Enter>", lambda e: self.close_btn.config(fg=THEME['error_color']))
+        self.close_btn.bind("<Leave>", lambda e: self.close_btn.config(fg=THEME['fg_main']))
+
+        if sys.platform == "win32":
+            try:
+                import ctypes
+
+                ctypes.windll.shcore.SetProcessDpiAwareness(1)
+                hwnd = ctypes.windll.user32.GetParent(self.root.winfo_id())
+                ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                    hwnd,
+                    33,  # DWMWA_WINDOW_CORNER_PREFERENCE
+                    ctypes.byref(ctypes.c_int(2)),  # DWM_WINDOW_CORNER_ROUND
+                    ctypes.sizeof(ctypes.c_int)
+                )
+            except:
+                pass
+
+    def start_move(self, event):
+        self.x = event.x
+        self.y = event.y
+
+    def stop_move(self, event):
+        self.x = None
+        self.y = None
+
+    def on_move(self, event):
+        deltax = event.x - self.x
+        deltay = event.y - self.y
+        x = self.root.winfo_x() + deltax
+        y = self.root.winfo_y() + deltay
+        self.root.geometry(f"+{x}+{y}")
+
     def center_window(self, window, width, height):
-        """Center the window on screen"""
+        """Center the window on screen without title bar"""
         screen_width = window.winfo_screenwidth()
         screen_height = window.winfo_screenheight()
         x = (screen_width - width) // 2
         y = (screen_height - height) // 2
         window.geometry(f"{width}x{height}+{x}+{y}")
+        window.update_idletasks()  # Ensure geometry is applied
 
     def create_required_files(self):
         """Create all required files if they don't exist"""
@@ -194,7 +253,7 @@ class APBLStartupLoader:
                 # Window configuration
                 screen_width = ide_root.winfo_screenwidth()
                 screen_height = ide_root.winfo_screenheight()
-                ide_root.geometry(f"1200x800+{(screen_width-1200)//2}+{(screen_height-800)//2}")
+                ide_root.geometry(f"1200x1000+{(screen_width-1200)//2}+{(screen_height-800)//2}")
                 ide_root.minsize(800, 600)
                 
                 # Hide loader only after IDE is ready

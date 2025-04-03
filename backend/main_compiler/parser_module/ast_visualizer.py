@@ -107,7 +107,6 @@ def generate_ast_image(ast, output_path="backend/main_compiler/parser_module/vis
     
     # SAVE THE GENERATED GRAPH AS AN IMAGE
     plt.savefig(output_path, format="PNG", dpi=300)
-    print(f"AST visualization saved to {output_path}")
 
 # MAIN FUNCTION TO LOAD THE AST AND GENERATE ITS VISUAL REPRESENTATION
 def main():

@@ -62,7 +62,7 @@ def get_events_by_name(event_name: str) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: List of event dictionaries
     """
     events = []
-    
+
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -79,6 +79,7 @@ def get_events_by_name(event_name: str) -> List[Dict[str, Any]]:
         
         # Convert rows to dictionaries
         columns = [column[0] for column in cursor.description]
+
         for row in cursor.fetchall():
             event = dict(zip(columns, row))
             # Convert date to string format for easier handling
@@ -90,7 +91,7 @@ def get_events_by_name(event_name: str) -> List[Dict[str, Any]]:
         
     except Exception as e:
         print(f"Database error in get_events_by_name: {str(e)}")
-    
+
     return events
 
 def add_event(event_data: Dict[str, Any]) -> Tuple[bool, str]:
@@ -191,23 +192,99 @@ def check_event_exists(name: str, venue: str, date: datetime.date) -> bool:
         print(f"Error checking event existence: {str(e)}")
         return False
 
-def check_available_tickets(event_id):
-    """Check the number of available tickets for an event."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT available_tickets FROM Events WHERE event_id = ?", event_id)
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else 0
+def check_available_tickets(event_name: str, date: str) -> int:
+    """
+    Check available tickets for a specific event on a specific date.
+    
+    Args:
+        event_name: Name of the event
+        date: Date string in format 'Month Day, Year' (e.g., 'April 15, 2023')
+    
+    Returns:
+        Number of available tickets (0 if not found)
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # First find the event ID
+        cursor.execute(
+            """
+            SELECT event_id FROM Events 
+            WHERE name = ? AND date = ?
+            """,
+            (event_name, date)
+        )
+        event_id = cursor.fetchone()
+        
+        if not event_id:
+            return 0
+            
+        # Now check availability
+        cursor.execute(
+            """
+            SELECT available_tickets FROM Events 
+            WHERE event_id = ?
+            """,
+            (event_id[0],)
+        )
+        result = cursor.fetchone()
+        
+        return result[0] if result else 0
+        
+    except Exception as e:
+        print(f"No tickets available for {event_name}")
+        return 0
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
-def check_event_price(event_id):
-    """Check the price of an event."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT price FROM Events WHERE event_id = ?", event_id)
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else None
+def check_event_price(event_name: str, date: str) -> Optional[float]:
+    """
+    Check ticket price for a specific event on a specific date.
+    
+    Args:
+        event_name: Name of the event
+        date: Date string in format 'Month Day, Year'
+    
+    Returns:
+        Price as float (None if not found)
+    """
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # First find the event ID
+        cursor.execute(
+            """
+            SELECT event_id FROM Events 
+            WHERE name = ? AND date = ?
+            """,
+            (event_name, date)
+        )
+        event_id = cursor.fetchone()
+        
+        if not event_id:
+            return None
+            
+        # Now check price
+        cursor.execute(
+            """
+            SELECT price FROM Events 
+            WHERE event_id = ?
+            """,
+            (event_id[0],)
+        )
+        result = cursor.fetchone()
+        
+        return float(result[0]) if result else None
+        
+    except Exception as e:
+        print(f"No price available for {event_name}")
+        return None
+    finally:
+        if 'conn' in locals():
+            conn.close()
 
 def get_or_create_user_id(name):
     """
@@ -245,7 +322,7 @@ def get_or_create_user_id(name):
 from datetime import datetime, date
 from decimal import Decimal
 
-def book_tickets(quantity: int, user_name: str, event_date: str, event_name: str) -> tuple[bool, str]:
+def book_ticket(quantity: int, user_name: str, event_date: str, event_name: str) -> tuple[bool, str]:
     """Book tickets for an event with comprehensive validation"""
     conn = None
     try:
@@ -331,7 +408,7 @@ def book_tickets(quantity: int, user_name: str, event_date: str, event_name: str
         if conn:
             conn.close()
 
-def pay_for_booking(event_name: str, user_name: str) -> tuple[bool, str]:
+def pay_booking(event_name: str, user_name: str) -> tuple[bool, str]:
     """Mark a booking as paid after validating all conditions"""
     conn = None
     try:
@@ -362,7 +439,7 @@ def pay_for_booking(event_name: str, user_name: str) -> tuple[bool, str]:
             ORDER BY b.date DESC 
             """, 
             (event_name, user_id))
-        
+
         booking = cursor.fetchone()
 
         # Handle all validation cases
@@ -372,7 +449,7 @@ def pay_for_booking(event_name: str, user_name: str) -> tuple[bool, str]:
         booking_id, status = booking
         
         if status == "Paid":
-            return False, f"Booking for '{event_name}' is already paid."
+            return False, f"Booking for {user_name} to {event_name} is already paid."
         
         if status == "Cancelled":
             return False, f"Cannot pay for cancelled booking. Try booking again."
@@ -386,17 +463,18 @@ def pay_for_booking(event_name: str, user_name: str) -> tuple[bool, str]:
             (booking_id,))
         
         conn.commit()
-        return True, f"Payment for '{event_name}' confirmed!"
+        return True, f"Payment for '{user_name}' to {event_name} confirmed!"
 
     except Exception as e:
         if conn:
             conn.rollback()
+        print(f"DEBUG: Payment error: {str(e)}")  # Add detailed error logging
         return False, f"Payment processing failed: {str(e)}"
     finally:
         if conn:
             conn.close()
 
-def cancel_booking(quantity: int, user_name: str, event_name: str) -> tuple[bool, str]:
+def cancel_bookings(quantity: int, user_name: str, event_name: str) -> tuple[bool, str]:
     """Cancel booking(s) for a specific user and event.
     Args:
         quantity: Number of tickets to cancel

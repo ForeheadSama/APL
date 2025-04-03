@@ -32,7 +32,7 @@ class ExecutionInsightsPanel:
         self.insights_text = scrolledtext.ScrolledText(
             self.parent_frame,
             wrap=tk.WORD,
-            font=("Consolas", 10),
+            font=("Consolas", 12),
             bg=THEME['bg_console'],
             fg=THEME['fg_console'],
             bd=0,

@@ -79,7 +79,7 @@ class EditorComponent:
         self.text_editor = scrolledtext.ScrolledText(
             editor_container,
             wrap=tk.NONE,
-            font=("Consolas", 11),
+            font=("Consolas", 12),
             bg=THEME['bg_editor'],
             fg=THEME['fg_main'],
             insertbackground=THEME['cursor_color'],
@@ -89,9 +89,6 @@ class EditorComponent:
             padx=5,
             pady=5
         )
-        
-        # Enable auto indentation
-        self.text_editor.bind("<Return>", self.auto_indent)
         
         # Configure tags for syntax highlighting
         for category, color in SYNTAX_COLORS.items():
@@ -112,29 +109,11 @@ class EditorComponent:
         self.text_editor.bind("<KeyRelease>", self.on_text_change)
         self.text_editor.bind("<FocusIn>", self.on_text_change)
         
-        # Setup horizontal scrollbar
-        h_scroll = tk.Scrollbar(self.parent_frame, orient=tk.HORIZONTAL, command=self.text_editor.xview)
-        self.text_editor.configure(xscrollcommand=h_scroll.set)
-        h_scroll.pack(side=tk.BOTTOM, fill=tk.X)
-        
         # Current line highlighting
         self.text_editor.bind("<KeyRelease>", self.highlight_current_line)
         self.text_editor.bind("<ButtonRelease-1>", self.highlight_current_line)
         self.text_editor.tag_configure("current_line", background=THEME['highlight_line'])
-    
-    def auto_indent(self, event):
-        """Auto-indent when pressing Enter."""
-        # Get current line
-        current_line = self.text_editor.get("insert linestart", "insert lineend")
-        
-        # Count leading spaces
-        match = re.match(r'^(\s+)', current_line)
-        if match:
-            indentation = match.group(1)
-            self.text_editor.insert(tk.INSERT, f"\n{indentation}")
-            return "break"
-        return None
-    
+
     def on_text_change(self, event=None):
         """Handle text changes and update line numbers and syntax highlighting."""
         self.highlight_syntax()

@@ -365,16 +365,16 @@ def p_error(p):
         # Generate an error message
         if 'STRING_LITERAL' in expected_tokens:
             if not (isinstance(p.value, str) and p.value.startswith('"') and p.value.endswith('"')):
-                error_msg = (f"- Syntax error at [{lineno}:{column}]: "
+                error_msg = (f"\n- Syntax error at [{lineno}:{column}]: "
                             f"Unexpected token '{p.value}'. Expected a string literal enclosed in double quotes.\n"
                             f"\t{context_line}\n\t{pointer}\n")
             else:
-                error_msg = (f"- Syntax error at [{lineno}:{column}]: "
+                error_msg = (f"\n- Syntax error at [{lineno}:{column}]: "
                             f"\n\tUnexpected token '{p.value}'. "
                             f"\n\t{context_line}\n\t{pointer}"
                             f"\nExpected: {', '.join(expected_tokens)}\n")
         else:
-            error_msg = (f"- Syntax error at [{lineno}:{column}]: "
+            error_msg = (f"\n- Syntax error at [{lineno}:{column}]: "
                         f"\n\tUnexpected token '{p.value}'. "
                         f"\n\t{context_line}\n\t{pointer}"
                         f"\nExpected: {', '.join(expected_tokens)}\n")
@@ -515,11 +515,12 @@ def parse(token_list):
             # Save the AST to a JSON file
             ast_file = "backend/main_compiler/parser_module/parser_output.json"
 
-            os.makedirs(os.path.dirname(ast_file), exist_ok=True)
             with open(ast_file, "w") as f:
                 json.dump(ast, f, indent=4)
 
-            print(f"AST saved to {ast_file}")
+            # Write symbol table to file
+            with open("backend/main_compiler/parser_module/symbol_table.json", "w") as f:
+                json.dump(symbol_table, f, indent=4)
 
 
             # Call the visualization code
