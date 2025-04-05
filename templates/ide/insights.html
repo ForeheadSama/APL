@@ -1,0 +1,77 @@
+<div class="insights-container" id="insights-container">
+    {% for phase in phases %}
+    <div class="phase">
+        <div class="phase-header">
+            <span class="phase-name">{{ phase.name }}</span>
+            <span class="phase-status status-{{ phase.status }} {% if phase.is_error %}status-error{% endif %}">
+                {{ phase.status }}
+            </span>
+        </div>
+        <div class="phase-description">{{ phase.description }}</div>
+        {% if phase.result %}
+        <div class="phase-result">{{ phase.result }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% for insight in insights %}
+    <div class="insight">
+        <div class="insight-title">{{ insight.title }}</div>
+        {% if insight.code %}
+        <div class="insight-code">{{ insight.code }}</div>
+        {% endif %}
+        <div class="insight-explanation">{{ insight.explanation }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Update insights periodically
+    setInterval(updateInsights, 1500);
+
+    function updateInsights() {
+        fetch('/insights/data')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('insights-container');
+            container.innerHTML = '';
+            
+            // Add phases
+            data.phases.forEach(phase => {
+                const phaseDiv = document.createElement('div');
+                phaseDiv.className = 'phase';
+                phaseDiv.innerHTML = `
+                    <div class="phase-header">
+                        <span class="phase-name">${phase.name}</span>
+                        <span class="phase-status status-${phase.status} ${phase.is_error ? 'status-error' : ''}">
+                            ${phase.status}
+                        </span>
+                    </div>
+                    <div class="phase-description">${phase.description}</div>
+                    ${phase.result ? `<div class="phase-result">${phase.result}</div>` : ''}
+                `;
+                container.appendChild(phaseDiv);
+            });
+            
+            // Add insights
+            data.insights.forEach(insight => {
+                const insightDiv = document.createElement('div');
+                insightDiv.className = 'insight';
+                insightDiv.innerHTML = `
+                    <div class="insight-title">${insight.title}</div>
+                    ${insight.code ? `<div class="insight-code">${insight.code}</div>` : ''}
+                    <div class="insight-explanation">${insight.explanation}</div>
+                `;
+                container.appendChild(insightDiv);
+            });
+        });
+    }
+
+    // Clear insights
+    function clearInsights() {
+        fetch('/insights/clear', {
+            method: 'POST'
+        })
+        .then(updateInsights);
+    }
+</script>

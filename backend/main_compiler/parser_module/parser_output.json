@@ -1,0 +1,42 @@
+{
+    "type": "program",
+    "lineno": 1,
+    "statements": [
+        {
+            "type": "declaration",
+            "lineno": 1,
+            "var_name": "number",
+            "var_type": "int",
+            "value": 9
+        },
+        {
+            "type": "declaration",
+            "lineno": 2,
+            "var_name": "name",
+            "var_type": "string",
+            "value": "Deshaunt"
+        },
+        {
+            "type": "declaration",
+            "lineno": 4,
+            "var_name": "anotherNumber",
+            "var_type": "int",
+            "value": 15
+        },
+        {
+            "type": "declaration",
+            "lineno": 5,
+            "var_name": "anotherName",
+            "var_type": "string",
+            "value": "Khaleesi"
+        },
+        {
+            "type": "declaration",
+            "lineno": 7,
+            "var_name": "someDay",
+            "var_type": "date",
+            "value": "June 15, 2024"
+        }
+    ],
+    "input_handler": "<backend.main_compiler.parser_module.user_input_handler.UserInputHandler object at 0x000002111D932E80>"
+}

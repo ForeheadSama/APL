@@ -1,11 +1,17 @@
-import tkinter as tk
+
+"""
+Main entry point for the APBL application :P
+"""
+
 import os
 import sys
+from app import create_app
 
-from frontend.startup.startup_loader import APBLStartupLoader
-
-# Main application
 if __name__ == "__main__":
-    # Initialize the startup loader
-    loader = APBLStartupLoader()
-    loader.run()
+    # Add project root to Python path to ensure imports work
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, project_root)
+    
+    # Create and run the application
+    apbl = create_app()
+    apbl.run(port=5000)

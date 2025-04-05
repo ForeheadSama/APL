@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>APBL | Booking Made Easy</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ide.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+</head>
+<body>
+    <div class="ide-container">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button id="new-btn">New</button>
+            <button id="open-btn">Open</button>
+            <button id="save-btn">Save</button>
+            <button id="compile-btn">Run</button>
+            <span class="filename" id="filename">
+                {% if current_file %}{{ current_file }}{% else %}Untitled{% endif %}
+                {% if is_modified %}*{% endif %}
+            </span>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Editor -->
+            {% include "ide/editor.html" %}
+            
+            <!-- Console and Insights Tabs -->
+            <div class="output-container">
+                <div class="tab-bar">
+                    <button class="tab-btn active" data-tab="console">Console</button>
+                    <button class="tab-btn" data-tab="insights">Execution Insights</button>
+                </div>
+                
+                <div class="tab-content active" id="console-tab">
+                    {% include "ide/console.html" %}
+                </div>
+                
+                <div class="tab-content" id="insights-tab">
+                    {% include "ide/insights.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/ide.js') }}"></script>
+</body>
+</html>

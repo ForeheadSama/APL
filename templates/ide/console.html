@@ -1,0 +1,39 @@
+<div class="console-output" id="console-output">
+    {% for message in console_messages %}
+        <div class="{{ message.type }}">{{ message.text }}</div>
+    {% endfor %}
+</div>
+
+<script>
+    // Update console output periodically
+    setInterval(updateConsole, 1000);
+
+    function updateConsole() {
+        fetch('/console/output')
+        .then(response => response.json())
+        .then(data => {
+            const consoleOutput = document.getElementById('console-output');
+            consoleOutput.innerHTML = '';
+            
+            data.output.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item.text;
+                if (item.type !== 'normal') {
+                    div.classList.add(item.type);
+                }
+                consoleOutput.appendChild(div);
+            });
+            
+            // Auto-scroll to bottom
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        });
+    }
+
+    // Clear console
+    function clearConsole() {
+        fetch('/console/clear', {
+            method: 'POST'
+        })
+        .then(updateConsole);
+    }
+</script>

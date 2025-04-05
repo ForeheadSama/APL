@@ -1,0 +1,241 @@
+/* Main IDE Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.ide-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    background-color: #252526;
+    padding: 8px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #2d2d2d;
+}
+
+#compile-btn{
+    background-color: #3794ff;
+}
+
+#compile-btn:hover{
+    background-color: #007acc;
+}
+
+.toolbar button {
+    background-color: #333;
+    color: #d4d4d4;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.toolbar button:hover {
+    background-color: #3e3e3e;
+}
+
+.filename {
+    margin-left: auto;
+    padding: 6px 12px;
+    color: #858585;
+}
+
+.main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.editor-container {
+    flex: 1;
+    overflow: hidden;
+}
+
+.CodeMirror {
+    height: 100%;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.output-container {
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid #2d2d2d;
+}
+
+.tab-bar {
+    display: flex;
+    background-color: #252526;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: #d4d4d4;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    border-bottom: 2px solid #3794ff;
+    background-color: #1e1e1e;
+}
+
+.tab-content {
+    flex: 1;
+    overflow: auto;
+    display: none;
+    padding: 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.console-output {
+    white-space: pre-wrap;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+}
+
+.console-output .error {
+    color: #f48771;
+}
+
+.console-output .success {
+    color: #4ec9b0;
+}
+
+.insights-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.phase {
+    background-color: #252526;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.phase-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.phase-name {
+    font-weight: bold;
+    color: #569cd6;
+}
+
+.phase-status {
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.status-running {
+    background-color: #264f78;
+    color: #3794ff;
+}
+
+.status-completed {
+    background-color: #1e3a1e;
+    color: #4ec9b0;
+}
+
+.status-error {
+    background-color: #5a1f1f;
+    color: #f48771;
+}
+
+.phase-description {
+    color: #858585;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+.phase-result {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: #2d2d2d;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.insight {
+    background-color: #252526;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.insight-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #d4d4d4;
+}
+
+.insight-code {
+    background-color: #2d2d2d;
+    padding: 8px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+
+.insight-explanation {
+    font-size: 0.9em;
+    color: #858585;
+}
+
+.editor-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #1e1e1e;
+}
+
+.CodeMirror {
+    flex: 1;
+    height: auto !important; /* Override default height */
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+}
+
+.CodeMirror-gutters {
+    background-color: #252526;
+    border-right: 1px solid #2d2d2d;
+}
+
+.CodeMirror-linenumber {
+    color: #858585;
+}
+
+.CodeMirror-cursor {
+    border-left: 1px solid #d4d4d4;
+}
+
+.cm-s-dracula .CodeMirror-selected {
+    background: #3e3e3e;
+}

@@ -1,0 +1,25 @@
+INT_TYPE, Value: int, Line: 1
+IDENTIFIER, Value: number, Line: 1
+EQUALS, Value: =, Line: 1
+NUMBER, Value: 9, Line: 1
+DOT, Value: ., Line: 1
+STRING_TYPE, Value: string, Line: 2
+IDENTIFIER, Value: name, Line: 2
+EQUALS, Value: =, Line: 2
+STRING_LITERAL, Value: Deshaunt, Line: 2
+DOT, Value: ., Line: 2
+INT_TYPE, Value: int, Line: 4
+IDENTIFIER, Value: anotherNumber, Line: 4
+EQUALS, Value: =, Line: 4
+NUMBER, Value: 15, Line: 4
+DOT, Value: ., Line: 4
+STRING_TYPE, Value: string, Line: 5
+IDENTIFIER, Value: anotherName, Line: 5
+EQUALS, Value: =, Line: 5
+STRING_LITERAL, Value: Khaleesi, Line: 5
+DOT, Value: ., Line: 5
+DATE_TYPE, Value: date, Line: 7
+IDENTIFIER, Value: someDay, Line: 7
+EQUALS, Value: =, Line: 7
+DATE_VAL, Value: June 15, 2024, Line: 7
+DOT, Value: ., Line: 7

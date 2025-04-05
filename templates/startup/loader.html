@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APBL - Loading</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/startup.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader-window">
+            <div class="title">APBL</div>
+            <div class="slogan">Booking made easy</div>
+            
+            <div class="status-message" id="status-message">Initializing...</div>
+            <div class="error-details" id="error-details"></div>
+            <div class="restart-countdown" id="restart-countdown"></div>
+            <br/> <br/> <br/>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="version">Version 1.0</div>
+        </div>
+
+        <script src="/static/js/loader.js"></script>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Check status every 500ms
+            const statusInterval = setInterval(checkStatus, 500);
+            let redirectAttempts = 0;
+            
+            function checkStatus() {
+                fetch('/status')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            document.getElementById('status-message').textContent = data.data.message;
+                            document.getElementById('progress-bar').style.width = data.data.progress + '%';
+                            
+                            if (data.data.error) {
+                                $('#error-details').text(data.data.error).show();
+                                clearInterval(statusInterval);
+                                $('#manual-launch').show();
+                            }
+                            
+                            if (data.data.complete) {
+                                clearInterval(statusInterval);
+                                attemptRedirect();
+                            }
+
+                            if (data.redirect) {
+                                // Add a small delay to ensure everything is ready
+                                setTimeout(() => {
+                                    window.location.href = data.redirect;
+                                }, 300);
+                            }
+                        } else {
+                            console.error("Status check failed:", data);
+                            $('#error-details').text("Connection to loader lost").show();
+                            $('#manual-launch').show();
+                            clearInterval(statusInterval);
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Status check failed:", err);
+                        $('#error-details').text("Connection to loader lost").show();
+                        $('#manual-launch').show();
+                        clearInterval(statusInterval);
+                    });
+            }
+            
+            function attemptRedirect() {
+                // Try multiple ports in case of conflicts
+                const ports = [5001, 5002, 5003, 5004, 5005];
+                $('#status-message').text("Connecting to IDE...");
+                
+                // Show manual launch option after a delay
+                setTimeout(() => {
+                    $('#manual-launch').show();
+                }, 5000);
+                
+                function tryPort(portIndex) {
+                    if (portIndex >= ports.length) {
+                        $('#status-message').text("Could not connect to IDE automatically.");
+                        $('#error-details').text("Please try again later.").show();
+                        return;
+                    }
+                    
+                    const port = ports[portIndex];
+                    console.log(`Trying port ${port}...`);
+                    
+                    fetch(`http://localhost:${port}/`, { mode: 'no-cors', timeout: 2000 })
+                        .then(() => {
+                            console.log(`Found IDE at port ${port}`);
+                            $('#status-message').text(`Redirecting to IDE on port ${port}...`);
+                            window.location.href = `http://localhost:${port}/`;
+                        })
+                        .catch(() => {
+                            console.log(`Port ${port} failed, trying next...`);
+                            setTimeout(() => tryPort(portIndex + 1), 1000);
+                        });
+                }
+                
+                // Start checking ports
+                tryPort(0);
+            }
+            
+            // Manual launch button handler
+            $('#launch-button').on('click', function() {
+                attemptRedirect();
+            });
+        });
+    </script>
+</body>
+</html>

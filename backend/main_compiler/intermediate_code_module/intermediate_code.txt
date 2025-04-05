@@ -1,0 +1,5 @@
+DECLARE number AS int WITH VALUE 9
+DECLARE name AS string WITH VALUE Deshaunt
+DECLARE anotherNumber AS int WITH VALUE 15
+DECLARE anotherName AS string WITH VALUE Khaleesi
+DECLARE someDay AS date WITH VALUE June 15, 2024

@@ -1,0 +1,36 @@
+<div class="editor-container">
+    <textarea id="code-editor"></textarea>
+</div>
+
+<script>
+
+    // Track editor changes
+    editor.on('change', function() {
+        updateEditorContent();
+        setModified(true);
+    });
+
+    // Save editor content periodically
+    setInterval(updateEditorContent, 5000);
+
+    function updateEditorContent() {
+        const content = editor.getValue();
+        fetch('/editor/content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: content })
+        });
+    }
+
+    function setModified(isModified) {
+        fetch('/editor/modified', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ modified: isModified })
+        });
+    }
+</script>
