@@ -93,3 +93,13 @@ class UserInputHandler:
             """
         else:
             return ""  # No validation needed for strings
+        
+    def get_current_date(self):
+        """
+        Get the current date in a standard format.
+        
+        Returns:
+            str: Current date as a string
+        """
+        from datetime import datetime
+        return datetime.now().strftime("%Y-%m-%d")# YYYY-MM-DD format

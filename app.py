@@ -146,6 +146,8 @@ class MainAPBL:
                             self.toolbar.save_file, methods=['POST'])
         self.app.add_url_rule('/compile', 'compile', 
                             self.compile, methods=['POST'])
+        self.app.add_url_rule('/syntax_rules', 'syntax_rules', self.syntax_rules)
+
         
         logger.info("Routes configured")
 
@@ -248,6 +250,10 @@ class MainAPBL:
             logger.error(f"Error starting compilation: {str(e)}", exc_info=True)
             return jsonify({'status': 'error', 'message': str(e)})
     
+    def syntax_rules(self):
+        """Render the syntax rules documentation page"""
+        return render_template('ide/syntax_rules.html')
+
     def _run_compilation(self, source_code):
         """Run compilation using CompilerService"""
         with self.app.app_context():

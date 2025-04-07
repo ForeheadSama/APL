@@ -6,6 +6,8 @@
 
     <title>APBL | Booking Made Easy</title>
 
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/ide.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
 
@@ -15,19 +17,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+
 </head>
 <body>
     <div class="ide-container">
         <!-- Toolbar -->
         <div class="toolbar">
-            <button id="new-btn">New</button>
-            <button id="open-btn">Open</button>
-            <button id="save-btn">Save</button>
-            <button id="compile-btn">Run</button>
-            <span class="filename" id="filename">
-                {% if current_file %}{{ current_file }}{% else %}Untitled{% endif %}
-                {% if is_modified %}*{% endif %}
-            </span>
+            <div class="title-container">
+                <span class="app-title">Advanced Programming for Booking Language</span>
+            </div>
+            <div class="toolbar-buttons">
+                <button id="new-btn">New</button>
+                <button id="open-btn">Open</button>
+                <button id="save-btn">Save</button>
+                <button id="about-btn">About</button>
+                <button id="compile-btn">Run</button>
+                <span class="filename" id="filename">
+                    {% if current_file %}{{ current_file }}{% else %}Untitled{% endif %}
+                    {% if is_modified %}*{% endif %}
+                </span>
+            </div>
         </div>
         
         <!-- Main Content -->
@@ -49,6 +58,37 @@
                 <div class="tab-content" id="insights-tab">
                     {% include "ide/insights.html" %}
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Advanced Programming for Booking Language (APBL)</h2>
+            <div class="version-info">Version 1.0</div>
+            
+            <div class="about-section">
+                <p>Advanced Programming for Booking Language (APBL) is an imperative, procedural, domain-specific programming language (DSL) designed to facilitate ticket booking applications. It follows a structured sequence of operations, utilizing built-in procedures to manage user registration and ticket reservations efficiently.</p>
+                
+                <p>It allows developers to create programs that handle user registration, ticket reservations, and booking confirmations with minimal complexity. APBL is designed to facilitate ticket booking operations through a natural language interface. Unlike general-purpose languages, which are intended for a broad range of applications, this language is tailored to address the particular needs of users within the ticket booking domain.</p>
+                
+                <h3>Compiler Implementation</h3>
+                <p>The APBL compiler was developed using PLY (Python Lex-Yacc), a Python-based tool for lexing and parsing. PLY provides functionality similar to traditional compiler tools like Lex and Yacc but within a Python environment. It was chosen for its flexibility in defining grammar rules and handling syntax analysis efficiently.</p>
+                
+                <p>By utilizing Python, a high-level language, the development of the compiler was streamlined and made more manageable. Python's readability and extensive libraries facilitated rapid development and integration with other components of the project.</p>
+                
+                <h3>Compiler Stages:</h3>
+                <ul>
+                    <li><strong>Lexical Analysis:</strong> Tokenizing APBL code into meaningful components.</li>
+                    <li><strong>Syntax Analysis:</strong> Construct an Abstract Syntax Tree (AST) based on predefined grammar rules.</li>
+                    <li><strong>Semantic Analysis:</strong> Ensuring correct interpretation of booking-related operations.</li>
+                    <li><strong>Intermediate Code Generation:</strong> Translating APBL code into a simplified version that retains its logical structure but is easier to process in later stages.</li>
+                    <li><strong>Code Generation and Execution:</strong> Generating executable Python code from APBL commands. This Python code is then executed to interact with the ticket booking system, performing tasks such as user registration, querying available tickets, and booking reservations.</li>
+                </ul>
+                
+                <p>You may find the syntax rules of APBL <a href="{{ url_for('syntax_rules') }}" class="syntax-link">here</a></p>
             </div>
         </div>
     </div>

@@ -43,7 +43,7 @@ def fetch_events_from_ticketmaster(
 ) -> List[Dict[str, Any]]:
     params = {
         "apikey": TICKETMASTER_API_KEY,
-        "size": 50,
+        "size": 10,
         "sort": "date,asc"
     }
 

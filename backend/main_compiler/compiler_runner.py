@@ -372,7 +372,7 @@ class CompilerService:
                 [sys.executable, generated_code_path],
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=120
             )
             
             if result.stderr:

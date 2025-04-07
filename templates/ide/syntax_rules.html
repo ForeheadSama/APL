@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APBL Syntax Rules</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #252526;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #333;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            color: #fff;
+        }
+        
+        h2 {
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-top: 30px;
+            font-size: 24px;
+            color: #3794ff;
+        }
+        
+        .version {
+            font-size: 16px;
+            color: #858585;
+            margin-top: 5px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .syntax-rule {
+            background-color: #252526;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .rule-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .rule-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        
+        .rule-title {
+            margin: 0;
+            font-size: 20px;
+            color: #569cd6;
+        }
+        
+        .rule-description {
+            margin-bottom: 15px;
+        }
+        
+        .code-example {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #569cd6;
+            font-family: 'Consolas', 'Courier New', monospace;
+            overflow-x: auto;
+            margin-bottom: 15px;
+        }
+        
+        .note {
+            padding: 10px;
+            background-color: #32394a;
+            border-left: 3px solid #3794ff;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #3794ff;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            opacity: 0.8;
+        }
+        
+        ul {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+
+        .copy-btn {
+            background-color: #333;
+            color: #d4d4d4;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            float: right;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background-color: #3e3e3e;
+        }
+
+        footer {
+            background-color: #252526;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid #333;
+            text-align: center;
+            font-size: 14px;
+            color: #858585;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>APBL Syntax Rules</h1>
+            <div class="version">Version 1.0</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="section">
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">✅</span>
+                    <h3 class="rule-title">How to Write Instructions (Statements)</h3>
+                </div>
+                <div class="rule-description">
+                    <p>Each instruction (or "statement") must end with a <strong>period</strong> (.).</p>
+                </div>
+                <div class="code-example">
+                    DISPLAY "Welcome to APBL".
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">🔤</span>
+                    <h3 class="rule-title">Declaring Information (Variable Setup)</h3>
+                </div>
+                <div class="rule-description">
+                    <p>Before you can use data like names, numbers, or dates, you must declare what type of data it is.</p>
+                </div>
+                <h4>To declare a string (text):</h4>
+                <div class="code-example">
+                    string username.
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <h4>To declare a number:</h4>
+                <div class="code-example">
+                    int ticketCount.
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <h4>To declare a date:</h4>
+                <div class="code-example">
+                    date eventDate.
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">🎯</span>
+                    <h3 class="rule-title">Making Decisions (If-Statements)</h3>
+                </div>
+                <div class="rule-description">
+                    <p>You can tell the program to do something <strong>only if a condition is true</strong>.</p>
+                </div>
+                <h4>Basic "if" structure:</h4>
+                <div class="code-example">
+                    if (ticketCount > 5) [ DISPLAY "You have a lot of tickets". ].
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <h4>"If...else" structure (for two possible paths):</h4>
+                <div class="code-example">
+                    if (ticketCount > 5) [ DISPLAY "Many tickets booked". ] else [ DISPLAY "Few tickets booked". ].
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <div class="note">
+                    <p>You can compare:</p>
+                    <ul>
+                        <li>Two numbers (e.g., <code>ticketCount > 5</code>)</li>
+                        <li>Two words or phrases (e.g., <code>"VIP" == userType</code>)</li>
+                        <li>Dates (e.g., <code>eventDate != "March 20, 2025"</code>)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">🧾</span>
+                    <h3 class="rule-title">Booking Tickets</h3>
+                </div>
+                <div class="rule-description">
+                    <p>To book tickets, use this format:</p>
+                </div>
+                <div class="code-example">
+                    BOOK 2 TICKETS FOR "John Doe" ON "April 15, 2025" FOR "Concert X".
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <p>You can also use saved variables:</p>
+                <div class="code-example">
+                    BOOK ticketCount TICKETS FOR username ON eventDate FOR eventName.
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">❌</span>
+                    <h3 class="rule-title">Cancelling Tickets</h3>
+                </div>
+                <div class="rule-description">
+                    <p>To cancel tickets:</p>
+                </div>
+                <div class="code-example">
+                    CANCEL 1 TICKET FOR "John Doe" EVENT "Concert X".
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">📋</span>
+                    <h3 class="rule-title">Listing Events</h3>
+                </div>
+                <div class="rule-description">
+                    <p>You can list events by date:</p>
+                </div>
+                <div class="code-example">
+                    LIST "Concert X" ON "April 15, 2025".
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <p>Or just list the event:</p>
+                <div class="code-example">
+                    LIST "Concert X".
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">🔍</span>
+                    <h3 class="rule-title">Checking Availability or Price</h3>
+                </div>
+                <div class="rule-description">
+                    <p>To check if seats are available or see the price:</p>
+                </div>
+                <div class="code-example">
+                    CHECK AVAILABILITY FOR "Concert X" ON "April 15, 2025".
+                    CHECK PRICE FOR "Concert X" ON "April 15, 2025".
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">💳</span>
+                    <h3 class="rule-title">Making Payments</h3>
+                </div>
+                <div class="rule-description">
+                    <p>To pay for an event:</p>
+                </div>
+                <div class="code-example">
+                    PAY FOR "Concert X" "John Doe".
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">🖥️</span>
+                    <h3 class="rule-title">Displaying Messages</h3>
+                </div>
+                <div class="rule-description">
+                    <p>To show a message:</p>
+                </div>
+                <div class="code-example">
+                    DISPLAY "Booking successful".
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <p>Or show the value of something you saved earlier:</p>
+                <div class="code-example">
+                    DISPLAY username.
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">✅</span>
+                    <h3 class="rule-title">Accepting Input</h3>
+                </div>
+                <div class="rule-description">
+                    <p>To let a user type something in:</p>
+                </div>
+                <div class="code-example">
+                    ACCEPT username.
+                    <button class="copy-btn">Copy</button>
+                </div>
+                <p>This will let the user enter a value, like their name.</p>
+            </div>
+            
+            <div class="syntax-rule">
+                <div class="rule-header">
+                    <span class="rule-icon">💬</span>
+                    <h3 class="rule-title">Adding Comments (Notes)</h3>
+                </div>
+                <div class="rule-description">
+                    <p>If you want to add notes in your code that the computer should ignore, start the line with <code>$$</code>.</p>
+                </div>
+                <div class="code-example">
+                    $$ This is a comment explaining the next line
+                    DISPLAY "Thank you for using APBL".
+                    <button class="copy-btn">Copy</button>
+                </div>
+            </div>
+        </div>
+        
+        <a href="{{ url_for('ide') }}" class="back-link">← Back to Editor</a>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>APBL Syntax Rules Documentation • Version 1.0</p>
+        </div>
+    </footer>
+
+    <script>
+        // Copy functionality for code examples
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeExample = this.parentElement;
+                const codeText = codeExample.textContent.trim().replace('Copy', '').trim();
+                
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const originalText = this.textContent;
+                    this.textContent = 'Copied!';
+                    this.style.backgroundColor = '#569cd6';
+                    
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.style.backgroundColor = '';
+                    }, 1500);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

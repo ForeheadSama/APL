@@ -180,6 +180,15 @@ def p_command_stmt(p):
 def p_book_cmd(p):
     '''book_cmd : BOOK quantity TICKETS FOR customer ON date FOR event'''
 
+    # Check if quantity is a dictionary and extract the value if needed
+    quantity = p[2]
+    if isinstance(quantity, dict) and 'value' in quantity:
+        quantity = quantity['value']
+    
+    if quantity < 1:
+        error_msg = f"Quantity must be greater than 0. Line {p.lineno(1)}."
+        syntax_errors.append(error_msg)
+
     p[0] = create_node('book_command', lineno=p.lineno(1), 
                        quantity=p[2], 
                        customer=p[5], 
@@ -228,6 +237,12 @@ def p_customer(p):
 def p_date(p):
     '''date : DATE_VAL
             | IDENTIFIER'''
+    
+    # Check if date is a date in the past 
+    if p.slice[1].type == 'DATE_VAL' and p[1] < input_handler.get_current_date():
+        error_msg = f"Error: Date cannot be in the past. Line {p.lineno(1)}."
+        syntax_errors.append(error_msg)
+        raise ValueError(error_msg)
     
     if p.slice[1].type == 'IDENTIFIER':
         var_name = p[1]
@@ -388,7 +403,7 @@ def p_error(p):
                 break
 
     else:
-        error_msg = "Syntax error at EOF.\n"
+        error_msg = "Syntax error at End Of File.\n"
         syntax_errors.append(error_msg)
 
 # Helper function to find the column of the error

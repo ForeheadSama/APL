@@ -32,6 +32,15 @@ $(document).ready(function() {
     $('#open-btn').click(openFile);
     $('#save-btn').click(saveFile);
     $('#compile-btn').click(compileCode);
+    $('#about-btn').click(openAboutModal);
+    
+    // Modal handlers
+    $('.close-btn').click(closeModal);
+    $(window).click(function(event) {
+        if ($(event.target).hasClass('modal')) {
+            closeModal();
+        }
+    });
     
     // Editor change handler
     editor.on('change', function() {
@@ -257,5 +266,13 @@ $(document).ready(function() {
         const filename = currentFile ? currentFile : 'Untitled';
         const modified = isModified ? '*' : '';
         $('#filename').text(`${filename}${modified}`);
+    }
+    
+    function openAboutModal() {
+        $('#about-modal').css('display', 'block');
+    }
+    
+    function closeModal() {
+        $('.modal').css('display', 'none');
     }
 });

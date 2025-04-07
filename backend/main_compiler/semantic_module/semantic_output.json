@@ -1,32 +1,12 @@
 [
     {
-        "type": "declaration",
-        "var_name": "number",
-        "var_type": "int",
-        "value": 9
-    },
-    {
-        "type": "declaration",
-        "var_name": "name",
-        "var_type": "string",
-        "value": "Deshaunt"
-    },
-    {
-        "type": "declaration",
-        "var_name": "anotherNumber",
-        "var_type": "int",
-        "value": 15
-    },
-    {
-        "type": "declaration",
-        "var_name": "anotherName",
-        "var_type": "string",
-        "value": "Khaleesi"
-    },
-    {
-        "type": "declaration",
-        "var_name": "someDay",
-        "var_type": "date",
-        "value": "June 15, 2024"
+        "type": "list_command",
+        "date": null,
+        "event": {
+            "type": "literal",
+            "lineno": 1,
+            "value": "party",
+            "lit_type": "string"
+        }
     }
 ]
