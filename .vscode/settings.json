@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/cd6d2da1-61d3-406d-8c5b-606505c80a22/resourceGroups/appsvc_linux_eastus/providers/Microsoft.Web/sites/apbl-app",
+    "appService.deploySubpath": "."
+}
