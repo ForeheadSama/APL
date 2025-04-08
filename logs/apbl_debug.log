@@ -20377,3 +20377,167 @@ Exception: Database connection failed
 2025-04-07 10:48:17 - INFO - Starting phase: Parsing - Parsing takes the 10 tokens (like words in a sentence) from the previous step (lexical analysis) and arranges them into a tree-like structure (parse tree) that shows how they relate grammatically.  This verifies the code's syntax and reveals the code's structure, ensuring it follows the language's rules.
 
 2025-04-07 10:48:17 - ERROR - Syntax errors found during parsing
+2025-04-07 13:43:20 - INFO - Creating APBL application instance
+2025-04-07 13:43:20 - INFO - Initializing APBL application
+2025-04-07 13:43:20 - DEBUG - Base directory: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL
+2025-04-07 13:43:20 - DEBUG - Template path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates, Static path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\static
+2025-04-07 13:43:20 - DEBUG - Application state initialized
+2025-04-07 13:43:20 - INFO - CompilerService initialized
+2025-04-07 13:43:20 - DEBUG - Startup thread initialized
+2025-04-07 13:43:20 - INFO - IDE components initialized
+2025-04-07 13:43:20 - INFO - Routes configured
+2025-04-07 13:43:20 - DEBUG - Found template: loader at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\startup/loader.html
+2025-04-07 13:43:20 - DEBUG - Found template: ide at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\ide/base.html
+2025-04-07 13:43:20 - INFO - Starting APBL on port 5000
+2025-04-07 13:43:20 - INFO - Beginning startup checks
+2025-04-07 13:43:20 - INFO - Startup thread started
+2025-04-07 13:43:20 - DEBUG - Queueing message: ('status', 'Checking network...', 25)
+2025-04-07 13:43:20 - DEBUG - Checking network connectivity
+2025-04-07 13:43:21 - DEBUG - Checking network connectivity
+2025-04-07 13:43:21 - DEBUG - Queueing message: ('status', 'Checking database...', 50)
+2025-04-07 13:43:21 - DEBUG - Checking database connection
+2025-04-07 13:43:21 - DEBUG - Browser opened
+2025-04-07 13:43:21 - DEBUG - Index route called, app_state: loading
+2025-04-07 13:43:22 - DEBUG - Checking Azure database connection
+2025-04-07 13:43:22 - DEBUG - Processing status request
+2025-04-07 13:43:22 - DEBUG - Status update: Checking network... (25%)
+2025-04-07 13:43:22 - DEBUG - Status update: Checking database... (50%)
+2025-04-07 13:43:22 - DEBUG - Processing status request
+2025-04-07 13:43:23 - DEBUG - Processing status request
+2025-04-07 13:43:23 - DEBUG - Processing status request
+2025-04-07 13:43:23 - DEBUG - Processing status request
+2025-04-07 13:43:24 - DEBUG - Processing status request
+2025-04-07 13:43:24 - DEBUG - Processing status request
+2025-04-07 13:43:24 - DEBUG - Processing status request
+2025-04-07 13:43:25 - DEBUG - Processing status request
+2025-04-07 13:43:25 - DEBUG - Processing status request
+2025-04-07 13:43:25 - DEBUG - Processing status request
+2025-04-07 13:43:27 - WARNING - Database connection timed out
+2025-04-07 13:43:27 - ERROR - Database connection failed
+2025-04-07 13:43:27 - CRITICAL - Startup process failed: Database connection failed
+Traceback (most recent call last):
+  File "C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\app.py", line 417, in startup_process
+    raise Exception(error_msg)
+Exception: Database connection failed
+2025-04-07 13:43:27 - DEBUG - Queueing message: ('error', 'Database connection failed')
+2025-04-07 13:44:00 - ERROR - Database connection failed: ('08001', '[08001] [Microsoft][ODBC Driver 18 for SQL Server]Named Pipes Provider: Could not open a connection to SQL Server [64].  (64) (SQLDriverConnect); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Login timeout expired (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Invalid connection string attribute (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to apblbookingserver.database.windows.net. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. (64)')
+Traceback (most recent call last):
+  File "C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\app.py", line 365, in db_check
+    conn = db_module.get_db_connection()
+  File "backend/database/connect.py", line 24, in get_db_connection
+    return pyodbc.connect(conn_str)
+pyodbc.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 18 for SQL Server]Named Pipes Provider: Could not open a connection to SQL Server [64].  (64) (SQLDriverConnect); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Login timeout expired (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Invalid connection string attribute (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to apblbookingserver.database.windows.net. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. (64)')
+2025-04-07 13:44:56 - INFO - Creating APBL application instance
+2025-04-07 13:44:56 - INFO - Initializing APBL application
+2025-04-07 13:44:56 - DEBUG - Base directory: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL
+2025-04-07 13:44:56 - DEBUG - Template path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates, Static path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\static
+2025-04-07 13:44:56 - DEBUG - Application state initialized
+2025-04-07 13:44:56 - INFO - CompilerService initialized
+2025-04-07 13:44:56 - DEBUG - Startup thread initialized
+2025-04-07 13:44:56 - INFO - IDE components initialized
+2025-04-07 13:44:56 - INFO - Routes configured
+2025-04-07 13:44:56 - DEBUG - Found template: loader at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\startup/loader.html
+2025-04-07 13:44:56 - DEBUG - Found template: ide at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\ide/base.html
+2025-04-07 13:44:56 - INFO - Starting APBL on port 5000
+2025-04-07 13:44:56 - INFO - Beginning startup checks
+2025-04-07 13:44:56 - INFO - Startup thread started
+2025-04-07 13:44:56 - DEBUG - Queueing message: ('status', 'Checking network...', 25)
+2025-04-07 13:44:56 - DEBUG - Checking network connectivity
+2025-04-07 13:44:57 - DEBUG - Checking network connectivity
+2025-04-07 13:44:57 - DEBUG - Queueing message: ('status', 'Checking database...', 50)
+2025-04-07 13:44:57 - DEBUG - Checking database connection
+2025-04-07 13:44:57 - DEBUG - Browser opened
+2025-04-07 13:44:57 - DEBUG - Index route called, app_state: loading
+2025-04-07 13:44:58 - DEBUG - Checking Azure database connection
+2025-04-07 13:44:58 - DEBUG - Processing status request
+2025-04-07 13:44:58 - DEBUG - Status update: Checking network... (25%)
+2025-04-07 13:44:58 - DEBUG - Status update: Checking database... (50%)
+2025-04-07 13:44:58 - DEBUG - Processing status request
+2025-04-07 13:44:59 - DEBUG - Processing status request
+2025-04-07 13:44:59 - DEBUG - Processing status request
+2025-04-07 13:45:00 - DEBUG - Processing status request
+2025-04-07 13:45:00 - DEBUG - Processing status request
+2025-04-07 13:45:01 - DEBUG - Processing status request
+2025-04-07 13:45:02 - DEBUG - Processing status request
+2025-04-07 13:45:02 - DEBUG - Processing status request
+2025-04-07 13:45:03 - WARNING - Database connection timed out
+2025-04-07 13:45:03 - ERROR - Database connection failed
+2025-04-07 13:45:03 - CRITICAL - Startup process failed: Database connection failed
+Traceback (most recent call last):
+  File "C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\app.py", line 417, in startup_process
+    raise Exception(error_msg)
+Exception: Database connection failed
+2025-04-07 13:45:03 - DEBUG - Queueing message: ('error', 'Database connection failed')
+2025-04-07 13:45:03 - DEBUG - Processing status request
+2025-04-07 13:45:03 - ERROR - Error status: Database connection failed
+2025-04-07 13:45:04 - DEBUG - Processing status request
+2025-04-07 13:45:33 - INFO - Creating APBL application instance
+2025-04-07 13:45:33 - INFO - Initializing APBL application
+2025-04-07 13:45:33 - DEBUG - Base directory: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL
+2025-04-07 13:45:33 - DEBUG - Template path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates, Static path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\static
+2025-04-07 13:45:33 - DEBUG - Application state initialized
+2025-04-07 13:45:33 - INFO - CompilerService initialized
+2025-04-07 13:45:33 - DEBUG - Startup thread initialized
+2025-04-07 13:45:33 - INFO - IDE components initialized
+2025-04-07 13:45:33 - INFO - Routes configured
+2025-04-07 13:45:33 - DEBUG - Found template: loader at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\startup/loader.html
+2025-04-07 13:45:33 - DEBUG - Found template: ide at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\ide/base.html
+2025-04-07 13:45:33 - INFO - Starting APBL on port 5000
+2025-04-07 13:45:33 - INFO - Beginning startup checks
+2025-04-07 13:45:33 - INFO - Startup thread started
+2025-04-07 13:45:33 - DEBUG - Queueing message: ('status', 'Checking network...', 25)
+2025-04-07 13:45:33 - DEBUG - Checking network connectivity
+2025-04-07 13:45:34 - DEBUG - Checking network connectivity
+2025-04-07 13:45:34 - DEBUG - Queueing message: ('status', 'Checking database...', 50)
+2025-04-07 13:45:34 - DEBUG - Checking database connection
+2025-04-07 13:45:35 - DEBUG - Browser opened
+2025-04-07 13:45:35 - DEBUG - Index route called, app_state: loading
+2025-04-07 13:45:36 - DEBUG - Checking Azure database connection
+2025-04-07 13:45:36 - DEBUG - Processing status request
+2025-04-07 13:45:36 - DEBUG - Status update: Checking network... (25%)
+2025-04-07 13:45:36 - DEBUG - Status update: Checking database... (50%)
+2025-04-07 13:45:36 - DEBUG - Processing status request
+2025-04-07 13:45:36 - DEBUG - Processing status request
+2025-04-07 13:45:37 - DEBUG - Processing status request
+2025-04-07 13:45:37 - DEBUG - Processing status request
+2025-04-07 13:45:37 - DEBUG - Processing status request
+2025-04-07 13:45:38 - DEBUG - Processing status request
+2025-04-07 13:45:38 - DEBUG - Processing status request
+2025-04-07 13:45:38 - DEBUG - Processing status request
+2025-04-07 13:45:38 - DEBUG - Processing status request
+2025-04-07 13:45:39 - DEBUG - Processing status request
+2025-04-07 13:45:39 - DEBUG - Processing status request
+2025-04-07 13:45:39 - DEBUG - Processing status request
+2025-04-07 13:45:40 - DEBUG - Processing status request
+2025-04-07 13:45:40 - DEBUG - Processing status request
+2025-04-07 13:45:40 - DEBUG - Processing status request
+2025-04-07 13:45:40 - DEBUG - Processing status request
+2025-04-07 13:45:41 - WARNING - Database connection timed out
+2025-04-07 13:45:41 - ERROR - Database connection failed
+2025-04-07 13:45:41 - CRITICAL - Startup process failed: Database connection failed
+Traceback (most recent call last):
+  File "C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\app.py", line 417, in startup_process
+    raise Exception(error_msg)
+Exception: Database connection failed
+2025-04-07 13:45:41 - DEBUG - Queueing message: ('error', 'Database connection failed')
+2025-04-07 13:45:41 - DEBUG - Processing status request
+2025-04-07 13:45:41 - ERROR - Error status: Database connection failed
+2025-04-07 13:45:41 - DEBUG - Processing status request
+2025-04-07 13:45:51 - ERROR - Database connection failed: ('08001', '[08001] [Microsoft][ODBC Driver 18 for SQL Server]Named Pipes Provider: Could not open a connection to SQL Server [53].  (53) (SQLDriverConnect); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Login timeout expired (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Invalid connection string attribute (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to apblbookingserver.database.windows.net. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. (53)')
+Traceback (most recent call last):
+  File "C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\app.py", line 365, in db_check
+    conn = db_module.get_db_connection()
+  File "backend/database/connect.py", line 24, in get_db_connection
+    return pyodbc.connect(conn_str)
+pyodbc.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 18 for SQL Server]Named Pipes Provider: Could not open a connection to SQL Server [53].  (53) (SQLDriverConnect); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Login timeout expired (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]Invalid connection string attribute (0); [08001] [Microsoft][ODBC Driver 18 for SQL Server]A network-related or instance-specific error has occurred while establishing a connection to apblbookingserver.database.windows.net. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online. (53)')
+2025-04-08 16:56:27 - INFO - Creating APBL application instance
+2025-04-08 16:56:27 - INFO - Initializing APBL application
+2025-04-08 16:56:27 - DEBUG - Base directory: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL
+2025-04-08 16:56:27 - DEBUG - Template path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates, Static path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\static
+2025-04-08 16:56:27 - DEBUG - Application state initialized
+2025-04-08 16:56:27 - INFO - CompilerService initialized
+2025-04-08 16:56:27 - DEBUG - Startup thread initialized
+2025-04-08 16:56:27 - INFO - IDE components initialized
+2025-04-08 16:56:27 - INFO - Routes configured
+2025-04-08 16:56:27 - DEBUG - Found template: loader at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\startup/loader.html
+2025-04-08 16:56:27 - DEBUG - Found template: ide at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\ide/base.html

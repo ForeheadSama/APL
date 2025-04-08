@@ -365,7 +365,6 @@ class CodeGenerator:
         """Generate the footer section of the Python code"""
         self.generated_code.extend([
             "",
-            "# By Alex-Ann Burrell :P",  
             "# == End of generated code == ",
         ])
 
