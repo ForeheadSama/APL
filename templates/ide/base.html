@@ -18,7 +18,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
 
+    <script src="{{ url_for('static', filename='js/ide.js') }}" defer></script>
 </head>
+
 <body>
     <div class="ide-container">
         <!-- Toolbar -->
@@ -93,6 +95,5 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/ide.js') }}"></script>
 </body>
 </html>
