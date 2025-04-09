@@ -20541,3 +20541,53 @@ pyodbc.OperationalError: ('08001', '[08001] [Microsoft][ODBC Driver 18 for SQL S
 2025-04-08 16:56:27 - INFO - Routes configured
 2025-04-08 16:56:27 - DEBUG - Found template: loader at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\startup/loader.html
 2025-04-08 16:56:27 - DEBUG - Found template: ide at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\ide/base.html
+2025-04-08 19:24:12 - INFO - Initializing APBL application
+2025-04-08 19:24:12 - DEBUG - Base directory: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL
+2025-04-08 19:24:12 - DEBUG - Template path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates, Static path: C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\static
+2025-04-08 19:24:12 - DEBUG - Application state initialized
+2025-04-08 19:24:12 - INFO - CompilerService initialized
+2025-04-08 19:24:12 - DEBUG - Startup thread initialized
+2025-04-08 19:24:12 - INFO - IDE components initialized
+2025-04-08 19:24:12 - INFO - Routes configured
+2025-04-08 19:24:12 - DEBUG - Found template: loader at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\startup/loader.html
+2025-04-08 19:24:12 - DEBUG - Found template: ide at C:\Users\britn\OneDrive\Documents\Britney Documents\UTech\Year 4 Sem 2\APL\APL Sumn\APL\templates\ide/base.html
+2025-04-08 19:24:12 - INFO - Starting APBL on port 5000
+2025-04-08 19:24:12 - INFO - Beginning startup checks
+2025-04-08 19:24:12 - INFO - Startup thread started
+2025-04-08 19:24:12 - DEBUG - Queueing message: ('status', 'Checking network...', 25)
+2025-04-08 19:24:12 - DEBUG - Checking network connectivity
+2025-04-08 19:24:13 - DEBUG - Checking network connectivity
+2025-04-08 19:24:13 - DEBUG - Queueing message: ('status', 'Checking database...', 50)
+2025-04-08 19:24:13 - DEBUG - Checking database connection
+2025-04-08 19:24:13 - DEBUG - Browser opened
+2025-04-08 19:24:14 - DEBUG - Index route called, app_state: loading
+2025-04-08 19:24:14 - DEBUG - Checking Azure database connection
+2025-04-08 19:24:14 - DEBUG - Processing status request
+2025-04-08 19:24:14 - DEBUG - Status update: Checking network... (25%)
+2025-04-08 19:24:14 - DEBUG - Status update: Checking database... (50%)
+2025-04-08 19:24:15 - DEBUG - Processing status request
+2025-04-08 19:24:15 - DEBUG - Processing status request
+2025-04-08 19:24:15 - DEBUG - Database connection successful
+2025-04-08 19:24:15 - DEBUG - Queueing message: ('status', 'Preparing files...', 75)
+2025-04-08 19:24:15 - DEBUG - Creating required files
+2025-04-08 19:24:15 - DEBUG - Processing status request
+2025-04-08 19:24:15 - DEBUG - Status update: Preparing files... (75%)
+2025-04-08 19:24:16 - DEBUG - Processing status request
+2025-04-08 19:24:16 - DEBUG - Processing status request
+2025-04-08 19:24:16 - INFO - Creating required files
+2025-04-08 19:24:16 - DEBUG - Queueing message: ('status', 'Starting IDE...', 100)
+2025-04-08 19:24:16 - INFO - Startup checks completed successfully
+2025-04-08 19:24:16 - DEBUG - Processing status request
+2025-04-08 19:24:16 - DEBUG - Status update: Starting IDE... (100%)
+2025-04-08 19:24:16 - DEBUG - Processing status request
+2025-04-08 19:24:17 - DEBUG - Processing status request
+2025-04-08 19:24:17 - DEBUG - Processing status request
+2025-04-08 19:24:17 - DEBUG - Queueing message: ('complete', 'Ready!', 100)
+2025-04-08 19:24:17 - INFO - Application ready for IDE mode
+2025-04-08 19:24:17 - DEBUG - Processing status request
+2025-04-08 19:24:17 - INFO - Completion status: Ready!
+2025-04-08 19:24:17 - INFO - Loading complete, redirecting to IDE
+2025-04-08 19:24:18 - DEBUG - Processing status request
+2025-04-08 19:24:18 - INFO - Loading complete, redirecting to IDE
+2025-04-08 19:24:18 - DEBUG - Ide route called, app_state: ide
+2025-04-08 19:24:18 - DEBUG - Rendering IDE template

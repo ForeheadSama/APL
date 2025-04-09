@@ -491,7 +491,8 @@ class MainAPBL:
             self.app.run(
                 port=port,
                 threaded=True,
-                debug=False,
+                debug=True,
+                host='0.0.0.0',
                 use_reloader=False
             )
         except Exception as e:
